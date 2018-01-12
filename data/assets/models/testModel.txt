@@ -1,0 +1,2 @@
+M: data/assets/meshes/test.fbx
+Ta testAlbedo.png
