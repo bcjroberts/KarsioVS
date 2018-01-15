@@ -5,18 +5,18 @@
 #include "PhysicsEngine.h"
 #include "PxPhysicsAPI.h"
 
-physx::PxDefaultAllocator		gAllocator;
-physx::PxDefaultErrorCallback	gErrorCallback;
+physx::PxDefaultAllocator gAllocator;
+physx::PxDefaultErrorCallback gErrorCallback;
 
-physx::PxFoundation*			gFoundation = NULL;
-physx::PxPhysics*				gPhysics = NULL;
+physx::PxFoundation* gFoundation = NULL;
+physx::PxPhysics* gPhysics = NULL;
 
-physx::PxDefaultCpuDispatcher*	gDispatcher = NULL;
-physx::PxScene*				gScene = NULL;
+physx::PxDefaultCpuDispatcher* gDispatcher = NULL;
+physx::PxScene* gScene = NULL;
 
-physx::PxMaterial*				gMaterial = NULL;
+physx::PxMaterial* gMaterial = NULL;
 
-physx::PxPvd*                  gPvd = NULL;
+physx::PxPvd* gPvd = NULL;
 
 PhysicsEngine::PhysicsEngine() {
 
@@ -56,8 +56,10 @@ void PhysicsEngine::initPhysics() {
     printf("PhysX created!!");
 }
 
-void PhysicsEngine::simulate() {
-
+// Tell physX to simulate the physics, takes time as a float in seconds.
+void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) {
+    gScene->simulate(timeInSeconds);
+    gScene->fetchResults(true);
 }
 
 PhysicsEngine::~PhysicsEngine()

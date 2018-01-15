@@ -114,6 +114,7 @@
     <ClCompile Include="engine\renderengine\artdata\RenderData.cpp" />
     <ClCompile Include="engine\renderengine\Geometry.cpp" />
     <ClCompile Include="engine\renderengine\RenderEngine.cpp" />
+    <ClCompile Include="Engine\EntityManager.cpp" />
     <ClCompile Include="game\Camera.cpp" />
     <ClCompile Include="game\data\entities\Entities.cpp" />
     <ClCompile Include="game\logic\Logic.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="engine\renderengine\artdata\RenderData.h" />
     <ClInclude Include="engine\renderengine\Geometry.h" />
     <ClInclude Include="engine\renderengine\RenderEngine.h" />
+    <ClInclude Include="Engine\EntityManager.h" />
     <ClInclude Include="game\Camera.h" />
     <ClInclude Include="game\data\entities\Entities.h" />
     <ClInclude Include="game\logic\Logic.h" />
