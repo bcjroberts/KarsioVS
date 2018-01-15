@@ -10,8 +10,9 @@ class PhysicsEngine {
 
 public:
     PhysicsEngine();
-    ~PhysicsEngine();
     void simulate();
+    void initPhysics(); // This method must be called before anything else physics related happens
+    ~PhysicsEngine();
 
 };
 

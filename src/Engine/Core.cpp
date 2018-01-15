@@ -7,6 +7,7 @@
 #include "../Art/MeshData.h"
 #include "../Art/ShaderData.h"
 #include "../Game/Camera.h"
+#include "PhysicsEngine\PhysicsEngine.h"
 
 //#include "PxPhysicsAPI.h"
 
@@ -34,6 +35,7 @@ void Core::coreLoop() {
     AudioEngine audioEngine;
     Logic logic;
 
+    physicsEngine.initPhysics();
     // -----------Temp code, to initialize model/instance in rendering code...
     // Obviously this should be moved elsewhere when it's being used for real...
 
