@@ -8,6 +8,7 @@
 #include "../Art/ShaderData.h"
 #include "../Game/Camera.h"
 #include "PhysicsEngine\PhysicsEngine.h"
+#include <time.h>
 
 //#include "PxPhysicsAPI.h"
 
@@ -80,6 +81,7 @@ void Core::coreLoop() {
 		gDefaultErrorCallback);*/
 
     // -----------------End of temp initialize model/instance in rendering code
+    clock_t previousTime = clock();
 
     while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
@@ -95,10 +97,14 @@ void Core::coreLoop() {
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other
         // approach is better
+        clock_t nowTime = clock();
+        int ms = double(nowTime - previousTime) / CLOCKS_PER_SEC * 1000;
+        printf("%i time diff\n", ms);
+        previousTime = nowTime;
         if(properties.isPaused){
             renderEngine.render(camera);
         }else{
-            physicsEngine.simulate();
+            physicsEngine.simulateTimeInSeconds(float(ms)/1000.0f);
             renderEngine.render(camera);
             audioEngine.simulate();
         }

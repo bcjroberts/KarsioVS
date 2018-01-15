@@ -80,7 +80,7 @@
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(PROJECTDIR)..\deps\glfw3\lib-vc2015;$(PROJECTDIR)..\deps\glew-2.1.0\lib</AdditionalLibraryDirectories>
@@ -105,6 +105,7 @@
     <ClCompile Include="art\MaterialData.cpp" />
     <ClCompile Include="art\MeshData.cpp" />
     <ClCompile Include="art\ShaderData.cpp" />
+    <ClCompile Include="Engine\ComponentFactory.cpp" />
     <ClCompile Include="engine\audioengine\AudioEngine.cpp" />
     <ClCompile Include="engine\Component.cpp" />
     <ClCompile Include="engine\Core.cpp" />
@@ -125,6 +126,7 @@
     <ClInclude Include="art\MaterialData.h" />
     <ClInclude Include="art\MeshData.h" />
     <ClInclude Include="art\ShaderData.h" />
+    <ClInclude Include="Engine\ComponentFactory.h" />
     <ClInclude Include="engine\audioengine\AudioEngine.h" />
     <ClInclude Include="engine\Component.h" />
     <ClInclude Include="engine\Core.h" />

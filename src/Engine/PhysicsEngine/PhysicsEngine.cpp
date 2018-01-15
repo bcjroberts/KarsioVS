@@ -25,8 +25,6 @@ PhysicsEngine::PhysicsEngine() {
 void PhysicsEngine::initPhysics() {
     gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
 
-    printf("Creating physX...");
-
     gPvd = PxCreatePvd(*gFoundation);
     physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
     gPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
@@ -51,9 +49,8 @@ void PhysicsEngine::initPhysics() {
 
     // Setup the ground plane now, this will always remain in the scene.
     // THIS SHOULD BE A PHYSICS COMPONENT OF AN ENTITY with a MESH!!! ***TODO***
-    physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0, 1, 0, 0), *gMaterial);
-    gScene->addActor(*groundPlane);
-    printf("PhysX created!!");
+    /*physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0, 1, 0, 0), *gMaterial);
+    gScene->addActor(*groundPlane);*/
 }
 
 // Tell physX to simulate the physics, takes time as a float in seconds.

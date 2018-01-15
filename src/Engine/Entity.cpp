@@ -4,7 +4,7 @@
 
 #include "Entity.h"
 
-Entity::Entity(glm::vec3 nposition, glm::vec4 nrotation, float nscale) {
+Entity::Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
     static int nextId = 0;
     id = nextId++;
     position = nposition;
@@ -12,15 +12,16 @@ Entity::Entity(glm::vec3 nposition, glm::vec4 nrotation, float nscale) {
     scale = nscale;
 }
 
-void Entity::addComponent(Component c) {
+void Entity::addComponent(Component* c) {
     myComponents.push_back(c);
 }
 
 // Currently only removes components by looking at its type.
 // This is NOT a good solution.
-void Entity::removeComponent(Component c) {
+void Entity::removeComponent(Component* c) {
     for (int i = 0; i < myComponents.size(); ++i) {
-        if (myComponents[i].getComponentType() == c.getComponentType()) {
+        if (myComponents[i]->getComponentType() == c->getComponentType()) {
+            Component* c = myComponents[i]; // keep for cleanup purposes ***TODO***
             myComponents.erase(myComponents.begin() + i);
             break;
         }
@@ -28,5 +29,5 @@ void Entity::removeComponent(Component c) {
 }
 
 Entity::~Entity() {
-
+    
 }

@@ -8,18 +8,19 @@
 #include <glm/glm.hpp>
 #include "Component.h"
 #include "vector"
+#include <glm/gtc/quaternion.hpp>
 
 class Entity {
 private:
-    int id;
     glm::vec3 position;
-    glm::vec4 rotation;
-    float scale;
-    std::vector<Component> myComponents;
+    glm::quat rotation;
+    glm::vec3 scale;
+    std::vector<Component*> myComponents;
 public:
-    Entity(glm::vec3 nposition, glm::vec4 nrotation, float nscale);
-    void addComponent(Component c);
-    void removeComponent(Component c);
+    int id;
+    Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale);
+    void addComponent(Component* c);
+    void removeComponent(Component* c);
     ~Entity();
 };
 

@@ -6,10 +6,10 @@ class EntityManager
 {
 public:
     EntityManager();
-    void createEntity();
-    void destoryEntity(int id);
+    Entity* createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 nscale);
+    void destroyEntity(int id);
     ~EntityManager();
 private:
-    std::vector<Entity> entities;
+    std::vector<Entity*> entities;
 };
 
