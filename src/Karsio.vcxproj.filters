@@ -54,9 +54,6 @@
     <ClCompile Include="game\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game\data\entities\Entities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="game\logic\Logic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,7 +66,7 @@
     <ClCompile Include="Engine\EntityManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\ComponentFactory.cpp">
+    <ClCompile Include="Game\Components\RendererComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,9 +110,6 @@
     <ClInclude Include="game\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="game\data\entities\Entities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="game\logic\Logic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -128,7 +122,7 @@
     <ClInclude Include="Engine\EntityManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\ComponentFactory.h">
+    <ClInclude Include="Game\Components\RendererComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

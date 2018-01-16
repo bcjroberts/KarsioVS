@@ -12,10 +12,10 @@ EntityManager::~EntityManager() {
 }
 
 // Returns a reference to the created entity
-Entity* EntityManager::createEntity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
+Entity EntityManager::createEntity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
     Entity newEntity(nposition, nrotation, nscale);
     entities.push_back(&newEntity);
-    return &newEntity;
+    return newEntity;
 }
 
 void EntityManager::destroyEntity(int id) {

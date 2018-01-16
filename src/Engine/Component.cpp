@@ -12,6 +12,10 @@ ComponentType Component::getComponentType() {
     return myComponentType;
 }
 
+int Component::getEventBitmask() {
+	return 0;
+}
+
 Component::~Component() {
 
 }

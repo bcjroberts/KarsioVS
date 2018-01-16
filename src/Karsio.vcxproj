@@ -105,7 +105,6 @@
     <ClCompile Include="art\MaterialData.cpp" />
     <ClCompile Include="art\MeshData.cpp" />
     <ClCompile Include="art\ShaderData.cpp" />
-    <ClCompile Include="Engine\ComponentFactory.cpp" />
     <ClCompile Include="engine\audioengine\AudioEngine.cpp" />
     <ClCompile Include="engine\Component.cpp" />
     <ClCompile Include="engine\Core.cpp" />
@@ -117,7 +116,7 @@
     <ClCompile Include="engine\renderengine\RenderEngine.cpp" />
     <ClCompile Include="Engine\EntityManager.cpp" />
     <ClCompile Include="game\Camera.cpp" />
-    <ClCompile Include="game\data\entities\Entities.cpp" />
+    <ClCompile Include="Game\Components\RendererComponent.cpp" />
     <ClCompile Include="game\logic\Logic.cpp" />
     <ClCompile Include="main\initopengl\OpenGL.cpp" />
     <ClCompile Include="main\mainGame.cpp" />
@@ -126,7 +125,6 @@
     <ClInclude Include="art\MaterialData.h" />
     <ClInclude Include="art\MeshData.h" />
     <ClInclude Include="art\ShaderData.h" />
-    <ClInclude Include="Engine\ComponentFactory.h" />
     <ClInclude Include="engine\audioengine\AudioEngine.h" />
     <ClInclude Include="engine\Component.h" />
     <ClInclude Include="engine\Core.h" />
@@ -138,7 +136,7 @@
     <ClInclude Include="engine\renderengine\RenderEngine.h" />
     <ClInclude Include="Engine\EntityManager.h" />
     <ClInclude Include="game\Camera.h" />
-    <ClInclude Include="game\data\entities\Entities.h" />
+    <ClInclude Include="Game\Components\RendererComponent.h" />
     <ClInclude Include="game\logic\Logic.h" />
     <ClInclude Include="main\initopengl\OpenGL.h" />
     <ClInclude Include="main\initopengl\OpenGL_Deps.h" />

@@ -14,7 +14,7 @@ private:
 public:
     Component(ComponentType type);
     ComponentType getComponentType();
-    int getEventBitmask();
+    virtual int getEventBitmask();
     ~Component();
 };
 
