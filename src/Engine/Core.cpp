@@ -11,9 +11,7 @@
 #include <time.h>
 #include "../Game/Components/RendererComponent.h"
 #include "../Engine/EntityManager.h"
-
-// Initialize the Entity Manager global pointer.
-EntityManager *EntityManager::globalInstance = 0;
+#include "../Engine/Entity.h"
 
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -100,6 +98,7 @@ void Core::coreLoop() {
         mat4 transform00;
         transform00 = glm::rotate(transform00,(GLfloat)glfwGetTime() * 5.0f,vec3(0,0,1));
         renderEngine.updateInstance(tempMesh,0,transform00);
+		EntityManager::getInstance()->processFrameUpdate();
 
         //------End of temp rotation code
 

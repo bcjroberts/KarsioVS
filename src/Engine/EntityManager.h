@@ -1,7 +1,9 @@
 #pragma once
-#include "Entity.h"
+
 #include "vector"
 #include "Event.h"
+
+class Entity;
 
 class EntityManager
 {

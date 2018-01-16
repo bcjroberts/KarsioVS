@@ -2,6 +2,10 @@
 
 #include "EntityManager.h"
 #include <glm/gtc/quaternion.hpp>
+#include "Entity.h"
+
+// Initialize the Entity Manager global pointer.
+EntityManager *EntityManager::globalInstance = 0;
 
 EntityManager::EntityManager() {
 
