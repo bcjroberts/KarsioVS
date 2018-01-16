@@ -7,15 +7,17 @@ EntityManager::EntityManager() {
 
 }
 
-EntityManager::~EntityManager() {
-
+// Can globally access the EntityManager from anywhere
+EntityManager * EntityManager::getInstance()
+{
+	if (!globalInstance) {
+		globalInstance = new EntityManager;
+	}
+	return globalInstance;
 }
 
-// Returns a reference to the created entity
-Entity EntityManager::createEntity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
-    Entity newEntity(nposition, nrotation, nscale);
-    entities.push_back(&newEntity);
-    return newEntity;
+EntityManager::~EntityManager() {
+
 }
 
 void EntityManager::destroyEntity(int id) {
@@ -27,3 +29,20 @@ void EntityManager::destroyEntity(int id) {
         }
     }
 }
+
+void EntityManager::registerEntity(Entity * e) {
+	entities.push_back(e);
+}
+
+void EntityManager::fireGlobalEvent(Event * e) {
+	for (int i = 0; i < entities.size(); ++i) {
+		entities[i]->processEvent(e);
+	}
+}
+
+void EntityManager::processFrameUpdate() {
+	for (int i = 0; i < entities.size(); ++i) {
+		entities[i]->processFrameUpdate();
+	}
+}
+

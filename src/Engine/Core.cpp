@@ -12,6 +12,9 @@
 #include "../Game/Components/RendererComponent.h"
 #include "../Engine/EntityManager.h"
 
+// Initialize the Entity Manager global pointer.
+EntityManager *EntityManager::globalInstance = 0;
+
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
@@ -76,15 +79,15 @@ void Core::coreLoop() {
 	*/
 
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
-	EntityManager em;
-	Entity e1 = em.createEntity(glm::vec3(0.f), glm::quat(glm::vec3(0.f)), glm::vec3(1.f));
+	Entity e1(glm::vec3(0.f), glm::quat(glm::vec3(0.f)), glm::vec3(1.f));
 	RendererComponent rc;
 	rc.myMesh = &tempMesh;
+	rc.myShader = &shaderData;
 	e1.addComponent(&rc);
 
 	mat4 transform2;
 	transform2 = glm::translate(transform2, rc.position);
-	renderEngine.addInstance(*rc.myMesh, 0, transform2, shaderData);
+	renderEngine.addInstance(*rc.myMesh, 0, transform2, *rc.myShader);
 
     // -----------------End of temp initialize model/instance in rendering code
     clock_t previousTime = clock();

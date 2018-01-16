@@ -10,6 +10,9 @@ Entity::Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
     position = nposition;
     rotation = nrotation;
     scale = nscale;
+
+	// Register myself with the entitymanager
+	EntityManager::getInstance()->registerEntity(this);
 }
 
 void Entity::addComponent(Component* c) {
@@ -26,6 +29,16 @@ void Entity::removeComponent(Component* c) {
             break;
         }
     }
+}
+
+void Entity::processEvent(Event * e) {
+	// Check the bitmask of the event against the bit mask of each component.
+}
+
+void Entity::processFrameUpdate() {
+	for (int i = 0; i < myComponents.size(); i++) {
+		myComponents[i]->processFrameUpdate();
+	}
 }
 
 Entity::~Entity() {

@@ -13,3 +13,7 @@ RendererComponent::~RendererComponent() {
 int RendererComponent::getEventBitmask() {
 	return eventBitmask;
 }
+
+void RendererComponent::processFrameUpdate() {
+	printf("Renderer component processing frame!");
+}

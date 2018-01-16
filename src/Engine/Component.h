@@ -5,6 +5,8 @@
 #ifndef PROJECTKARSIO_COMPONENT_H
 #define PROJECTKARSIO_COMPONENT_H
 
+#include <stdio.h>
+
 enum ComponentType {RENDERER, PHYSICS};
 
 class Component {
@@ -15,6 +17,7 @@ public:
     Component(ComponentType type);
     ComponentType getComponentType();
     virtual int getEventBitmask();
+	virtual void processFrameUpdate();
     ~Component();
 };
 

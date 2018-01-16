@@ -9,6 +9,8 @@
 #include "Component.h"
 #include "vector"
 #include <glm/gtc/quaternion.hpp>
+#include "EntityManager.h"
+#include "Event.h"
 
 class Entity {
 private:
@@ -21,6 +23,8 @@ public:
     Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale);
     void addComponent(Component* c);
     void removeComponent(Component* c);
+	void processEvent(Event* e);
+	void processFrameUpdate();
     ~Entity();
 };
 
