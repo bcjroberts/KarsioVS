@@ -12,6 +12,7 @@ enum ComponentType {RENDERER, PHYSICS};
 class Component {
 private:
     bool initialized = false;
+	int eventBitmask;
     ComponentType myComponentType;
 public:
     Component(ComponentType type);

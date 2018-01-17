@@ -120,6 +120,7 @@
     <ClCompile Include="game\logic\Logic.cpp" />
     <ClCompile Include="main\initopengl\OpenGL.cpp" />
     <ClCompile Include="main\mainGame.cpp" />
+    <ClCompile Include="Game\Components\PhysicsComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="art\MaterialData.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="game\logic\Logic.h" />
     <ClInclude Include="main\initopengl\OpenGL.h" />
     <ClInclude Include="main\initopengl\OpenGL_Deps.h" />
+    <ClInclude Include="Game\Components\PhysicsComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

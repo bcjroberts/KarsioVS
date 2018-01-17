@@ -8,7 +8,6 @@
 #include "../Art/ShaderData.h"
 #include "../Game/Camera.h"
 #include "PhysicsEngine\PhysicsEngine.h"
-#include <time.h>
 #include "../Game/Components/RendererComponent.h"
 #include "../Engine/EntityManager.h"
 #include "../Engine/Entity.h"
@@ -22,9 +21,7 @@ Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused
     this->properties.isPaused = gamePaused;
 }
 
-Core::~Core() {
-
-}
+Core::~Core() = default;
 
 
 //Main game loop
@@ -77,36 +74,36 @@ void Core::coreLoop() {
 	*/
 
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
-	Entity e1(glm::vec3(0.f), glm::quat(glm::vec3(0.f)), glm::vec3(1.f));
-	RendererComponent rc;
-	rc.myMesh = &tempMesh;
-	rc.myShader = &shaderData;
-	e1.addComponent(&rc);
+	auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(glm::vec3(0.f)), glm::vec3(1.f));
+	auto rc = new RendererComponent();
+	rc->myMesh = &tempMesh;
+	rc->myShader = &shaderData;
+	entity1->addComponent(rc);
 
 	mat4 transform2;
-	transform2 = glm::translate(transform2, rc.position);
-	renderEngine.addInstance(*rc.myMesh, 0, transform2, *rc.myShader);
+	transform2 = glm::translate(transform2, rc->position);
+	renderEngine.addInstance(*rc->myMesh, 0, transform2, *rc->myShader);
 
     // -----------------End of temp initialize model/instance in rendering code
-    clock_t previousTime = clock();
 
-    while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
+	double previousTime = 0;
+
+	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
+
+		const auto currentTime = glfwGetTime();
+	    const auto timeDiff = currentTime - previousTime;
+		previousTime = currentTime;
+		
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
         mat4 transform00;
-        transform00 = glm::rotate(transform00,(GLfloat)glfwGetTime() * 5.0f,vec3(0,0,1));
+        transform00 = glm::rotate(transform00,GLfloat(timeDiff) * 5.0f,vec3(0,0,1));
         renderEngine.updateInstance(tempMesh,0,transform00);
 		EntityManager::getInstance()->processFrameUpdate();
 
         //------End of temp rotation code
-
-		// Time code
-		clock_t nowTime = clock();
-		int frameDeltaTimeMillis = double(nowTime - previousTime) / CLOCKS_PER_SEC * 1000;
-		// printf("%i time diff\n", frameDeltaTimeMillis); // Uncomment this to see the time it takes to render a frame.
-		previousTime = nowTime;
 
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other
@@ -114,7 +111,7 @@ void Core::coreLoop() {
         if(properties.isPaused){
             renderEngine.render(camera);
         }else{
-            physicsEngine.simulateTimeInSeconds(float(frameDeltaTimeMillis)/1000.0f);
+            physicsEngine.simulateTimeInSeconds(float(timeDiff));
             renderEngine.render(camera);
             audioEngine.simulate();
         }

@@ -5,11 +5,9 @@
 #include "Entity.h"
 
 // Initialize the Entity Manager global pointer.
-EntityManager *EntityManager::globalInstance = 0;
+EntityManager *EntityManager::globalInstance = nullptr;
 
-EntityManager::EntityManager() {
-
-}
+EntityManager::EntityManager() = default;
 
 // Can globally access the EntityManager from anywhere
 EntityManager * EntityManager::getInstance()
@@ -20,33 +18,34 @@ EntityManager * EntityManager::getInstance()
 	return globalInstance;
 }
 
-EntityManager::~EntityManager() {
-
-}
+EntityManager::~EntityManager() = default;
 
 void EntityManager::destroyEntity(int id) {
-    for (int i = 0; i < entities.size(); ++i) {
+    for (uint32_t i = 0; i < entities.size(); ++i) {
         if (entities[i]->id == id) {
-            Entity* e = entities[i]; // keep for cleanup purposes ***TODO***
+            Entity* e = entities[i]; // keep for cleanup purposes
             entities.erase(entities.begin() + i);
+			delete e;
             break;
         }
     }
 }
 
-void EntityManager::registerEntity(Entity * e) {
-	entities.push_back(e);
-}
-
 void EntityManager::fireGlobalEvent(Event * e) {
-	for (int i = 0; i < entities.size(); ++i) {
-		entities[i]->processEvent(e);
+	for (auto & entity : entities) {
+		entity->processEvent(e);
 	}
 }
 
+Entity* EntityManager::createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
+	Entity* e = new Entity(position, rotation, scale);
+	entities.push_back(e);
+	return e;
+}
+
 void EntityManager::processFrameUpdate() {
-	for (int i = 0; i < entities.size(); ++i) {
-		entities[i]->processFrameUpdate();
+	for (auto & entity : entities) {
+		entity->processFrameUpdate();
 	}
 }
 

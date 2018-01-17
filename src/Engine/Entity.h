@@ -9,7 +9,6 @@
 #include "Component.h"
 #include "vector"
 #include <glm/gtc/quaternion.hpp>
-#include "EntityManager.h"
 #include "Event.h"
 
 class Entity {

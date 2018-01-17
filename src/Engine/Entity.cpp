@@ -9,10 +9,7 @@ Entity::Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
     id = nextId++;
     position = nposition;
     rotation = nrotation;
-    scale = nscale;
-
-	// Register myself with the entitymanager
-	EntityManager::getInstance()->registerEntity(this);
+	scale = nscale;
 }
 
 void Entity::addComponent(Component* c) {
@@ -24,8 +21,9 @@ void Entity::addComponent(Component* c) {
 void Entity::removeComponent(Component* c) {
     for (int i = 0; i < myComponents.size(); ++i) {
         if (myComponents[i]->getComponentType() == c->getComponentType()) {
-            Component* c = myComponents[i]; // keep for cleanup purposes ***TODO***
+            Component* c = myComponents[i]; // keep for cleanup purpose
             myComponents.erase(myComponents.begin() + i);
+			delete c;
             break;
         }
     }
@@ -41,6 +39,4 @@ void Entity::processFrameUpdate() {
 	}
 }
 
-Entity::~Entity() {
-    
-}
+Entity::~Entity() = default;

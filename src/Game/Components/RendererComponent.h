@@ -17,7 +17,7 @@ public:
 	ShaderData* myShader;
 	RendererComponent();
 	~RendererComponent();
-	int getEventBitmask();
-	void processFrameUpdate();
+	int getEventBitmask() override;
+	void processFrameUpdate() override;
 };
 
