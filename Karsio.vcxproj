@@ -110,6 +110,12 @@
     <ClCompile Include="src\engine\EntityManager.cpp" />
     <ClCompile Include="src\engine\Event.cpp" />
     <ClCompile Include="src\engine\physicsengine\PhysicsEngine.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicle4WCreate.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleCreate.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleFilterShader.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleNoDriveCreate.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleSceneQuery.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleTireFriction.cpp" />
     <ClCompile Include="src\engine\renderengine\artdata\RenderData.cpp" />
     <ClCompile Include="src\engine\renderengine\Geometry.cpp" />
     <ClCompile Include="src\engine\renderengine\RenderEngine.cpp" />
@@ -131,6 +137,12 @@
     <ClInclude Include="src\engine\EntityManager.h" />
     <ClInclude Include="src\engine\Event.h" />
     <ClInclude Include="src\engine\physicsengine\PhysicsEngine.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleConcurrency.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleCreate.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleFilterShader.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleSceneQuery.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleTireFriction.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleWheelQueryResult.h" />
     <ClInclude Include="src\engine\renderengine\artdata\RenderData.h" />
     <ClInclude Include="src\engine\renderengine\Geometry.h" />
     <ClInclude Include="src\engine\renderengine\RenderEngine.h" />

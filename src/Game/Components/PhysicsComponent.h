@@ -2,15 +2,13 @@
 
 #include <glm/gtc/quaternion.hpp>
 #include "../../Engine/Component.h"
+#include "PxPhysicsAPI.h"
 
 class PhysicsComponent: public Component
 {
-private:
-	int eventBitmask;
 public:
+	physx::PxActor* myActor;
 	PhysicsComponent();
 	~PhysicsComponent();
-	int getEventBitmask() override;
-	void processFrameUpdate() override;
 };
 

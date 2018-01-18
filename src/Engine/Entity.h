@@ -21,9 +21,7 @@ public:
     int id;
     Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale);
     void addComponent(Component* c);
-    void removeComponent(Component* c);
-	void processEvent(Event* e);
-	void processFrameUpdate();
+	void removeComponent(Component* c);
     ~Entity();
 };
 

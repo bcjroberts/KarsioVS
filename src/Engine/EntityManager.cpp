@@ -21,19 +21,13 @@ EntityManager * EntityManager::getInstance()
 EntityManager::~EntityManager() = default;
 
 void EntityManager::destroyEntity(int id) {
-    for (uint32_t i = 0; i < entities.size(); ++i) {
-        if (entities[i]->id == id) {
-            Entity* e = entities[i]; // keep for cleanup purposes
-            entities.erase(entities.begin() + i);
+	for (uint32_t i = 0; i < entities.size(); ++i) {
+		if (entities[i]->id == id) {
+			Entity* e = entities[i]; // keep for cleanup purposes
+			entities.erase(entities.begin() + i);
 			delete e;
-            break;
-        }
-    }
-}
-
-void EntityManager::fireGlobalEvent(Event * e) {
-	for (auto & entity : entities) {
-		entity->processEvent(e);
+			break;
+		}
 	}
 }
 
@@ -42,10 +36,3 @@ Entity* EntityManager::createEntity(glm::vec3 position, glm::quat rotation, glm:
 	entities.push_back(e);
 	return e;
 }
-
-void EntityManager::processFrameUpdate() {
-	for (auto & entity : entities) {
-		entity->processFrameUpdate();
-	}
-}
-

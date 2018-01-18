@@ -19,23 +19,13 @@ void Entity::addComponent(Component* c) {
 // Currently only removes components by looking at its type.
 // This is NOT a good solution.
 void Entity::removeComponent(Component* c) {
-    for (int i = 0; i < myComponents.size(); ++i) {
-        if (myComponents[i]->getComponentType() == c->getComponentType()) {
-            Component* c = myComponents[i]; // keep for cleanup purpose
-            myComponents.erase(myComponents.begin() + i);
+	for (int i = 0; i < myComponents.size(); ++i) {
+		if (myComponents[i]->getComponentType() == c->getComponentType()) {
+			Component* c = myComponents[i]; // keep for cleanup purpose
+			myComponents.erase(myComponents.begin() + i);
 			delete c;
-            break;
-        }
-    }
-}
-
-void Entity::processEvent(Event * e) {
-	// Check the bitmask of the event against the bit mask of each component.
-}
-
-void Entity::processFrameUpdate() {
-	for (int i = 0; i < myComponents.size(); i++) {
-		myComponents[i]->processFrameUpdate();
+			break;
+		}
 	}
 }
 

@@ -3,16 +3,9 @@
 
 
 PhysicsComponent::PhysicsComponent() : Component(PHYSICS) {
-	eventBitmask = 0;
+	myActor = nullptr;
 }
 
 
 PhysicsComponent::~PhysicsComponent() = default;
 
-int PhysicsComponent::getEventBitmask() {
-	return eventBitmask;
-}
-
-void PhysicsComponent::processFrameUpdate() {
-
-}

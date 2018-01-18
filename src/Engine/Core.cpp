@@ -101,7 +101,6 @@ void Core::coreLoop() {
         mat4 transform00;
         transform00 = glm::rotate(transform00,GLfloat(timeDiff) * 5.0f,vec3(0,0,1));
         renderEngine.updateInstance(tempMesh,0,transform00);
-		EntityManager::getInstance()->processFrameUpdate();
 
         //------End of temp rotation code
 

@@ -12,15 +12,4 @@ ComponentType Component::getComponentType() {
     return myComponentType;
 }
 
-int Component::getEventBitmask() {
-	return 0;
-}
-
-void Component::processFrameUpdate() {
-	// Intended on being overriden in subclass, but it is not required to be.
-	printf("General component processing frame update");
-}
-
-Component::~Component() {
-
-}
+Component::~Component() = default;

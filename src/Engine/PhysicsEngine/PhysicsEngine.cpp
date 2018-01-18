@@ -22,6 +22,34 @@ PhysicsEngine::PhysicsEngine() {
 
 }
 
+enum {
+	DRIVABLE_SURFACE = 0xffff0000,
+	UNDRIVABLE_SURFACE = 0x0000ffff
+};
+
+void setupDrivableSurface(physx::PxFilterData& filterData) {
+	filterData.word3 = static_cast<physx::PxU32>(DRIVABLE_SURFACE);
+}
+
+physx::PxRigidStatic* createDrivablePlane(const physx::PxFilterData& simFilterData, physx::PxMaterial* material, physx::PxPhysics* physics) {
+	//Add a plane to the scene.
+	physx::PxRigidStatic* groundPlane = PxCreatePlane(*physics, physx::PxPlane(0, 1, 0, 0), *material);
+
+	//Get the plane shape so we can set query and simulation filter data.
+	physx::PxShape* shapes[1];
+	groundPlane->getShapes(shapes, 1);
+
+	//Set the query filter data of the ground plane so that the vehicle raycasts can hit the ground.
+	physx::PxFilterData qryFilterData;
+	setupDrivableSurface(qryFilterData);
+	shapes[0]->setQueryFilterData(qryFilterData);
+
+	//Set the simulation filter data of the ground plane so that it collides with the chassis of a vehicle but not the wheels.
+	shapes[0]->setSimulationFilterData(simFilterData);
+
+	return groundPlane;
+}
+
 void PhysicsEngine::initPhysics() {
     gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
 
@@ -49,8 +77,15 @@ void PhysicsEngine::initPhysics() {
 
     // Setup the ground plane now, this will always remain in the scene.
     // THIS SHOULD BE A PHYSICS COMPONENT OF AN ENTITY with a MESH!!! ***TODO***
-    /*physx::PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, physx::PxPlane(0, 1, 0, 0), *gMaterial);
-    gScene->addActor(*groundPlane);*/
+	//Create a plane to drive on.
+	/*physx::PxRigidStatic* gGroundPlane = NULL;
+	physx::PxFilterData groundPlaneSimFilterData(COLLISION_FLAG_GROUND, COLLISION_FLAG_GROUND_AGAINST, 0, 0);
+	gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
+	gScene->addActor(*gGroundPlane);*/
+}
+
+physx::PxActor* PhysicsEngine::createPhysicsActor() {
+	
 }
 
 // Tell physX to simulate the physics, takes time as a float in seconds.

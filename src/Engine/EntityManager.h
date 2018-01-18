@@ -14,9 +14,7 @@ private:
 public:
     EntityManager();
 	void destroyEntity(int id);
-	void fireGlobalEvent(Event* e);
 	Entity* createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 scale);
-	void processFrameUpdate();
 	static EntityManager* getInstance();
     ~EntityManager();
 };

@@ -7,8 +7,6 @@
 
 class RendererComponent : public Component
 {
-private:
-	int eventBitmask;
 public:
 	glm::vec3 position;
 	glm::quat rotation;
@@ -17,7 +15,5 @@ public:
 	ShaderData* myShader;
 	RendererComponent();
 	~RendererComponent();
-	int getEventBitmask() override;
-	void processFrameUpdate() override;
 };
 
