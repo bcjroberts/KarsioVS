@@ -85,7 +85,7 @@ void PhysicsEngine::initPhysics() {
 }
 
 physx::PxActor* PhysicsEngine::createPhysicsActor() {
-	
+    return nullptr;
 }
 
 // Tell physX to simulate the physics, takes time as a float in seconds.
