@@ -43,12 +43,12 @@ void Core::coreLoop() {
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
     MeshData tempMesh("testObject1");
-    tempMesh.loadMeshData("data/assets/meshes/tempCar.obj");
+    tempMesh.loadMeshData("../data/assets/meshes/tempCar.obj");
 
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;
-    shaderData.attachShader("data/shaderData/vertex.glsl",GL_VERTEX_SHADER);
-    shaderData.attachShader("data/shaderData/fragment.glsl",GL_FRAGMENT_SHADER);
+    shaderData.attachShader("../data/shaderData/vertex.glsl",GL_VERTEX_SHADER);
+    shaderData.attachShader("../data/shaderData/fragment.glsl",GL_FRAGMENT_SHADER);
     shaderData.link();
 
     //Sets up the first instance of the temp mesh that has been created above and

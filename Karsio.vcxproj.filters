@@ -15,120 +15,120 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="art\MaterialData.cpp">
+    <ClCompile Include="src\art\MaterialData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="art\MeshData.cpp">
+    <ClCompile Include="src\art\MeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="art\ShaderData.cpp">
+    <ClCompile Include="src\art\ShaderData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Component.cpp">
+    <ClCompile Include="src\engine\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Core.cpp">
+    <ClCompile Include="src\engine\Core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Entity.cpp">
+    <ClCompile Include="src\engine\Entity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\Event.cpp">
+    <ClCompile Include="src\engine\EntityManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\audioengine\AudioEngine.cpp">
+    <ClCompile Include="src\engine\Event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\physicsengine\PhysicsEngine.cpp">
+    <ClCompile Include="src\engine\audioengine\AudioEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\renderengine\Geometry.cpp">
+    <ClCompile Include="src\engine\physicsengine\PhysicsEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\renderengine\RenderEngine.cpp">
+    <ClCompile Include="src\engine\renderengine\Geometry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine\renderengine\artdata\RenderData.cpp">
+    <ClCompile Include="src\engine\renderengine\RenderEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game\Camera.cpp">
+    <ClCompile Include="src\engine\renderengine\artdata\RenderData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game\logic\Logic.cpp">
+    <ClCompile Include="src\game\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main\mainGame.cpp">
+    <ClCompile Include="src\game\components\PhysicsComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main\initopengl\OpenGL.cpp">
+    <ClCompile Include="src\game\components\RendererComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\EntityManager.cpp">
+    <ClCompile Include="src\game\logic\Logic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Components\RendererComponent.cpp">
+    <ClCompile Include="src\main\mainGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Components\PhysicsComponent.cpp">
+    <ClCompile Include="src\main\initopengl\OpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="art\MaterialData.h">
+    <ClInclude Include="src\art\MaterialData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="art\MeshData.h">
+    <ClInclude Include="src\art\MeshData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="art\ShaderData.h">
+    <ClInclude Include="src\art\ShaderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Component.h">
+    <ClInclude Include="src\engine\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Core.h">
+    <ClInclude Include="src\engine\Core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Entity.h">
+    <ClInclude Include="src\engine\Entity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\Event.h">
+    <ClInclude Include="src\engine\EntityManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\audioengine\AudioEngine.h">
+    <ClInclude Include="src\engine\Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\physicsengine\PhysicsEngine.h">
+    <ClInclude Include="src\engine\audioengine\AudioEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\renderengine\Geometry.h">
+    <ClInclude Include="src\engine\physicsengine\PhysicsEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\renderengine\RenderEngine.h">
+    <ClInclude Include="src\engine\renderengine\Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="engine\renderengine\artdata\RenderData.h">
+    <ClInclude Include="src\engine\renderengine\RenderEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="game\Camera.h">
+    <ClInclude Include="src\engine\renderengine\artdata\RenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="game\logic\Logic.h">
+    <ClInclude Include="src\game\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="main\initopengl\OpenGL.h">
+    <ClInclude Include="src\game\components\PhysicsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="main\initopengl\OpenGL_Deps.h">
+    <ClInclude Include="src\game\components\RendererComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\EntityManager.h">
+    <ClInclude Include="src\game\logic\Logic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Components\RendererComponent.h">
+    <ClInclude Include="src\main\initopengl\OpenGL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Components\PhysicsComponent.h">
+    <ClInclude Include="src\main\initopengl\OpenGL_Deps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
