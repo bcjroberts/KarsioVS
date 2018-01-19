@@ -32,7 +32,7 @@ void Core::coreLoop() {
     AudioEngine audioEngine;
     Logic logic;
 
-    //physicsEngine.initPhysics();
+    physicsEngine.initPhysics();
     // -----------Temp code, to initialize model/instance in rendering code...
     // Obviously this should be moved elsewhere when it's being used for real...
 
@@ -103,7 +103,7 @@ void Core::coreLoop() {
         if(properties.isPaused){
             renderEngine.render(camera);
         }else{
-            //physicsEngine.simulateTimeInSeconds(float(timeDiff));
+            physicsEngine.simulateTimeInSeconds(float(timeDiff));
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performRendering(&renderEngine);

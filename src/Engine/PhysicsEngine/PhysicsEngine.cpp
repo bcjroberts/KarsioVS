@@ -50,12 +50,13 @@ physx::PxRigidStatic* createDrivablePlane(const physx::PxFilterData& simFilterDa
 	return groundPlane;
 }
 
-void PhysicsEngine::initPhysics() {
+void PhysicsEngine::initPhysics()
+{
     gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
 
-    gPvd = PxCreatePvd(*gFoundation);
+    /*gPvd = PxCreatePvd(*gFoundation);
     physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-    gPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
+    gPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);*/
 
     gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale(), false, NULL);
 
