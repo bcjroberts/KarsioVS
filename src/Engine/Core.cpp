@@ -10,6 +10,7 @@
 #include "PhysicsEngine\PhysicsEngine.h"
 #include "../Game/Components/RendererComponent.h"
 #include "../Engine/EntityManager.h"
+#include "../Engine/ComponentManager.h"
 #include "../Engine/Entity.h"
 
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
@@ -31,7 +32,7 @@ void Core::coreLoop() {
     AudioEngine audioEngine;
     Logic logic;
 
-    physicsEngine.initPhysics();
+    //physicsEngine.initPhysics();
     // -----------Temp code, to initialize model/instance in rendering code...
     // Obviously this should be moved elsewhere when it's being used for real...
 
@@ -75,15 +76,8 @@ void Core::coreLoop() {
 
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
 	auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(glm::vec3(0.f)), glm::vec3(1.f));
-	auto rc = new RendererComponent();
-	rc->myMesh = &tempMesh;
-	rc->myShader = &shaderData;
-	entity1->addComponent(rc);
-
-	mat4 transform2;
-	transform2 = glm::translate(transform2, rc->position);
-	renderEngine.addInstance(*rc->myMesh, 0, transform2, *rc->myShader);
-
+    ComponentManager::getInstance()->addRendererComponent(entity1, &tempMesh, &shaderData, glm::vec3(0,0,-10),glm::quat(),glm::vec3(1));
+    ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
 	double previousTime = 0;
@@ -94,13 +88,12 @@ void Core::coreLoop() {
 		const auto currentTime = glfwGetTime();
 	    const auto timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
-		
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
-        mat4 transform00;
+        /*mat4 transform00;
         transform00 = glm::rotate(transform00,GLfloat(timeDiff) * 5.0f,vec3(0,0,1));
-        renderEngine.updateInstance(tempMesh,0,transform00);
+        renderEngine.updateInstance(tempMesh,0,transform00);*/
 
         //------End of temp rotation code
 
@@ -110,7 +103,11 @@ void Core::coreLoop() {
         if(properties.isPaused){
             renderEngine.render(camera);
         }else{
-            physicsEngine.simulateTimeInSeconds(float(timeDiff));
+            //physicsEngine.simulateTimeInSeconds(float(timeDiff));
+
+            // Render all of the renderer components here
+            ComponentManager::getInstance()->performRendering(&renderEngine);
+
             renderEngine.render(camera);
             audioEngine.simulate();
         }

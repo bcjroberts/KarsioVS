@@ -90,6 +90,9 @@
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleTireFriction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\ComponentManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\art\MaterialData.h">
@@ -165,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleWheelQueryResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\ComponentManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

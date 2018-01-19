@@ -6,6 +6,7 @@
 #define PROJECTKARSIO_COMPONENT_H
 
 #include <stdio.h>
+#include "Entity.h"
 
 enum ComponentType {RENDERER, PHYSICS};
 
@@ -13,6 +14,8 @@ class Component {
 private:
     ComponentType myComponentType;
 public:
+    Entity* owner;
+    int id;
     Component(ComponentType type);
 	ComponentType getComponentType();
     ~Component();

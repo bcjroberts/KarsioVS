@@ -11,9 +11,10 @@ public:
 	glm::vec3 position;
 	glm::quat rotation;
 	glm::vec3 scale;
-	MeshData* myMesh;
+    MeshData* myMesh;
 	ShaderData* myShader;
-	RendererComponent();
+    mat4 getMatrix() const;
+	RendererComponent(MeshData* newMesh, ShaderData* newShader);
 	~RendererComponent();
 };
 

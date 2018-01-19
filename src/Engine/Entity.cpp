@@ -3,6 +3,7 @@
 //
 
 #include "Entity.h"
+#include "Component.h"
 
 Entity::Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
     static int nextId = 0;
@@ -14,19 +15,23 @@ Entity::Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
 
 void Entity::addComponent(Component* c) {
     myComponents.push_back(c);
+    c->owner = this;
 }
 
-// Currently only removes components by looking at its type.
-// This is NOT a good solution.
+// Removes component based on unique identifier
 void Entity::removeComponent(Component* c) {
-	for (int i = 0; i < myComponents.size(); ++i) {
-		if (myComponents[i]->getComponentType() == c->getComponentType()) {
-			Component* c = myComponents[i]; // keep for cleanup purpose
-			myComponents.erase(myComponents.begin() + i);
-			delete c;
-			break;
-		}
-	}
+    removeComponent(c->id);
+}
+
+void Entity::removeComponent(int cid) {
+    for (int i = 0; i < myComponents.size(); ++i) {
+        if (myComponents[i]->id == cid) {
+            Component* c = myComponents[i]; // keep for cleanup purpose
+            myComponents.erase(myComponents.begin() + i);
+            delete c;
+            break;
+        }
+    }
 }
 
 Entity::~Entity() = default;

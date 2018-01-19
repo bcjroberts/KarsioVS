@@ -3,6 +3,7 @@
 #include "vector"
 #include "Event.h"
 #include <glm/gtc/quaternion.hpp>
+#include "../game/components/RendererComponent.h"
 
 class Entity;
 

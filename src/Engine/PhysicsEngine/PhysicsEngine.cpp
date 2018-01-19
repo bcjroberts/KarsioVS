@@ -94,7 +94,4 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) {
     gScene->fetchResults(true);
 }
 
-PhysicsEngine::~PhysicsEngine()
-{
-
-}
+PhysicsEngine::~PhysicsEngine() = default;

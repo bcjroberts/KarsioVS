@@ -6,6 +6,8 @@
 
 Component::Component(ComponentType type) {
     myComponentType = type;
+    static int nextId = 0;
+    id = nextId++;
 }
 
 ComponentType Component::getComponentType() {
