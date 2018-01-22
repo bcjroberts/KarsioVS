@@ -7,8 +7,8 @@
 class PhysicsComponent: public Component
 {
 public:
-	physx::PxActor* myActor;
-	PhysicsComponent();
+	physx::PxRigidActor* myActor;
+	PhysicsComponent(physx::PxRigidActor* nactor);
 	~PhysicsComponent();
 };
 

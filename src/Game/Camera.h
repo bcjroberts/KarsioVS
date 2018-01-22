@@ -20,6 +20,16 @@
 
 using namespace glm;
 
+struct Movement
+{
+    bool forward;
+    bool backward;
+    bool right;
+    bool left;
+    bool up;
+    bool down;
+};
+
 class Camera {
 private:
     vec3 cameraPosition = vec3(0.0f, 0.0f, 0.0f);
@@ -34,14 +44,6 @@ private:
     GLfloat xRoll = -90.0f;
     GLfloat yRoll = 0.0f;
 
-    struct Movement{
-        bool forward;
-        bool backward;
-        bool right;
-        bool left;
-        bool up;
-        bool down;
-    };
     int window_width;
     int window_height;
     mat4 view;
@@ -49,6 +51,7 @@ private:
     //void updateCameraVectors();
 
 public:
+    vec3 lookAtPos;
     Camera(int window_width, int window_height);
     //void centerView(int scaleX, int scaleY);
     //void fpsMouseMovement();

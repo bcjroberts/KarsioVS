@@ -4,6 +4,8 @@
 
 #include "Entity.h"
 #include "Component.h"
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.inl>
 
 Entity::Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale) {
     static int nextId = 0;
@@ -32,6 +34,20 @@ void Entity::removeComponent(int cid) {
             break;
         }
     }
+}
+
+void Entity::updatePosition(glm::vec3 nposition) {
+    position = nposition;
+}
+
+void Entity::updateRotation(glm::quat nrotation) {
+    rotation = nrotation;
+}
+
+
+glm::mat4 Entity::getMatrix() const {
+    glm::mat4 myMatrix = glm::translate(glm::scale(glm::toMat4(rotation), scale), position);
+    return myMatrix;
 }
 
 Entity::~Entity() = default;

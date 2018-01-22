@@ -44,7 +44,9 @@ void Core::coreLoop() {
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
     MeshData tempMesh("testObject1");
-    tempMesh.loadMeshData("data/assets/meshes/tempCar.obj");
+    tempMesh.loadMeshData("data/assets/meshes/cube.obj");
+    MeshData planeMesh("planeMesh");
+    planeMesh.loadMeshData("data/assets/meshes/plane.obj");
 
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;
@@ -74,13 +76,26 @@ void Core::coreLoop() {
     renderEngine.addInstance(tempMesh,2,transform2,shaderData); //draw object at 0,-2,0
 	*/
 
+    physx::PxVehicleDrive4W* myVehicle = physicsEngine.createVehicle();
+
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
-	auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(glm::vec3(0.f)), glm::vec3(1.f));
-    ComponentManager::getInstance()->addRendererComponent(entity1, &tempMesh, &shaderData, glm::vec3(0,0,-10),glm::quat(),glm::vec3(1));
+	auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
+    ComponentManager::getInstance()->addRendererComponent(entity1, &tempMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2));
+    ComponentManager::getInstance()->addPhysicsComponent(entity1, myVehicle->getRigidDynamicActor());
+    
+    auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
+    ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(10,10,100));
+    
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
 	double previousTime = 0;
+    float physicsTime = 0;
+    const float physicsTimeStep = 1.0f / 60.0f;
+    Movement movement;
+    movement.right = true;
+    
+    float previousZ = 0;
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
@@ -88,6 +103,7 @@ void Core::coreLoop() {
 		const auto currentTime = glfwGetTime();
 	    const auto timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
+        
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
@@ -103,9 +119,24 @@ void Core::coreLoop() {
         if(properties.isPaused){
             renderEngine.render(camera);
         }else{
-            physicsEngine.simulateTimeInSeconds(float(timeDiff));
+            
+            // Simulate physics in a Fixed Timestep style
+            while(physicsTime < currentTime) {
+                physicsTime += physicsTimeStep;
+                physicsEngine.simulateTimeInSeconds(physicsTimeStep, myVehicle);
+                //const physx::PxVec3 pos = myVehicle->getRigidDynamicActor()->getGlobalPose().p;
+                //printf("Vehicle position: (%f, %f, %f)\n", pos.x, pos.y, pos.z);
+            }
+            
+            // Moce the camera to track the vehicle
+            const physx::PxVec3 pos = myVehicle->getRigidDynamicActor()->getGlobalPose().p;
+            //camera.moveCamera(movement, pos.z - previousZ);
+            previousZ = pos.z;
+            camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
+
 
             // Render all of the renderer components here
+            ComponentManager::getInstance()->performPhysicsLogic();
             ComponentManager::getInstance()->performRendering(&renderEngine);
 
             renderEngine.render(camera);

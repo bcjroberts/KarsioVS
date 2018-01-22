@@ -24,6 +24,9 @@ public:
     void addComponent(Component* c);
 	void removeComponent(Component* c);
     void removeComponent(int cid);
+    void updatePosition(glm::vec3 nposition);
+    void updateRotation(glm::quat nrotation);
+    glm::mat4 getMatrix() const;
     ~Entity();
 };
 
