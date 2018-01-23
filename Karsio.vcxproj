@@ -63,8 +63,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(PROJECTDIR)\deps\glew-2.1.0\include;$(PROJECTDIR)\deps\glfw3\include;$(PROJECTDIR)\deps\glm;$(PROJECTDIR)\deps\stb;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include</IncludePath>
-    <LibraryPath>$(PROJECTDIR)\deps\glfw3\lib-vc2015;$(PROJECTDIR)\deps\glew-2.1.0\lib;$(PROJECTDIR)\deps\physx\PxShared\lib\vc14win32;$(PROJECTDIR)\deps\physx\Lib\vc14win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(PROJECTDIR)\deps\include;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include</IncludePath>
+    <LibraryPath>$(PROJECTDIR)\deps\libs;$(PROJECTDIR)\deps\physx\PxShared\lib\vc14win32;$(PROJECTDIR)\deps\physx\Lib\vc14win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -81,7 +81,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

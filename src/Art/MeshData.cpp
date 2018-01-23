@@ -8,6 +8,9 @@
 
 
 MeshData::MeshData(std::string name) {
+
+	Assimp::Importer importer;
+
     //model_ID = name;
     //meshDataPointer = this;
     //loadModelData(filepath);
