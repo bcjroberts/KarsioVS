@@ -60,23 +60,9 @@ void Core::coreLoop() {
     /// you'd need to do is tell it that a certain mesh needs an instance.
     /// Currently the mesh is created if it doesn't exist yet but once it exists the
     /// instance is added to that mesh using the address of the mesh.
-    /*mat4 transform0;
-    renderEngine.addInstance(tempMesh,0,transform0,shaderData); //Draw object at 0,0,0
-
-    //sets up the second instance of the temp mesh that has been created above and
-    // translates it up 2 units before telling the render engine that it exists
-    mat4 transform1;
-    transform1 = glm::translate(transform1,vec3(0,2,0));
-    renderEngine.addInstance(tempMesh,1,transform1,shaderData); //draw object at 0,2,0
-
-    //sets up the third instance of the temp mesh that has been created above and
-    // translates it down 2 units before telling the render engine that it exists
-    mat4 transform2;
-    transform2 = glm::translate(transform2, vec3(0,-2,0));
-    renderEngine.addInstance(tempMesh,2,transform2,shaderData); //draw object at 0,-2,0
-	*/
 
     physx::PxVehicleDrive4W* myVehicle = physicsEngine.createVehicle();
+    //printf("Number of shapes: %i", myVehicle->getRigidDynamicActor()->getNbShapes());
 
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
 	auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
@@ -92,10 +78,11 @@ void Core::coreLoop() {
 	double previousTime = 0;
     float physicsTime = 0;
     const float physicsTimeStep = 1.0f / 60.0f;
-    Movement movement;
-    movement.right = true;
-    
-    float previousZ = 0;
+
+    // Used to move the camera alongside the cube vehicle
+    //Movement movement;
+    //movement.right = true;
+    //float previousZ = 0;
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
@@ -128,10 +115,10 @@ void Core::coreLoop() {
                 //printf("Vehicle position: (%f, %f, %f)\n", pos.x, pos.y, pos.z);
             }
             
-            // Moce the camera to track the vehicle
+            // Move the camera to track the vehicle
             const physx::PxVec3 pos = myVehicle->getRigidDynamicActor()->getGlobalPose().p;
             //camera.moveCamera(movement, pos.z - previousZ);
-            previousZ = pos.z;
+            //previousZ = pos.z;
             camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
 
 
