@@ -123,6 +123,7 @@
     <ClCompile Include="src\game\Camera.cpp" />
     <ClCompile Include="src\game\components\PhysicsComponent.cpp" />
     <ClCompile Include="src\game\components\RendererComponent.cpp" />
+    <ClCompile Include="src\Game\Components\DriveComponent.cpp" />
     <ClCompile Include="src\game\logic\Logic.cpp" />
     <ClCompile Include="src\main\initopengl\OpenGL.cpp" />
     <ClCompile Include="src\main\mainGame.cpp" />
@@ -149,6 +150,7 @@
     <ClInclude Include="src\engine\renderengine\Geometry.h" />
     <ClInclude Include="src\engine\renderengine\RenderEngine.h" />
     <ClInclude Include="src\game\Camera.h" />
+    <ClInclude Include="src\Game\Components\DriveComponent.h" />
     <ClInclude Include="src\game\components\PhysicsComponent.h" />
     <ClInclude Include="src\game\components\RendererComponent.h" />
     <ClInclude Include="src\game\logic\Logic.h" />
