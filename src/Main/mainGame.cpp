@@ -15,7 +15,7 @@ int main(){
     Core core(screenWidth,screenHeight,openGL_Program.getWindow(),false);
     core.coreLoop();
 
-    //final thing that will be printed to inform the programmer that stuff didn't crash ungracefully
+    // final thing that will be printed to inform the programmer that stuff didn't crash ungracefully
     std::cout<<"exiting project"<<std::endl;
     return 0;
 }

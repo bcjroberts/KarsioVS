@@ -24,6 +24,41 @@ Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused
 
 Core::~Core() = default;
 
+// uhhh should these be in core? Can change/delete as needed
+// keyboard for yaw and pitch
+vec2 cameraRoll(GLFWwindow *window) {
+	float xpos = 0;
+	float ypos = 0;
+	float mov = 0.01f;
+
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		xpos -= mov;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		xpos += mov;
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		ypos += mov;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		ypos -= mov;
+
+	return vec2(xpos, ypos);
+}
+
+// keyboard movement for WASD
+void processCameraInput(GLFWwindow *window, Movement &movement) {
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		movement.forward = true;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		movement.backward = true;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		movement.left = true;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		movement.right = true;
+}
+
+
+void resetMovement(Movement &movement) {
+	movement.right = movement.left = movement.forward = movement.backward = false;
+}
 
 //Main game loop
 void Core::coreLoop() {
@@ -80,9 +115,15 @@ void Core::coreLoop() {
     const float physicsTimeStep = 1.0f / 60.0f;
 
     // Used to move the camera alongside the cube vehicle
-    //Movement movement;
-    //movement.right = true;
+	// Now used such that WASD is used to move camera
+    Movement movement;
+    //movement.right = false;
     //float previousZ = 0;
+
+
+	
+	
+	
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
@@ -114,14 +155,18 @@ void Core::coreLoop() {
                 //const physx::PxVec3 pos = myVehicle->getRigidDynamicActor()->getGlobalPose().p;
                 //printf("Vehicle position: (%f, %f, %f)\n", pos.x, pos.y, pos.z);
             }
-            
             // Move the camera to track the vehicle
+			
             const physx::PxVec3 pos = myVehicle->getRigidDynamicActor()->getGlobalPose().p;
             //camera.moveCamera(movement, pos.z - previousZ);
             //previousZ = pos.z;
-            camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
-
-
+            
+			camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
+			processCameraInput(this->properties.window, movement);
+			camera.moveCamera(movement, 0.5f); // just some number for the speed...
+			resetMovement(movement);
+			camera.rotateView(cameraRoll(this->properties.window));
+			
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
             ComponentManager::getInstance()->performRendering(&renderEngine);

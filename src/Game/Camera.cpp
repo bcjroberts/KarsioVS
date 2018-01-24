@@ -6,7 +6,7 @@
 
 void Camera::setupCameraTransformationMatrices(GLint viewLocation, GLint projectionLocation, GLint viewPosLoc){
     // Create camera transformation
-    view = lookAt(cameraPosition, lookAtPos/*cameraPosition + cameraFront*/, cameraUp);
+    view = lookAt(cameraPosition, /*lookAtPos*/cameraPosition + cameraFront, cameraUp);
     //view = lookAt(vec3(0,0,5.85537815),vec3(0,0,4.85537815),vec3(0,1,0));
     projection = perspective(cameraFOV, (GLfloat)window_width/(GLfloat)window_height, 0.1f, 1000.0f);
 
@@ -20,7 +20,7 @@ void Camera::setupCameraTransformationMatrices(GLint viewLocation, GLint project
 
 void Camera::moveCamera(Movement movement, float deltaTime) {
     float velocity = (cameraSpeed) * (deltaTime);
-    //cout<<velocity<<endl;
+    //std::cout<<"velocity: " << velocity<<std::endl;
     if (movement.forward) {
         cameraPosition += cameraFront * velocity;
     }
@@ -29,7 +29,7 @@ void Camera::moveCamera(Movement movement, float deltaTime) {
     }
     if (movement.right) {
         cameraPosition += normalize(cross(cameraFront, cameraUp)) * velocity;
-        cameraPosition += glm::vec3(0, 0, deltaTime);
+        //cameraPosition += glm::vec3(0, 0, deltaTime);
         //cameraPosition += normalize(cross(cameraFront, cameraUp)) * cameraSpeed;
     }
     if (movement.left) {
@@ -42,8 +42,10 @@ void Camera::moveCamera(Movement movement, float deltaTime) {
     if(movement.down){
         cameraPosition -= cameraUp * velocity;
     }
-    printf("new pos: (%f,%f,%f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    //printf("new camera pos: (%f,%f,%f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
+
+
 
 void Camera::changeCameraSpeed(float changeSpeed) {
     float newCameraSpeed=cameraSpeed+changeSpeed;
@@ -61,6 +63,7 @@ void Camera::rotateView(vec2 mouseOffset) {
 
     xRoll += mouseOffset.x;
     yRoll += mouseOffset.y;
+	std::cout << xRoll << " : " << yRoll << std::endl;
 
     // Make sure that when pitch is out of bounds, screen doesn't get flipped
     if (yRoll > 89.0f){
