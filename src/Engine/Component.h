@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "Entity.h"
 
-enum ComponentType {RENDERER, PHYSICS};
+enum ComponentType {RENDERER, PHYSICS, DRIVE};
 
 class Component {
 private:
