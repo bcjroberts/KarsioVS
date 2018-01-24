@@ -212,7 +212,7 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 	{
 		//Construct a convex mesh for a cylindrical wheel.
 		PxConvexMesh* wheelMesh = createWheelMesh(wheelWidth, wheelRadius, *physics, *cooking);
-        PxConvexMesh* wheelMeshSmall = createWheelMesh(wheelWidth, wheelRadius / 2.0f, *physics, *cooking);
+        PxConvexMesh* wheelMeshSmall = createWheelMesh(wheelWidth, wheelRadius , *physics, *cooking);
 		//Assume all wheels are identical for simplicity.
 		PxConvexMesh* wheelConvexMeshes[PX_MAX_NB_WHEELS];
 		PxMaterial* wheelMaterials[PX_MAX_NB_WHEELS];

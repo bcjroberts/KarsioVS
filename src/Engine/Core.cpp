@@ -70,8 +70,8 @@ void Core::coreLoop() {
     auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], myVehicle->getRigidDynamicActor(), glm::vec3(1.25f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[0], myVehicle->getRigidDynamicActor(), glm::vec3(0.25f, 0.25f, 0.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[1], myVehicle->getRigidDynamicActor(), glm::vec3(0.25f, 0.25f, 0.25f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[0], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[1], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[2], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[3], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, myVehicle->getRigidDynamicActor());

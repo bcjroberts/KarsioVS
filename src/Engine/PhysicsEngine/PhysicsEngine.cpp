@@ -92,7 +92,7 @@ void PhysicsEngine::initPhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-    gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+    gMaterial = gPhysics->createMaterial(0.0f, 0.0f, 0.2f);
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
 
@@ -120,7 +120,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     //Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
     //The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
     //Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
-    const physx::PxF32 chassisMass = 1000.0f;
+    const physx::PxF32 chassisMass = 1500.0f;
     const physx::PxVec3 chassisDims(2.5f, 2.0f, 5.0f);
     const physx::PxVec3 chassisMOI
         ((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
