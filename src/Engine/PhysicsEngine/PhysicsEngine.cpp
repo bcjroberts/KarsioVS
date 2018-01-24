@@ -70,11 +70,11 @@ void PhysicsEngine::initPhysics()
 {
     gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
 
-    /*gPvd = PxCreatePvd(*gFoundation);
+    gPvd = PxCreatePvd(*gFoundation);
     physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-    gPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);*/
+    gPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 
-    gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale(), false, NULL);
+    gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale(), true, gPvd);
 
     physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
@@ -120,7 +120,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     //Set up the chassis mass, dimensions, moment of inertia, and center of mass offset.
     //The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
     //Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
-    const physx::PxF32 chassisMass = 1500.0f;
+    const physx::PxF32 chassisMass = 1000.0f;
     const physx::PxVec3 chassisDims(2.5f, 2.0f, 5.0f);
     const physx::PxVec3 chassisMOI
         ((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
@@ -151,7 +151,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.wheelMOI = wheelMOI;
     vehicleDesc.numWheels = nbWheels;
     vehicleDesc.wheelMaterial = gMaterial;
-    vehicleDesc.chassisSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_WHEEL, snippetvehicle::COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
+    vehicleDesc.wheelSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_WHEEL, snippetvehicle::COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
 
     return vehicleDesc;
 }
@@ -238,6 +238,7 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds, physx::PxVehicleD
 
     // Tell the vehicle that it is accelerating forward
     gVehicleInputData.setDigitalAccel(true);
+    gVehicleInputData.setDigitalSteerLeft(true);
 
 
     // Set the vehicle moving

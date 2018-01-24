@@ -13,7 +13,7 @@ public:
 	glm::vec3 scale;
     MeshData* myMesh;
 	ShaderData* myShader;
-    mat4 getMatrix() const;
+    virtual mat4 getMatrix();
 	RendererComponent(MeshData* newMesh, ShaderData* newShader);
 	~RendererComponent();
 };

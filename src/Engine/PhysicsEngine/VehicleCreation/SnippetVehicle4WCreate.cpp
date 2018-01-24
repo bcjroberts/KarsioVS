@@ -212,18 +212,19 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 	{
 		//Construct a convex mesh for a cylindrical wheel.
 		PxConvexMesh* wheelMesh = createWheelMesh(wheelWidth, wheelRadius, *physics, *cooking);
+        PxConvexMesh* wheelMeshSmall = createWheelMesh(wheelWidth, wheelRadius / 2.0f, *physics, *cooking);
 		//Assume all wheels are identical for simplicity.
 		PxConvexMesh* wheelConvexMeshes[PX_MAX_NB_WHEELS];
 		PxMaterial* wheelMaterials[PX_MAX_NB_WHEELS];
 
 		//Set the meshes and materials for the driven wheels.
-		for(PxU32 i = PxVehicleDrive4WWheelOrder::eFRONT_LEFT; i <= PxVehicleDrive4WWheelOrder::eREAR_RIGHT; i++)
+		for(PxU32 i = PxVehicleDrive4WWheelOrder::eFRONT_LEFT; i <= PxVehicleDrive4WWheelOrder::eFRONT_RIGHT; i++)
 		{
-			wheelConvexMeshes[i] = wheelMesh;
+			wheelConvexMeshes[i] = wheelMeshSmall;
 			wheelMaterials[i] = vehicle4WDesc.wheelMaterial;
 		}
 		//Set the meshes and materials for the non-driven wheels
-		for(PxU32 i = PxVehicleDrive4WWheelOrder::eREAR_RIGHT + 1; i < numWheels; i++)
+		for(PxU32 i = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT + 1; i < numWheels; i++)
 		{
 			wheelConvexMeshes[i] = wheelMesh;
 			wheelMaterials[i] = vehicle4WDesc.wheelMaterial;

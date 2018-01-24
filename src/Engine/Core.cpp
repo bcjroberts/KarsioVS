@@ -78,8 +78,8 @@ void Core::coreLoop() {
     //following set of functions opens an object file, I considered sticking an id
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
-    MeshData tempMesh("testObject1");
-    tempMesh.loadMeshData("data/assets/meshes/cube.obj");
+    MeshData cubeMesh("testObject1");
+    cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
     MeshData planeMesh("planeMesh");
     planeMesh.loadMeshData("data/assets/meshes/plane.obj");
 
@@ -98,10 +98,17 @@ void Core::coreLoop() {
 
     physx::PxVehicleDrive4W* myVehicle = physicsEngine.createVehicle();
     //printf("Number of shapes: %i", myVehicle->getRigidDynamicActor()->getNbShapes());
+    physx::PxShape* shapes[5];
+    myVehicle->getRigidDynamicActor()->getShapes(shapes, 5);
 
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
-	auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
-    ComponentManager::getInstance()->addRendererComponent(entity1, &tempMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2));
+    auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
+    //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], myVehicle->getRigidDynamicActor(), glm::vec3(1.25f, 1.0f, 2.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[0], myVehicle->getRigidDynamicActor(), glm::vec3(0.25f, 0.25f, 0.25f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[1], myVehicle->getRigidDynamicActor(), glm::vec3(0.25f, 0.25f, 0.25f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[2], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[3], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, myVehicle->getRigidDynamicActor());
     
     auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
