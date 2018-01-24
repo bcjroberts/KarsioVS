@@ -23,6 +23,20 @@ RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, MeshDat
     return rc;
 }
 
+ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader,
+    physx::PxShape* newShape, physx::PxRigidActor* newActor, glm::vec3 newScale)
+{
+    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, shader, newShape, newActor);
+    rendererComponents.push_back(src);
+    addTo->addComponent(src);
+
+    // SPECIAL: set the scale
+    src->scale = newScale;
+
+    src->owner = addTo;
+    return src;
+}
+
 PhysicsComponent* ComponentManager::addPhysicsComponent(Entity* addTo, physx::PxRigidActor* nactor) {
     PhysicsComponent* pc = new PhysicsComponent(nactor);
     physicsComponents.push_back(pc);

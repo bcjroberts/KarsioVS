@@ -100,6 +100,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Components\ShapeRendererComponent.cpp" />
     <ClCompile Include="src\Engine\ComponentManager.cpp" />
     <ClCompile Include="src\art\MaterialData.cpp" />
     <ClCompile Include="src\art\MeshData.cpp" />
@@ -129,6 +130,7 @@
     <ClCompile Include="src\main\mainGame.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Components\ShapeRendererComponent.h" />
     <ClInclude Include="src\Engine\ComponentManager.h" />
     <ClInclude Include="src\art\MaterialData.h" />
     <ClInclude Include="src\art\MeshData.h" />
