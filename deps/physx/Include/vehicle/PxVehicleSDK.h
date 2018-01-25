@@ -78,8 +78,12 @@ PX_C_EXPORT void PX_CALL_CONV PxCloseVehicleSDK(PxSerializationRegistry* seriali
 /**
 \brief This number is the maximum number of wheels allowed for a vehicle.
 */
-#define PX_MAX_NB_WHEELS (20)
+#define PX_MAX_NB_WHEELS (8)
 
+/**
+\brief This number is the maximum number of vehicles allowed in total
+ */
+#define PX_MAX_NB_VEHICLES (10)
 
 /**
 \brief Compiler setting to enable recording of telemetry data

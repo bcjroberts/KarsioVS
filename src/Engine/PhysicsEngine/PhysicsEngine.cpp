@@ -103,13 +103,13 @@ void PhysicsEngine::initPhysics()
     PxVehicleSetUpdateMode(physx::PxVehicleUpdateMode::eVELOCITY_CHANGE);
 
     //Create the batched scene queries for the suspension raycasts.
-    gVehicleSceneQueryData = snippetvehicle::VehicleSceneQueryData::allocate(1, PX_MAX_NB_WHEELS, 1, 1, snippetvehicle::WheelSceneQueryPreFilterBlocking, NULL, gAllocator);
+    gVehicleSceneQueryData = snippetvehicle::VehicleSceneQueryData::allocate(5, PX_MAX_NB_WHEELS, 1, 1, snippetvehicle::WheelSceneQueryPreFilterBlocking, NULL, gAllocator);
     gBatchQuery = snippetvehicle::VehicleSceneQueryData::setUpBatchedSceneQuery(0, *gVehicleSceneQueryData, gScene);
 
     //Create the friction table for each combination of tire and surface type.
     gFrictionPairs = snippetvehicle::createFrictionPairs(gMaterial);
 
-    //Create a plane to drive on.
+    //Create a plane to drive on. TODO: Move this elswhere, should not happen here!
     physx::PxFilterData groundPlaneSimFilterData(snippetvehicle::COLLISION_FLAG_GROUND, snippetvehicle::COLLISION_FLAG_GROUND_AGAINST, 0, 0);
     gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
     gScene->addActor(*gGroundPlane);
@@ -156,7 +156,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     return vehicleDesc;
 }
 
-physx::PxVehicleDrive4W* PhysicsEngine::createVehicle() {
+physx::PxVehicleDrive4W* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
 
     // Create the vehicle
     physx::PxVehicleDrive4W* gVehicle4W = NULL;
@@ -164,7 +164,7 @@ physx::PxVehicleDrive4W* PhysicsEngine::createVehicle() {
     gVehicle4W = createVehicle4W(vehicleDesc, gPhysics, gCooking);
 
     // Sets its position and add to the physics simulation
-    physx::PxTransform startTransform(physx::PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), physx::PxQuat(physx::PxIdentity));
+    physx::PxTransform startTransform(startPos + physx::PxVec3(0, (vehicleDesc.chassisDims.y*0.5f + vehicleDesc.wheelRadius + 1.0f), 0), physx::PxQuat(physx::PxIdentity));
     gVehicle4W->getRigidDynamicActor()->setGlobalPose(startTransform);
     gScene->addActor(*gVehicle4W->getRigidDynamicActor());
 
@@ -172,6 +172,7 @@ physx::PxVehicleDrive4W* PhysicsEngine::createVehicle() {
     gVehicle4W->setToRestState();
     gVehicle4W->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
     gVehicle4W->mDriveDynData.setUseAutoGears(true);
+	allVehicles.push_back(gVehicle4W);
     return gVehicle4W;
 }
 
@@ -227,7 +228,7 @@ bool gIsVehicleInAir = true;
 
 
 // Tell physX to simulate the physics, takes time as a float in seconds.
-void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds, physx::PxVehicleDrive4W* gVehicle4W) const {
+void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
     
     //Reset all movement things
     gVehicleInputData.setDigitalAccel(false);
@@ -241,24 +242,34 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds, physx::PxVehicleD
     gVehicleInputData.setDigitalSteerLeft(true);
 
 
-    // Set the vehicle moving
-    PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timeInSeconds, gIsVehicleInAir, *gVehicle4W);
-    //PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timeInSeconds, gIsVehicleInAir, *gVehicle4W);
+	const int numberOfVehicles = allVehicles.size();
 
     //Raycasts.
-    physx::PxVehicleWheels* vehicles[1] = { gVehicle4W };
+	physx::PxVehicleWheels* vehicles[PX_MAX_NB_VEHICLES];
+	for (int i = 0; i < numberOfVehicles; i++)
+	{
+		// Set the vehicle moving
+		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timeInSeconds, gIsVehicleInAir, *allVehicles[i]);
+		//PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timeInSeconds, gIsVehicleInAir, *gVehicle4W);
+
+		vehicles[i] = allVehicles[i];
+	}
     physx::PxRaycastQueryResult* raycastResults = gVehicleSceneQueryData->getRaycastQueryResultBuffer(0);
     const physx::PxU32 raycastResultsSize = gVehicleSceneQueryData->getQueryResultBufferSize();
-    PxVehicleSuspensionRaycasts(gBatchQuery, 1, vehicles, raycastResultsSize, raycastResults);
+    PxVehicleSuspensionRaycasts(gBatchQuery, numberOfVehicles, vehicles, raycastResultsSize, raycastResults);
 
     //Vehicle update.
     const physx::PxVec3 grav = gScene->getGravity();
-    physx::PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
-    physx::PxVehicleWheelQueryResult vehicleQueryResults[1] = { { wheelQueryResults, gVehicle4W->mWheelsSimData.getNbWheels() } };
-    PxVehicleUpdates(timeInSeconds, grav, *gFrictionPairs, 1, vehicles, vehicleQueryResults);
+	physx::PxVehicleWheelQueryResult vehicleQueryResults[PX_MAX_NB_VEHICLES];
+	for (int i = 0; i < numberOfVehicles; i++)
+	{
+		physx::PxWheelQueryResult wheelQueryResults[PX_MAX_NB_WHEELS];
+		vehicleQueryResults[i] = { wheelQueryResults, allVehicles[i]->mWheelsSimData.getNbWheels() };
+	}
+    PxVehicleUpdates(timeInSeconds, grav, *gFrictionPairs, numberOfVehicles, vehicles, vehicleQueryResults);
 
     //Work out if the vehicle is in the air.
-    gIsVehicleInAir = gVehicle4W->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
+    gIsVehicleInAir = allVehicles[0]->getRigidDynamicActor()->isSleeping() ? false : PxVehicleIsInAir(vehicleQueryResults[0]);
 
     gScene->simulate(timeInSeconds);
     gScene->fetchResults(true);
