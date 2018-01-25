@@ -4,21 +4,14 @@ DriveComponent::DriveComponent() : Component(DRIVE)
 {
 };
 
-void DriveComponent::StartAccel() {
-    accelerate = true;
-};
-
-void DriveComponent::StopAccel() {
-    accelerate = false;
+void DriveComponent::setInputs(const bool inAccel, const bool inBrake, const bool inHandbrake, const bool inSteerLeft, const bool inSteerRight, const bool inGearUp, const bool inGearDown) {
+    accel = inAccel;
+    brake = inBrake;
+    handbrake = inHandbrake;
+    steerLeft = inSteerLeft;
+    steerRight = inSteerRight;
+    gearUp = inGearUp;
+    gearDown = inGearDown;
 }
-
-void DriveComponent::StartBrake() {
-    brake = true;
-}
-
-void DriveComponent::StopBrake() {
-    brake = false;
-}
-
 
 DriveComponent::~DriveComponent() = default;

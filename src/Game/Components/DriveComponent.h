@@ -6,15 +6,17 @@
 class DriveComponent : public Component
 {
 public:
-    bool accelerate;
+    bool accel;
     bool brake;
-    bool steerLeft;     // These two are placeholders.
-    bool steerRight;    // Currently, I have no clue what datatype PhysX uses to determine "how much" a vehicle turns.
+    bool handbrake;
+    bool steerLeft;     
+    bool steerRight;    
+    bool gearUp;
+    bool gearDown;
+    bool inReverse;
+
+    void setInputs(const bool inAccel, const bool inBrake, const bool inHandbrake, const bool inSteerLeft, const bool inSteerRight, const bool inGearUp, const bool inGearDown);
 
     DriveComponent();
-    void StartAccel();
-    void StopAccel();
-    void StartBrake();
-    void StopBrake();
     ~DriveComponent();
 };

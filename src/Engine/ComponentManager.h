@@ -6,12 +6,14 @@
 #include  "RenderEngine/RenderEngine.h"
 #include <PxRigidDynamic.h>
 #include "../game/components/PhysicsComponent.h"
+#include "../Game/Components/DriveComponent.h"
 
 class ComponentManager
 {
 private:
     std::vector<RendererComponent*> rendererComponents;
     std::vector<PhysicsComponent*> physicsComponents;
+    std::vector<DriveComponent*> driveComponents;
     static ComponentManager* globalInstance;
 public:
     ComponentManager();
