@@ -61,7 +61,7 @@ void Core::coreLoop() {
     /// Currently the mesh is created if it doesn't exist yet but once it exists the
     /// instance is added to that mesh using the address of the mesh.
 
-    physx::PxVehicleDrive4W* myVehicle = physicsEngine.createVehicle();
+    physx::PxVehicleDrive4W* myVehicle = physicsEngine.createVehicle(physx::PxVec3(0,0,0));
     //printf("Number of shapes: %i", myVehicle->getRigidDynamicActor()->getNbShapes());
     physx::PxShape* shapes[5];
     myVehicle->getRigidDynamicActor()->getShapes(shapes, 5);
@@ -76,6 +76,21 @@ void Core::coreLoop() {
     ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[3], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, myVehicle->getRigidDynamicActor());
     
+	// Making a second vehicle:
+	physx::PxVehicleDrive4W* myVehicle2 = physicsEngine.createVehicle(physx::PxVec3(-5.0f, 0, 0));
+	physx::PxShape* shapes2[5];
+	myVehicle->getRigidDynamicActor()->getShapes(shapes2, 5);
+
+	// New Entity creation code, place at center of screen, no rotation, scale of 1.
+	auto entity3 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
+	//ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[4], myVehicle2->getRigidDynamicActor(), glm::vec3(1.25f, 1.0f, 2.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[0], myVehicle2->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[1], myVehicle2->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[2], myVehicle2->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[3], myVehicle2->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addPhysicsComponent(entity3, myVehicle2->getRigidDynamicActor());
+
     auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(10,10,100));
     
@@ -117,7 +132,7 @@ void Core::coreLoop() {
             // Simulate physics in a Fixed Timestep style
             while(physicsTime < currentTime) {
                 physicsTime += physicsTimeStep;
-                physicsEngine.simulateTimeInSeconds(physicsTimeStep, myVehicle);
+                physicsEngine.simulateTimeInSeconds(physicsTimeStep);
                 //const physx::PxVec3 pos = myVehicle->getRigidDynamicActor()->getGlobalPose().p;
                 //printf("Vehicle position: (%f, %f, %f)\n", pos.x, pos.y, pos.z);
             }
