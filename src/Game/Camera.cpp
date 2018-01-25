@@ -17,7 +17,6 @@ void Camera::setupCameraTransformationMatrices(GLint viewLocation, GLint project
     glUniform3f(viewPosLoc,cameraPosition.x,cameraPosition.y,cameraPosition.z);
 }
 
-
 void Camera::moveCamera(Movement movement, float deltaTime) {
     float velocity = (cameraSpeed) * (deltaTime);
     //std::cout<<"velocity: " << velocity<<std::endl;
@@ -56,14 +55,13 @@ void Camera::changeCameraSpeed(float changeSpeed) {
 
 void Camera::rotateView(vec2 mouseOffset) {
     //cout<< xOffset<<":"<<yOffset<<endl;
-    GLfloat sensitivity = 25;	// Change this value to your liking
+    GLfloat sensitivity = 100;	// Change this value to your liking
     //mouseOffset.x *= sensitivity;
     //mouseOffset.y *= sensitivity;
     mouseOffset*=sensitivity;
 
-    xRoll += mouseOffset.x;
-    yRoll += mouseOffset.y;
-	std::cout << xRoll << " : " << yRoll << std::endl;
+    xRoll = mouseOffset.x;
+    yRoll = mouseOffset.y;
 
     // Make sure that when pitch is out of bounds, screen doesn't get flipped
     if (yRoll > 89.0f){
@@ -76,6 +74,8 @@ void Camera::rotateView(vec2 mouseOffset) {
                       sin(radians(yRoll)),
                       sin(radians(xRoll)) * cos(radians(yRoll)));
     cameraFront = normalize(front);
+
+	std::cout << xRoll << " : " << yRoll << std::endl;
 }
 
 
