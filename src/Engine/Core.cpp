@@ -12,6 +12,8 @@
 #include "../Engine/EntityManager.h"
 #include "../Engine/ComponentManager.h"
 #include "../Engine/Entity.h"
+//Used for my not-so-great struct -Brian
+#include "../Game/Components/DriveComponent.h"
 
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -23,6 +25,8 @@ Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused
 }
 
 Core::~Core() = default;
+
+vehicleInput tempPlayerInput;
 
 // there has to be a better way than to make it this way
 Movement movement;
@@ -46,12 +50,27 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	case GLFW_KEY_D:
 		movement.right = set ? 1 : 0;
 		break;
-	case GLFW_KEY_UP:
+	case GLFW_KEY_SPACE:
 		movement.up = set ? 1 : 0;
 		break;
-	case GLFW_KEY_DOWN:
+	case GLFW_KEY_C:
 		movement.down = set ? 1 : 0;
 		break;
+
+    // Vehicle movement, adding to the pile of broken stuff
+
+    case GLFW_KEY_RIGHT:
+        tempPlayerInput.steerRight = set ? 1 : 0;
+        break;
+    case GLFW_KEY_LEFT:
+        tempPlayerInput.steerLeft = set ? 1 : 0;
+        break;
+    case GLFW_KEY_UP:
+        tempPlayerInput.accel = set ? 1 : 0;
+        break;
+    case GLFW_KEY_DOWN:
+        tempPlayerInput.brake = set ? 1 : 0;
+        break;
 	}
 }
 
@@ -65,6 +84,7 @@ void Core::coreLoop() {
 
 	glfwSetKeyCallback(properties.window, windowKeyInput);
 	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
     physicsEngine.initPhysics();
     // -----------Temp code, to initialize model/instance in rendering code...
@@ -95,6 +115,13 @@ void Core::coreLoop() {
     /// Currently the mesh is created if it doesn't exist yet but once it exists the
     /// instance is added to that mesh using the address of the mesh.
 
+    // Brian's shenanigans go here
+    // Don't mind me, just trying to figure out how to shove everything into logic
+    logic.bindCamera(&camera);
+    physicsEngine.bindDriveList(&ComponentManager::getInstance()->driveComponents);
+    // END Brian's shenanigans
+
+
     physx::PxVehicleDrive4W* myVehicle = physicsEngine.createVehicle(physx::PxVec3(0,0,0));
     //printf("Number of shapes: %i", myVehicle->getRigidDynamicActor()->getNbShapes());
     physx::PxShape* shapes[5];
@@ -109,7 +136,11 @@ void Core::coreLoop() {
     ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[2], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[3], myVehicle->getRigidDynamicActor(), glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, myVehicle->getRigidDynamicActor());
-    
+    ComponentManager::getInstance()->addDriveComponent(entity1);
+
+    // More Brian shenanigans
+    logic.bindPlayer(entity1);
+
 	// Making a second vehicle:
 	physx::PxVehicleDrive4W* myVehicle2 = physicsEngine.createVehicle(physx::PxVec3(-5.0f, 0, 0));
 	physx::PxShape* shapes2[5];
@@ -185,8 +216,10 @@ void Core::coreLoop() {
 			camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
 			glfwGetCursorPos(properties.window, &xpos, &ypos);
 			camera.rotateView(vec2(xpos / properties.screenWidth, ypos / properties.screenHeight));
-			camera.moveCamera(movement, 0.5f); // just some number for the time delta...
-			
+			//camera.moveCamera(movement, 0.5f); // just some number for the time delta...
+            logic.cameraMovement(&movement);
+            logic.playerMovement(&tempPlayerInput);
+			logic.updateInputs();
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();

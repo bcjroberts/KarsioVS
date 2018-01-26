@@ -45,11 +45,24 @@ PhysicsComponent* ComponentManager::addPhysicsComponent(Entity* addTo, physx::Px
     return pc;
 }
 
+DriveComponent* ComponentManager::addDriveComponent(Entity* addTo) {
+    DriveComponent* dc = new DriveComponent();
+    driveComponents.push_back(dc);
+    addTo->addComponent(dc);
+    dc->owner = addTo;
+    return dc;
+}
+
 ComponentManager* ComponentManager::getInstance() {
     if (!globalInstance) {
         globalInstance = new ComponentManager;
     }
     return globalInstance;
+}
+
+std::vector<DriveComponent*> ComponentManager::getDriveComponents() {
+    return ComponentManager::getInstance()->driveComponents;
+
 }
 
 void ComponentManager::performRendering(RenderEngine* re) {

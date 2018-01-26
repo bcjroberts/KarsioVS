@@ -14,4 +14,13 @@ void DriveComponent::setInputs(const bool inAccel, const bool inBrake, const boo
     gearDown = inGearDown;
 }
 
+void DriveComponent::setInputs(vehicleInput in) {
+    accel = in.accel;
+    brake = in.brake;
+    handbrake = in.handbrake;
+    steerLeft = in.steerLeft;
+    steerRight = in.steerRight;
+    gearUp = in.gearUp;
+    gearDown = in.gearDown;
+}
 DriveComponent::~DriveComponent() = default;

@@ -12,7 +12,11 @@
 #include "VehicleCreation/SnippetVehicleTireFriction.h"
 #include "VehicleCreation/SnippetVehicleFilterShader.h"
 #include "VehicleCreation/SnippetVehicleCreate.h"
+// Brian's discipline-breaking include
+#include "../ComponentManager.h"
 
+std::vector<DriveComponent>* driveComponentList;
+// END of brian's discipline-breaking stuff
 physx::PxDefaultAllocator gAllocator;
 physx::PxDefaultErrorCallback gErrorCallback;
 
@@ -64,6 +68,14 @@ physx::PxRigidStatic* createDrivablePlane(const physx::PxFilterData& simFilterDa
 	shapes[0]->setSimulationFilterData(simFilterData);
 
 	return groundPlane;
+}
+
+
+
+// 
+void PhysicsEngine::bindDriveList(std::vector<DriveComponent*> * driveList)
+{
+    driveComponentList = driveList;
 }
 
 void PhysicsEngine::initPhysics()
@@ -237,9 +249,16 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
     gVehicleInputData.setDigitalBrake(false);
     gVehicleInputData.setDigitalHandbrake(false);
 
+    // attempt at input
+    gVehicleInputData.setDigitalAccel(driveComponentList->at(0)->getAccel());
+    gVehicleInputData.setDigitalSteerLeft(driveComponentList->at(0)->getSteerLeft());
+    gVehicleInputData.setDigitalSteerRight(driveComponentList->at(0)->getSteerRight());
+    gVehicleInputData.setDigitalBrake(driveComponentList->at(0)->getBrake());
+    gVehicleInputData.setDigitalHandbrake(driveComponentList->at(0)->getHandbrake());
+
     // Tell the vehicle that it is accelerating forward
-    gVehicleInputData.setDigitalAccel(true);
-    gVehicleInputData.setDigitalSteerLeft(true);
+    // gVehicleInputData.setDigitalAccel(true);
+    // gVehicleInputData.setDigitalSteerLeft(true);
 
 
 	const int numberOfVehicles = allVehicles.size();

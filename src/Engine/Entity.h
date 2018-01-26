@@ -17,8 +17,8 @@ private:
     glm::vec3 position;
     glm::quat rotation;
     glm::vec3 scale;
-    std::vector<Component*> myComponents;
 public:
+    std::vector<Component*> myComponents; // Temporarily moved here
     int id;
     Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale);
     void addComponent(Component* c);
