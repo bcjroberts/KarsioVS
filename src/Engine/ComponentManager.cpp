@@ -45,8 +45,8 @@ PhysicsComponent* ComponentManager::addPhysicsComponent(Entity* addTo, physx::Px
     return pc;
 }
 
-DriveComponent* ComponentManager::addDriveComponent(Entity* addTo) {
-    DriveComponent* dc = new DriveComponent();
+DriveComponent* ComponentManager::addDriveComponent(Entity* addTo, physx::PxVehicleDrive4WRawInputData* inputData) {
+    DriveComponent* dc = new DriveComponent(inputData);
     driveComponents.push_back(dc);
     addTo->addComponent(dc);
     dc->owner = addTo;
@@ -58,11 +58,6 @@ ComponentManager* ComponentManager::getInstance() {
         globalInstance = new ComponentManager;
     }
     return globalInstance;
-}
-
-std::vector<DriveComponent*> ComponentManager::getDriveComponents() {
-    return ComponentManager::getInstance()->driveComponents;
-
 }
 
 void ComponentManager::performRendering(RenderEngine* re) {

@@ -19,11 +19,9 @@ vehicleInput * movePlayer;
 DriveComponent * playerDrive;
 public:        
     Logic();
-    void updateInputs();
     void cameraMovement(Movement* newMovement);
-    void playerMovement(vehicleInput* playerInput);
+    void playerMovement(vehicleInput* newMovement, Entity* targetEnt);
     void bindCamera(Camera* aCamera);
-    void bindPlayer(Entity* targetEnt);
    ~Logic();
 };
 

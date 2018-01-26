@@ -1,5 +1,6 @@
 #pragma once
 #include "../../Engine/Component.h"
+#include <vehicle/PxVehicleUtilControl.h>
 
 // Drive component. Ideally, all vehicles should have this. 
 // Is controlled by a separate driver component, either an AI Driver or a player Driver
@@ -18,6 +19,8 @@ struct vehicleInput {
 
 class DriveComponent : public Component
 {
+private:
+    physx::PxVehicleDrive4WRawInputData* myInput;
 public:
     bool accel;
     bool brake;
@@ -40,6 +43,6 @@ public:
     bool getGearDown() { return gearDown; };
     bool getInReverse() { return inReverse; };
 
-    DriveComponent();
+    DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput);
     ~DriveComponent();
 };
