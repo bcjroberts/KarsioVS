@@ -8,18 +8,22 @@
 #include <PxActor.h>
 #include <vehicle/PxVehicleDrive4W.h>
 #include <vector>
-#include "../ComponentManager.h"
+#include <vehicle/PxVehicleUtilControl.h>
+
+struct vehicleData {
+    bool isInAir = false;
+    physx::PxVehicleDrive4W* myVehicle;
+    physx::PxVehicleDrive4WRawInputData myInput;
+};
 
 class PhysicsEngine {
 private:
-	std::vector<physx::PxVehicleDrive4W*> allVehicles;
+	std::vector<vehicleData*> allVehicleData;
 public:
-    std::vector<DriveComponent*>* driveComponentList;
-    void bindDriveList(std::vector<DriveComponent*> * driveList);
     PhysicsEngine();
     void simulateTimeInSeconds(float timeInSeconds) const;
     void initPhysics(); // This method must be called before anything else physics related happens
-    physx::PxVehicleDrive4W* createVehicle(physx::PxVec3 startpos);
+    vehicleData* createVehicle(physx::PxVec3 startpos);
     ~PhysicsEngine();
 };
 
