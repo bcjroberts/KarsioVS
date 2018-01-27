@@ -14,7 +14,8 @@
 #include "../Engine/Entity.h"
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
-
+// for A*
+#include "../Game/Logic/AStar.h"
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
@@ -83,7 +84,7 @@ void Core::coreLoop() {
     Logic logic;
 
 	glfwSetKeyCallback(properties.window, windowKeyInput);
-	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 
     physicsEngine.initPhysics();
@@ -101,6 +102,22 @@ void Core::coreLoop() {
     cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
     MeshData planeMesh("planeMesh");
     planeMesh.loadMeshData("data/assets/meshes/plane.obj");
+	
+	// Should go somewhere else I am sure; logic?? Will put here for now
+	AStar::Generator generator;
+	//set 2D map size
+	generator.setWorldSize(vec2(25, 25));
+	//generator.setHeuristic(AStar::Heuristic::euclidean); // shouldn't need this, always euclidean
+	generator.setDiagonalMovement(true);
+	generator.addCollision(vec2(1, 1));
+	generator.addCollision(vec2(18, 18));
+
+	// returns vector of coordinates from target to source
+	auto path = generator.findPath(vec2(0, 0), vec2(20, 20));
+	
+	for (auto& coordinate : path) {
+		std::cout << coordinate.x << " " << coordinate.y << "\n";
+	}
 
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;

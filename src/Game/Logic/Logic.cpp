@@ -3,6 +3,7 @@
 //
 
 #include "Logic.h"
+
 Logic::Logic(){
 };
 void Logic::updateInputs() {
@@ -27,4 +28,7 @@ void Logic::bindPlayer(Entity* targetEnt) {
         }
     }
 }
+
+
+
 Logic::~Logic() = default;
