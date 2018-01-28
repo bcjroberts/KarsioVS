@@ -56,8 +56,6 @@ void Camera::changeCameraSpeed(float changeSpeed) {
 void Camera::rotateView(vec2 mouseOffset) {
     //cout<< xOffset<<":"<<yOffset<<endl;
     GLfloat sensitivity = 100;	// Change this value to your liking
-    //mouseOffset.x *= sensitivity;
-    //mouseOffset.y *= sensitivity;
     mouseOffset*=sensitivity;
 
     xRoll = mouseOffset.x;
@@ -75,7 +73,7 @@ void Camera::rotateView(vec2 mouseOffset) {
                       sin(radians(xRoll)) * cos(radians(yRoll)));
     cameraFront = normalize(front);
 
-	std::cout << xRoll << " : " << yRoll << std::endl;
+	//std::cout << xRoll << " : " << yRoll << std::endl;
 }
 
 

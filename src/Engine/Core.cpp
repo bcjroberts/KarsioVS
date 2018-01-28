@@ -59,10 +59,10 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 
     // Vehicle movement, adding to the pile of broken stuff
 
-    case GLFW_KEY_RIGHT:
+    case GLFW_KEY_LEFT:
         tempPlayerInput.steerRight = set ? 1 : 0;
         break;
-    case GLFW_KEY_LEFT:
+    case GLFW_KEY_RIGHT:
         tempPlayerInput.steerLeft = set ? 1 : 0;
         break;
     case GLFW_KEY_UP:
@@ -124,11 +124,11 @@ void Core::coreLoop() {
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
     auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], rigid1, glm::vec3(1.25f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[0], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[1], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[2], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[3], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], glm::vec3(1.25f, 1.0f, 2.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[0], glm::vec3(0.5f, 0.5f, 0.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[1], glm::vec3(0.5f, 0.5f, 0.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[2], glm::vec3(0.5f, 0.5f, 0.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[3], glm::vec3(0.5f, 0.5f, 0.5f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity1, &myVehicleData->myInput);
 
@@ -141,11 +141,11 @@ void Core::coreLoop() {
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
 	auto entity3 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
 	//ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[4], rigid2, glm::vec3(1.25f, 1.0f, 2.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[0], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[1], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[2], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[3], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[4], glm::vec3(1.25f, 1.0f, 2.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[0], glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[1], glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[2], glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[3], glm::vec3(0.5f, 0.5f, 0.5f));
 	ComponentManager::getInstance()->addPhysicsComponent(entity3, rigid2);
 
     auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
@@ -207,8 +207,8 @@ void Core::coreLoop() {
 			// Move camera by keyboard and cursor
 			camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
 			glfwGetCursorPos(properties.window, &xpos, &ypos);
-			camera.rotateView(vec2(xpos / properties.screenWidth, ypos / properties.screenHeight));
-			//camera.moveCamera(movement, 0.5f); // just some number for the time delta...
+			camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
+			camera.moveCamera(movement, 0.5f); // just some number for the time delta...
             logic.cameraMovement(&movement);
             logic.playerMovement(&tempPlayerInput, entity1);
 

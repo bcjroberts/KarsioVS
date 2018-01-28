@@ -110,7 +110,7 @@ void PhysicsEngine::initPhysics()
     //Create the friction table for each combination of tire and surface type.
     gFrictionPairs = snippetvehicle::createFrictionPairs(gMaterial);
 
-    //Create a plane to drive on. TODO: Move this elswhere, should not happen here!
+    //Create a plane to drive on. TODO: Move this elsewhere, should not happen here!
     physx::PxFilterData groundPlaneSimFilterData(snippetvehicle::COLLISION_FLAG_GROUND, snippetvehicle::COLLISION_FLAG_GROUND_AGAINST, 0, 0);
     gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
     gScene->addActor(*gGroundPlane);

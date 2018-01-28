@@ -24,9 +24,9 @@ RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, MeshDat
 }
 
 ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader,
-    physx::PxShape* newShape, physx::PxRigidActor* newActor, glm::vec3 newScale)
+    physx::PxShape* newShape, glm::vec3 newScale)
 {
-    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, shader, newShape, newActor);
+    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, shader, newShape);
     rendererComponents.push_back(src);
     addTo->addComponent(src);
 
