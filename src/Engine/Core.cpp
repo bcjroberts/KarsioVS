@@ -84,7 +84,7 @@ void Core::coreLoop() {
     Logic logic;
 
 	glfwSetKeyCallback(properties.window, windowKeyInput);
-	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
     physicsEngine.initPhysics();
@@ -98,11 +98,16 @@ void Core::coreLoop() {
     //following set of functions opens an object file, I considered sticking an id
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
-    MeshData cubeMesh("testObject1");
-    cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
+    MeshData chassisMesh("testObjectChassis");
+    chassisMesh.loadMeshData("data/assets/meshes/chassis.obj");
+	MeshData wheelMesh("testObjectWheels");
+	wheelMesh.loadMeshData("data/assets/meshes/wheels.obj");
+	MeshData cubeMesh("testObject1");
+	cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
     MeshData planeMesh("planeMesh");
     planeMesh.loadMeshData("data/assets/meshes/plane.obj");
 	
+	/*
 	// Should go somewhere else I am sure; logic?? Will put here for now
 	AStar::Generator generator;
 	//set 2D map size
@@ -118,7 +123,7 @@ void Core::coreLoop() {
 	for (auto& coordinate : path) {
 		std::cout << coordinate.x << " " << coordinate.y << "\n";
 	}
-
+	*/
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;
     shaderData.attachShader("data/shaderData/vertex.glsl",GL_VERTEX_SHADER);
@@ -141,20 +146,21 @@ void Core::coreLoop() {
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
     auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], rigid1, glm::vec3(1.25f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[0], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[1], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[2], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[3], rigid1, glm::vec3(0.5f, 0.5f, 0.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &chassisMesh, &shaderData, shapes[4], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[0], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[1], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[2], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[3], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity1, &myVehicleData->myInput);
 
+	
 	// Making a second vehicle:
     vehicleData* myVehicleData2 = physicsEngine.createVehicle(physx::PxVec3(-5.0f, 0, 0));
 	physx::PxShape* shapes2[5];
     physx::PxRigidDynamic* rigid2 = myVehicleData2->myVehicle->getRigidDynamicActor();
     rigid2->getShapes(shapes2, 5);
-
+	
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
 	auto entity3 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
 	//ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
@@ -164,7 +170,7 @@ void Core::coreLoop() {
 	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[2], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
 	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[3], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
 	ComponentManager::getInstance()->addPhysicsComponent(entity3, rigid2);
-
+	
     auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(10,10,100));
     
