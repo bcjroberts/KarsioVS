@@ -55,9 +55,7 @@ void Camera::changeCameraSpeed(float changeSpeed) {
 
 void Camera::rotateView(vec2 mouseOffset) {
     //cout<< xOffset<<":"<<yOffset<<endl;
-    GLfloat sensitivity = 150;	// Change this value to your liking
-    //mouseOffset.x *= sensitivity;
-    //mouseOffset.y *= sensitivity;
+    GLfloat sensitivity = 100;	// Change this value to your liking
     mouseOffset*=sensitivity;
 
     xRoll = mouseOffset.x;

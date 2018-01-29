@@ -139,7 +139,6 @@
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicle4WCreate.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleCreate.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleFilterShader.cpp" />
-    <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleNoDriveCreate.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleSceneQuery.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleTireFriction.cpp" />
     <ClCompile Include="src\engine\renderengine\artdata\RenderData.cpp" />

@@ -14,8 +14,7 @@
 #include "../Engine/Entity.h"
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
-// for A*
-#include "../Game/Logic/AStar.h"
+
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
@@ -60,10 +59,10 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 
     // Vehicle movement, adding to the pile of broken stuff
 
-    case GLFW_KEY_RIGHT:
+    case GLFW_KEY_LEFT:
         tempPlayerInput.steerRight = set ? 1 : 0;
         break;
-    case GLFW_KEY_LEFT:
+    case GLFW_KEY_RIGHT:
         tempPlayerInput.steerLeft = set ? 1 : 0;
         break;
     case GLFW_KEY_UP:
@@ -98,32 +97,15 @@ void Core::coreLoop() {
     //following set of functions opens an object file, I considered sticking an id
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
-    MeshData chassisMesh("testObjectChassis");
+    MeshData cubeMesh("cubeMesh");
+    cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
+    MeshData wheelMesh("wheelMesh");
+    wheelMesh.loadMeshData("data/assets/meshes/wheels.obj");
+    MeshData chassisMesh("chassisMesh");
     chassisMesh.loadMeshData("data/assets/meshes/chassis.obj");
-	MeshData wheelMesh("testObjectWheels");
-	wheelMesh.loadMeshData("data/assets/meshes/wheels.obj");
-	MeshData cubeMesh("testObject1");
-	cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
     MeshData planeMesh("planeMesh");
     planeMesh.loadMeshData("data/assets/meshes/plane.obj");
-	
-	/*
-	// Should go somewhere else I am sure; logic?? Will put here for now
-	AStar::Generator generator;
-	//set 2D map size
-	generator.setWorldSize(vec2(25, 25));
-	//generator.setHeuristic(AStar::Heuristic::euclidean); // shouldn't need this, always euclidean
-	generator.setDiagonalMovement(true);
-	generator.addCollision(vec2(1, 1));
-	generator.addCollision(vec2(18, 18));
 
-	// returns vector of coordinates from target to source
-	auto path = generator.findPath(vec2(0, 0), vec2(20, 20));
-	
-	for (auto& coordinate : path) {
-		std::cout << coordinate.x << " " << coordinate.y << "\n";
-	}
-	*/
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;
     shaderData.attachShader("data/shaderData/vertex.glsl",GL_VERTEX_SHADER);
@@ -146,31 +128,32 @@ void Core::coreLoop() {
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
     auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &chassisMesh, &shaderData, shapes[4], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[0], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[1], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[2], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[3], rigid1, glm::vec3(1.0f, 1.0f, 1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &chassisMesh, &shaderData, shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
+    // Uncomment this if you want to see the physics hitbox
+    //ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], glm::vec3(1.5f, 1.0f, 2.5f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.6f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.3f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity1, &myVehicleData->myInput);
 
-	
 	// Making a second vehicle:
     vehicleData* myVehicleData2 = physicsEngine.createVehicle(physx::PxVec3(-5.0f, 0, 0));
 	physx::PxShape* shapes2[5];
     physx::PxRigidDynamic* rigid2 = myVehicleData2->myVehicle->getRigidDynamicActor();
     rigid2->getShapes(shapes2, 5);
-	
+
 	// New Entity creation code, place at center of screen, no rotation, scale of 1.
 	auto entity3 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
 	//ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[4], rigid2, glm::vec3(1.25f, 1.0f, 2.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[0], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[1], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[2], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &cubeMesh, &shaderData, shapes2[3], rigid2, glm::vec3(0.5f, 0.5f, 0.5f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &chassisMesh, &shaderData, shapes2[4], glm::vec3(1.0f, 1.0f, 1.0f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[0], glm::vec3(0.4f, 0.8f, 0.8f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[1], glm::vec3(0.4f, 0.8f, 0.8f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[2], glm::vec3(0.4f, 0.8f, 0.8f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[3], glm::vec3(0.4f, 0.8f, 0.8f));
 	ComponentManager::getInstance()->addPhysicsComponent(entity3, rigid2);
-	
+
     auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(10,10,100));
     
@@ -230,8 +213,8 @@ void Core::coreLoop() {
 			// Move camera by keyboard and cursor
 			camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
 			glfwGetCursorPos(properties.window, &xpos, &ypos);
-			camera.rotateView(vec2(xpos / properties.screenWidth, ypos / properties.screenHeight));
-			//camera.moveCamera(movement, 0.5f); // just some number for the time delta...
+			camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
+			camera.moveCamera(movement, 0.5f); // just some number for the time delta...
             logic.cameraMovement(&movement);
             logic.playerMovement(&tempPlayerInput, entity1);
 

@@ -24,9 +24,9 @@ RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, MeshDat
 }
 
 ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader,
-    physx::PxShape* newShape, physx::PxRigidActor* newActor, glm::vec3 newScale)
+    physx::PxShape* newShape, glm::vec3 newScale)
 {
-    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, shader, newShape, newActor);
+    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, shader, newShape);
     rendererComponents.push_back(src);
     addTo->addComponent(src);
 
@@ -34,6 +34,14 @@ ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addT
     src->scale = newScale;
 
     src->owner = addTo;
+    return src;
+}
+
+ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader,
+    physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos)
+{
+    ShapeRendererComponent* src = addShapeRendererComponent(addTo, mesh, shader, newShape, newScale);
+    src->localPos = newLocalPos;
     return src;
 }
 

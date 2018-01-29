@@ -2,18 +2,18 @@
 #include <glm/gtx/quaternion.hpp>
 #include <extensions/PxShapeExt.h>
 
-ShapeRendererComponent::ShapeRendererComponent(MeshData* newMesh, ShaderData* newShader, physx::PxShape* newShape, physx::PxRigidActor* newActor) : RendererComponent(newMesh, newShader)
+ShapeRendererComponent::ShapeRendererComponent(MeshData* newMesh, ShaderData* newShader, physx::PxShape* newShape) : RendererComponent(newMesh, newShader)
 {
     myShape = newShape;
-    myActor = newActor;
 }
 
 mat4 ShapeRendererComponent::getMatrix()
 {
-    physx::PxTransform loc = myShape->getLocalPose();//physx::PxShapeExt::getGlobalPose(*myShape, *myActor);
-                                                     // copy the position from the shape
-    loc = physx::PxShapeExt::getGlobalPose(*myShape, *myActor);
+    physx::PxTransform loc = myShape->getLocalPose();
+                                                     
+    //loc = physx::PxShapeExt::getGlobalPose(*myShape, *myShape->getActor());
 
+    // copy the position of the shape
     position.x = loc.p.x;
     position.y = loc.p.y;
     position.z = loc.p.z;
@@ -25,10 +25,8 @@ mat4 ShapeRendererComponent::getMatrix()
     rotation.z = loc.q.z;
 
     mat4 myMat2;
-    myMat2 = glm::translate(myMat2, position) * glm::toMat4(rotation) * glm::scale(myMat2, scale);
-    mat4 myMatrix = glm::translate(glm::scale(glm::toMat4(rotation), scale), position);
-    mat4 ownerMatrix = owner->getMatrix();
-    return /*ownerMatrix */ myMat2;
+    myMat2 = glm::translate(myMat2, position + localPos) * glm::toMat4(rotation) * glm::scale(myMat2, scale);
+    return owner->getMatrix() * myMat2;
 }
 
 
