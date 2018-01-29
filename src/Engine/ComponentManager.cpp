@@ -37,6 +37,14 @@ ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addT
     return src;
 }
 
+ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader,
+    physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos)
+{
+    ShapeRendererComponent* src = addShapeRendererComponent(addTo, mesh, shader, newShape, newScale);
+    src->localPos = newLocalPos;
+    return src;
+}
+
 PhysicsComponent* ComponentManager::addPhysicsComponent(Entity* addTo, physx::PxRigidActor* nactor) {
     PhysicsComponent* pc = new PhysicsComponent(nactor);
     physicsComponents.push_back(pc);

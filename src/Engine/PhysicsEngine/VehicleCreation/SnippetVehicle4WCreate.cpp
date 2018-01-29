@@ -40,27 +40,20 @@ using namespace physx;
 namespace fourwheel
 {
 
-void computeWheelCenterActorOffsets4W(const PxF32 wheelFrontZ, const PxF32 wheelRearZ, const PxVec3& chassisDims, const PxF32 wheelWidth, const PxF32 wheelRadius, const PxU32 numWheels, PxVec3* wheelCentreOffsets)
+void computeWheelCenterActorOffsets4W(const PxF32 wheelFrontZ, const PxF32 wheelRearZ, const PxVec3& chassisDims, const PxF32 wheelWidth, const PxF32 wheelRadius, PxVec3* wheelCentreOffsets)
 {
 	//chassisDims.z is the distance from the rear of the chassis to the front of the chassis.
 	//The front has z = 0.5*chassisDims.z and the rear has z = -0.5*chassisDims.z.
 	//Compute a position for the front wheel and the rear wheel along the z-axis.
 	//Compute the separation between each wheel along the z-axis.
-	const PxF32 numLeftWheels = numWheels/2.0f;
-	const PxF32 deltaZ = (wheelFrontZ - wheelRearZ)/(numLeftWheels-1.0f);
+	const PxF32 deltaZ = (wheelFrontZ - wheelRearZ);
 	//Set the outside of the left and right wheels to be flush with the chassis.
 	//Set the top of the wheel to be just touching the underside of the chassis.
 	//Begin by setting the rear-left/rear-right/front-left,front-right wheels.
 	wheelCentreOffsets[PxVehicleDrive4WWheelOrder::eREAR_LEFT] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + 0*deltaZ*0.5f);
 	wheelCentreOffsets[PxVehicleDrive4WWheelOrder::eREAR_RIGHT] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + 0*deltaZ*0.5f);
-	wheelCentreOffsets[PxVehicleDrive4WWheelOrder::eFRONT_LEFT] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + (numLeftWheels-1)*deltaZ);
-	wheelCentreOffsets[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + (numLeftWheels-1)*deltaZ);
-	//Set the remaining wheels.
-	for(PxU32 i = 2, wheelCount = 4; i < numWheels-2; i+=2, wheelCount+=2)
-	{
-		wheelCentreOffsets[wheelCount + 0] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
-		wheelCentreOffsets[wheelCount + 1] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + i*deltaZ*0.5f);
-	}
+	wheelCentreOffsets[PxVehicleDrive4WWheelOrder::eFRONT_LEFT] = PxVec3((-chassisDims.x + wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + deltaZ);
+	wheelCentreOffsets[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT] = PxVec3((+chassisDims.x - wheelWidth)*0.5f, -(chassisDims.y/2 + wheelRadius), wheelRearZ + deltaZ);
 }
 
 void setupWheelsSimulationData
@@ -201,7 +194,7 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 	const PxVec3 chassisDims = vehicle4WDesc.chassisDims;
 	const PxF32 wheelWidth = vehicle4WDesc.wheelWidth;
 	const PxF32 wheelRadius = vehicle4WDesc.wheelRadius;
-	const PxU32 numWheels = vehicle4WDesc.numWheels;
+	const PxU32 numWheels = 4;
 
 	const PxFilterData& chassisSimFilterData = vehicle4WDesc.chassisSimFilterData;
 	const PxFilterData& wheelSimFilterData = vehicle4WDesc.wheelSimFilterData;
@@ -211,22 +204,22 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 	PxRigidDynamic* veh4WActor = NULL;
 	{
 		//Construct a convex mesh for a cylindrical wheel.
-		PxConvexMesh* wheelMesh = createWheelMesh(wheelWidth, wheelRadius, *physics, *cooking);
-        PxConvexMesh* wheelMeshSmall = createWheelMesh(wheelWidth, wheelRadius , *physics, *cooking);
+        PxConvexMesh* frontWheelMesh = createWheelMesh(wheelWidth, wheelRadius, *physics, *cooking);
+		PxConvexMesh* rearWheelMesh = createWheelMesh(wheelWidth, wheelRadius, *physics, *cooking);
 		//Assume all wheels are identical for simplicity.
 		PxConvexMesh* wheelConvexMeshes[PX_MAX_NB_WHEELS];
 		PxMaterial* wheelMaterials[PX_MAX_NB_WHEELS];
 
-		//Set the meshes and materials for the driven wheels.
+		//Set the meshes and materials for the FRONT wheels
 		for(PxU32 i = PxVehicleDrive4WWheelOrder::eFRONT_LEFT; i <= PxVehicleDrive4WWheelOrder::eFRONT_RIGHT; i++)
 		{
-			wheelConvexMeshes[i] = wheelMeshSmall;
+			wheelConvexMeshes[i] = frontWheelMesh;
 			wheelMaterials[i] = vehicle4WDesc.wheelMaterial;
 		}
-		//Set the meshes and materials for the non-driven wheels
-		for(PxU32 i = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT + 1; i < numWheels; i++)
+		//Set the meshes and materials for the REAR wheels
+		for(PxU32 i = PxVehicleDrive4WWheelOrder::eREAR_LEFT; i <= PxVehicleDrive4WWheelOrder::eREAR_RIGHT; i++)
 		{
-			wheelConvexMeshes[i] = wheelMesh;
+			wheelConvexMeshes[i] = rearWheelMesh;
 			wheelMaterials[i] = vehicle4WDesc.wheelMaterial;
 		}
 
@@ -255,7 +248,7 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 		PxVec3 wheelCenterActorOffsets[PX_MAX_NB_WHEELS];
 		const PxF32 frontZ = chassisDims.z*0.3f;
 		const PxF32 rearZ = -chassisDims.z*0.3f;
-		fourwheel::computeWheelCenterActorOffsets4W(frontZ, rearZ, chassisDims, wheelWidth, wheelRadius, numWheels, wheelCenterActorOffsets);
+		fourwheel::computeWheelCenterActorOffsets4W(frontZ, rearZ, chassisDims, wheelWidth, wheelRadius, wheelCenterActorOffsets);
 
 		//Set up the simulation data for all wheels.
 		fourwheel::setupWheelsSimulationData

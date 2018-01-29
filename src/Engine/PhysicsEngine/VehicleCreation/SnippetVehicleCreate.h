@@ -31,7 +31,6 @@
 #define SNIPPET_VEHICLE_COMMON_H
 
 #include "PxPhysicsAPI.h"
-#include "vehicle/PxVehicleDriveTank.h"
 #include "vehicle/PxVehicleNoDrive.h"
 
 namespace snippetvehicle
