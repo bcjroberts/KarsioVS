@@ -24,9 +24,8 @@ namespace AStar {
 		uint G, H;
 		vec2 coordinates;
 		Node *parent;
-		Node(vec2 aCoordinates, Node *aParent = nullptr, int aCost = 1);
+		Node(vec2 aCoordinates, Node *aParent = nullptr);
 		uint getScore();
-		int cost;
 	};
 
 	using NodeSet = std::set<Node*>;
@@ -38,6 +37,7 @@ namespace AStar {
 
 	public:
 		Generator();
+		void importNavmesh();
 		void setWorldSize(vec2 aWorldSize);
 		void setDiagonalMovement(bool enable);
 		void setHeuristic(HeuristicFunction aHeuristic);

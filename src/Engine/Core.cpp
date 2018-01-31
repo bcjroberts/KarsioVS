@@ -15,6 +15,8 @@
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
 
+#include "../Game/Logic/AStar.h"
+
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
@@ -83,7 +85,7 @@ void Core::coreLoop() {
     Logic logic;
 
 	glfwSetKeyCallback(properties.window, windowKeyInput);
-	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 
     physicsEngine.initPhysics();
@@ -104,7 +106,7 @@ void Core::coreLoop() {
     MeshData chassisMesh("chassisMesh");
     chassisMesh.loadMeshData("data/assets/meshes/chassis.obj");
     MeshData planeMesh("planeMesh");
-    planeMesh.loadMeshData("data/assets/meshes/plane.obj");
+    planeMesh.loadMeshData("data/assets/meshes/naviTest.obj");
 
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;
@@ -155,7 +157,7 @@ void Core::coreLoop() {
 	ComponentManager::getInstance()->addPhysicsComponent(entity3, rigid2);
 
     auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
-    ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(10,10,100));
+    ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(5,5,5));
     
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -169,6 +171,9 @@ void Core::coreLoop() {
     //Movement movement;
     //movement.right = false;
     //float previousZ = 0;
+
+	AStar::Generator a;
+	a.importNavmesh();
 	
 	// for yaw/pitch controlled by cursor
 	double xpos, ypos;

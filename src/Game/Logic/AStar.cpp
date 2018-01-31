@@ -14,38 +14,23 @@
 using namespace std::placeholders;
 
 
-struct Graph {
-	std::map<char, std::vector<char>> edges;
-	std::vector<char> neighbours(char id) {
-		return edges[id];
-	}
+
+struct Triangle {
+	int index;
+	vec3 a, b, c;
+	std::vector<int> adjTris;	// list of adjacent triangles by index
 };
 
-struct Location {
 
+
+struct Point {
+	int index;
+	vec3 pos;
+	std::vector<int> adjNodes;
 };
 
-void importNavmesh() {
-	MeshData navMesh("navmesh");
-	navMesh.loadMeshData("data/assets/meshes/naviTest.obj");
-	
-	Graph graph;
-
-	// get x y z coordinates... we already have them
-	// if each x y z is the vertices then for loop isn't needed
-	vec3 tempPos;
-	std::vector<vec3> vertexPoints;
-
-	// get list of edges
-
-
-
-	for (unsigned int i = 0; i < tempPos.length; i++) {
-		tempPos = navMesh.vertices[i].position;
-		vertexPoints.push_back(vec3(tempPos.x, tempPos.y, tempPos.z));
-	}
-	
-}
+std::vector<Triangle> triangles;
+std::vector<Point> points;
 
 bool sameSide(vec3 p1, vec3 p2, vec3 a, vec3 b) {
 	vec3 cp1 = cross(b - a, p1 - a);
@@ -58,7 +43,7 @@ bool sameSide(vec3 p1, vec3 p2, vec3 a, vec3 b) {
 	}
 }
 
-bool pointInTriange(vec3 p, vec3 a, vec3 b, vec3 c) {
+bool pointInTriangle(vec3 p, vec3 a, vec3 b, vec3 c) {
 	if (sameSide(p, a, b, c) && sameSide(p, b, a, c) && sameSide(p, c, a, b)) {
 		return true;
 	}
@@ -68,59 +53,181 @@ bool pointInTriange(vec3 p, vec3 a, vec3 b, vec3 c) {
 
 }
 
-inline double heuristic(vec2 a, vec2 b) {
-	return abs(a.x - b.x) + abs(a.y - b.y);
-}
-
-
-template<typename Location, typename Graph>
-void a_star_search(Graph graph, Location start, Location goal,
-	std::map<Location, Location>& came_from,
-	std::map<Location, double>& cost_so_far) {
-	PriorityQueue<Location, double> frontier;
-	frontier.put(start, 0);
-
-	came_from[start] = start;
-	cost_so_far[start] = 0;
-
-	while (!frontier.empty()) {
-		Location current = frontier.get();
-
-		if (current == goal) {
+void findPath(std::vector<vec3> vertices, vec3 start, vec3 end) {
+	std::vector<vec3> openList;
+	std::vector<vec3> closedList;
+	vec3 current = start;
+	bool startInTri = false;
+	bool endInTri = false;
+	int startIndex = -1;
+	int endIndex = -1;
+	
+	// check where you are is in a triangle
+	// for all triangles, check which triangle point is in
+	// if either start or end are not in a triangle, stop the entire operation
+	for (int i = 0; i < triangles.size(); i++) {
+		// each 3 in vertices form a triangle
+		startInTri = pointInTriangle(start, triangles[i].a, triangles[i].b, triangles[i].c);
+		if (startInTri) {
+			// confirm that startindex is index of triangles
+			startIndex = i;
 			break;
 		}
+		if (!startInTri) {
+			return;
+		}
+	}
+	// check if place you want to go is in a triangle
+	for (int i = 0; i < triangles.size(); i++) {
+		// each 3 in vertices form a triangle
+		endInTri = pointInTriangle(end, triangles[i].a, triangles[i].b, triangles[i].c);
+		//endInTri = pointInTriangle(start, vertices[i], vertices[i + 1], vertices[i + 2]);
+		if (endInTri) {
+			// confirm that startindex is index of triangles
+			endIndex = i;
+			break;
+		}
+		if (!endInTri) {
+			return;
+		}
+	}
 
-		for (Location next : graph.neighbours(current)) {
-			double new_cost = cost_so_far[current] + graph.cost(current, next);
-			if (cost_so_far.find(next) == cost_so_far.end() ||
-				new_cost < cost_so_far[next]) {
-				cost_so_far[next] = new_cost;
-				double priority = new_cost + heuristic(next, goal);
-				frontier.put(next, priority);
-				came_from[next] = current;
+	// reached here meaning both points are in a triangle
+	// check if both in same triangle
+	if (startIndex == endIndex) {
+		// in same triangle, go straight to it
+	}
+	// if reaches else, both points located on different triangles
+	else {
+		// keep record of parent point (which is start)
+		closedList.push_back(start);
+
+		// calculation start
+
+		int currentIndex = startIndex;
+		float cost = 0;
+		std::vector<float> G;
+		int j = 0;
+
+		while (currentIndex != endIndex) {
+
+			// send all adjacent points to open list
+			for (int i = 0; i < triangles[currentIndex].adjTris.size() - 1; i++) {
+				// get index of adjacent triangle
+				j = triangles[currentIndex].adjTris[i];
+				// add its vertices
+				if (current != triangles[j].a) {
+					openList.push_back(triangles[j].a);
+				}
+				if (current != triangles[j].b) {
+					openList.push_back(triangles[j].b);
+				}
+				if (current != triangles[j].c) {
+					openList.push_back(triangles[j].c);
+				}
+			}
+
+
+			// calculate F, where F = G + H
+			// G = cost from start to current node
+			// H = cost of getting to end from current node
+			// look at each point, then compare
+			for (int i = 0; i > openList.size()-1; i++) {
+				//G[i] = calculateCost(start, openList.at[i], end);
+			}
+
+			float F = 0;
+			// get minimum F cost
+			for (int i = 0; i < G.size() - 1; i++) {
+				if ((i + 1) == G.size()) {
+					F = min(G[0], G[i]);
+				}
+				else {
+					F = min(G[i], G[i + 1]);
+				}
+			}
+			
+			// put the shortest path into closed list
+			for (int i = 0; i < G.size() - 1; i++) {
+				if (F == G[i]) {
+					//currentIndex = i;
+					//closedList.push_back(openList.at[currentIndex]);
+					//current = openList.at[currentIndex];
+				}
+			}
+			G.clear();
+			cost += F;
+		}
+
+
+	}	// end of path finding (in the else)
+}
+
+// a = start
+// b = possible node to move to
+// c = end
+float calculateCost(vec3 a, vec3 b, vec3 c) {
+	float G = abs(a.x - b.x) + abs(a.y - b.y) + abs(a.z - b.z);
+	float H = abs(b.x - c.x) + abs(b.y - c.y) + abs(b.z - c.z);
+
+	return G + H;
+}
+
+void AStar::Generator::importNavmesh() {
+	MeshData navMesh("navmesh");
+	navMesh.loadMeshData("data/assets/meshes/cube.obj");
+	
+	Triangle tri;
+	int j = 0;
+
+	// every 3 points makes one triangle
+	// after every three iterations, put in a triangle struct node thing
+	for (int i = 0; i < navMesh.vertices.size(); i += 3) {
+		tri.index = j++;
+		tri.a = navMesh.vertices[i].position;
+		tri.b = navMesh.vertices[i+1].position;
+		tri.c = navMesh.vertices[i+2].position;
+		triangles.push_back(tri);		
+		}
+	int adj = 0;
+	// find all adjacent triangles
+	for (int i = 0; i < triangles.size() - 1; i++) {
+		for (int m = 0; m < triangles.size() - 1; m++) {
+			adj = 0;
+			if (triangles[i].index == triangles[m].index) {
+				continue;
+			}
+			// check if neighbours by if triangles share two vertices
+			if (triangles[i].a == triangles[m].a || triangles[i].a == triangles[m].b || triangles[i].a == triangles[m].c) {
+				adj++;
+			}
+
+			if (triangles[i].b == triangles[m].a || triangles[i].b == triangles[m].b || triangles[i].b == triangles[m].c) {
+				adj++;
+			}
+
+			if (triangles[i].c == triangles[m].a || triangles[i].c == triangles[m].b || triangles[i].c == triangles[m].c) {
+				adj++;
+			}
+			if (adj == 2) {
+				// then it's a neighbour triangle woo...
+				triangles[i].adjTris.push_back(m);
 			}
 		}
 	}
+	
+		//std::cout << "i = " << i << " ";
+		//std::cout << tempPos.x << ":"<< tempPos.y <<":"<< tempPos.z << std::endl
+	
 }
 
-// build path to be used
-template<typename Location>
-std::vector<Location> reconstruct_path(Location start, Location goal, std::map<Location, Location> came_from) {
-	std::vector<Location> path;
-	Location current = goal;
-	while (current != start) {
-		path.push_back(current);
-		current = came)from[current];
-	}
-	path.push_back(start); // optional
-	std::reverse(path.begin(), path.end());
-	return path;
-}
 
-AStar::Node::Node(vec2 aCoordinates, Node *aParent, int aCost) {
+
+
+
+AStar::Node::Node(vec2 aCoordinates, Node *aParent) {
 	parent = aParent;
 	coordinates = aCoordinates;
-	cost = aCost;
 	G = H = 0;
 }
 
@@ -129,8 +236,9 @@ AStar::uint AStar::Node::getScore() {
 	return G + H;
 }
 
-// constructor... 
+ 
 // heuristic is euclidean, manhattan, or octoganol
+// can change direction from square grid to other-sided grid here
 AStar::Generator::Generator() {
 	setDiagonalMovement(false);
 	setHeuristic(&Heuristic::euclidean);
@@ -144,7 +252,7 @@ void AStar::Generator::setWorldSize(vec2 aWorldSize) {
 	worldSize = aWorldSize;
 }
 
-// shouldn't need this
+// square grid; can change for hexagonal etc
 void AStar::Generator::setDiagonalMovement(bool enable) {
 	directions = (enable ? 8 : 4);
 }
@@ -154,7 +262,6 @@ void AStar::Generator::setHeuristic(HeuristicFunction aHeuristic) {
 	heuristic = std::bind(aHeuristic, _1, _2); 
 }
 
-// shouldn't need this
 // unbreakable objects, add another for breakable later
 void AStar::Generator::addCollision(vec2 coordinates) {
 	walls.push_back(coordinates);
@@ -182,7 +289,6 @@ AStar::CoordinateList AStar::Generator::findPath(vec2 source, vec2 target) {
 		current = *openSet.begin();
 		// for all nodes in openSet, get one with smallest score
 		// which is shortest path
-		// probably change to length instead, distance from one vertex to another
 		for (auto node : openSet) {
 			// if length is the shortest
 			if (node->getScore() <= current->getScore()) {
@@ -198,10 +304,7 @@ AStar::CoordinateList AStar::Generator::findPath(vec2 source, vec2 target) {
 		closedSet.insert(current);
 		openSet.erase(std::find(openSet.begin(), openSet.end(), current));
 
-		// search each directiion
-		// instead, search each adjacent vertex
-			// get distance
-			// continue rest of algorithm?
+		// search each direction
 		for (uint i = 0; i < directions; ++i) {
 			// get coordinates of each possible direction
 			vec2 newCoordinates(current->coordinates + direction[i]);
@@ -214,18 +317,13 @@ AStar::CoordinateList AStar::Generator::findPath(vec2 source, vec2 target) {
 			// i think it makes diagonal extra cost,
 			// this is where cost is made
 			// if i==4 then diagonal begins
-
 			uint totalCost = current->G + ((i < 4) ? 10 : 14);
-			// do the triangle thing
-			//uint totalCost = get cost somehow;	// may not need this after all, cost calculated at start
-			// new node created
-			// need to get cost this way from somewhere else
+
 			Node *successor = findNodeOnList(openSet, newCoordinates);
 			if (successor == nullptr) {
 				successor = new Node(newCoordinates, current);
 				successor->G = totalCost;
 				successor->H = heuristic(successor->coordinates, target);
-				successor->cost = totalCost;	// may not need this after all, cost calculated at start
 				openSet.insert(successor);
 			}
 			// backtrack if all other options too big of cost
