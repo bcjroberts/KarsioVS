@@ -6,9 +6,9 @@
 #define PROJECTKARSIO_COMPONENT_H
 
 #include <stdio.h>
-#include "Entity.h"
 
 enum ComponentType {RENDERER, PHYSICS, DRIVE};
+class Entity;
 
 class Component {
 private:

@@ -8,7 +8,6 @@
 #include "../Art/ShaderData.h"
 #include "../Game/Camera.h"
 #include "PhysicsEngine\PhysicsEngine.h"
-#include "../Game/Components/RendererComponent.h"
 #include "../Engine/EntityManager.h"
 #include "../Engine/ComponentManager.h"
 #include "../Engine/Entity.h"
@@ -78,7 +77,6 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 //Main game loop
 void Core::coreLoop() {
     RenderEngine renderEngine(properties.window);
-    PhysicsEngine physicsEngine;
     AudioEngine audioEngine;
     Logic logic;
 
@@ -86,7 +84,7 @@ void Core::coreLoop() {
 	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 
-    physicsEngine.initPhysics();
+    PhysicsEngine::getInstance()->initPhysics();
     // -----------Temp code, to initialize model/instance in rendering code...
     // Obviously this should be moved elsewhere when it's being used for real...
 
@@ -118,41 +116,8 @@ void Core::coreLoop() {
     logic.bindCamera(&camera);
     // END Brian's shenanigans
 
-
-    vehicleData* myVehicleData = physicsEngine.createVehicle(physx::PxVec3(0,0,0));
-    //printf("Number of shapes: %i", myVehicle->getRigidDynamicActor()->getNbShapes());
-    physx::PxShape* shapes[5];
-    physx::PxRigidDynamic* rigid1 = myVehicleData->myVehicle->getRigidDynamicActor();
-    rigid1->getShapes(shapes, 5);
-
-	// New Entity creation code, place at center of screen, no rotation, scale of 1.
-    auto entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
-    //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &chassisMesh, &shaderData, shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
-    // Uncomment this if you want to see the physics hitbox
-    //ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], glm::vec3(1.5f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.3f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, &shaderData, shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
-    ComponentManager::getInstance()->addPhysicsComponent(entity1, rigid1);
-    ComponentManager::getInstance()->addDriveComponent(entity1, &myVehicleData->myInput);
-
-	// Making a second vehicle:
-    vehicleData* myVehicleData2 = physicsEngine.createVehicle(physx::PxVec3(-5.0f, 0, 0));
-	physx::PxShape* shapes2[5];
-    physx::PxRigidDynamic* rigid2 = myVehicleData2->myVehicle->getRigidDynamicActor();
-    rigid2->getShapes(shapes2, 5);
-
-	// New Entity creation code, place at center of screen, no rotation, scale of 1.
-	auto entity3 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
-	//ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &chassisMesh, &shaderData, shapes2[4], glm::vec3(1.0f, 1.0f, 1.0f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[0], glm::vec3(0.4f, 0.8f, 0.8f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[1], glm::vec3(0.4f, 0.8f, 0.8f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[2], glm::vec3(0.4f, 0.8f, 0.8f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity3, &wheelMesh, &shaderData, shapes2[3], glm::vec3(0.4f, 0.8f, 0.8f));
-	ComponentManager::getInstance()->addPhysicsComponent(entity3, rigid2);
+    ////////// NEW way to create vehicles. TODO: Should not have to pass in the shader data!
+    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(&shaderData);
 
     auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(10,10,100));
@@ -200,18 +165,13 @@ void Core::coreLoop() {
             // Simulate physics in a Fixed Timestep style
             while(physicsTime < currentTime) {
                 physicsTime += physicsTimeStep;
-                physicsEngine.simulateTimeInSeconds(physicsTimeStep);
-                //const physx::PxVec3 pos = myVehicle->getRigidDynamicActor()->getGlobalPose().p;
-                //printf("Vehicle position: (%f, %f, %f)\n", pos.x, pos.y, pos.z);
+                PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
             }
-            // Move the camera to track the vehicle
 			
-            const physx::PxVec3 pos = myVehicleData->myVehicle->getRigidDynamicActor()->getGlobalPose().p;
-            //camera.moveCamera(movement, pos.z - previousZ);
-            //previousZ = pos.z;
+            // set the movement of the vehicle
+            static_cast<DriveComponent*>(entity1->getComponent(DRIVE))->setInputs(tempPlayerInput);
             
 			// Move camera by keyboard and cursor
-			camera.lookAtPos = glm::vec3(pos.x, pos.y, pos.z);
 			glfwGetCursorPos(properties.window, &xpos, &ypos);
 			camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
 			camera.moveCamera(movement, 0.5f); // just some number for the time delta...

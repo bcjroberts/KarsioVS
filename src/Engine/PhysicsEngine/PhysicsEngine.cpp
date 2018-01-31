@@ -13,6 +13,8 @@
 #include "VehicleCreation/SnippetVehicleFilterShader.h"
 #include "VehicleCreation/SnippetVehicleCreate.h"
 
+// Initialize the Physics Manager global pointer
+PhysicsEngine *PhysicsEngine::globalInstance = nullptr;
 
 physx::PxDefaultAllocator gAllocator;
 physx::PxDefaultErrorCallback gErrorCallback;
@@ -156,6 +158,8 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     return vehicleDesc;
 }
 
+bool scaleUpVehicle = false;
+
 vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
 
     // Create the vehicle
@@ -173,11 +177,26 @@ vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
     gVehicle4W->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
     gVehicle4W->mDriveDynData.setUseAutoGears(true);
 
+    // Do this scaleUpVehicle only
+    if (scaleUpVehicle)
+    {
+        scaleUpVehicle = false;
+        snippetvehicle::customizeVehicleToLengthScale(2.0f, gVehicle4W->getRigidDynamicActor(), &gVehicle4W->mWheelsSimData, &gVehicle4W->mDriveSimData);
+    }
+
     // Create the vehicleData object to store the data, push to vector and return
     vehicleData* vd = new vehicleData();
     vd->myVehicle = gVehicle4W;
 	allVehicleData.push_back(vd);
     return vd;
+}
+
+PhysicsEngine* PhysicsEngine::getInstance()
+{
+    if (!globalInstance) {
+        globalInstance = new PhysicsEngine;
+    }
+    return globalInstance;
 }
 
 // When using a digital controller, how quickly the value reaches 1.

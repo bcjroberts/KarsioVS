@@ -5,7 +5,7 @@
 #include "Geometry.h"
 
 Geometry::~Geometry() {
-    // Properly de-allocate all resources once they've outlived their purpose,
+    // Properly de-allocate all resources scaleUpVehicle they've outlived their purpose,
     // now the program doesn't randomly crash after it's been running for a while
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
