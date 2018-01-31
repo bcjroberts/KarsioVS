@@ -9,6 +9,7 @@
 #include "vector"
 #include <glm/gtc/quaternion.hpp>
 #include "Event.h"
+#include "Component.h"
 
 class Component;
 
@@ -22,6 +23,7 @@ public:
     int id;
     Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale);
     void addComponent(Component* c);
+    Component* getComponent(ComponentType type);
 	void removeComponent(Component* c);
     void removeComponent(int cid);
     void updatePosition(glm::vec3 nposition);

@@ -1,4 +1,5 @@
 #include "ComponentManager.h"
+#include "Entity.h"
 
 // Initialize the Component Manager global pointer.
 ComponentManager *ComponentManager::globalInstance = nullptr;

@@ -19,7 +19,7 @@ private:
 public:
     //Constructor to make the opengl window
     OpenGL(int &screenWidth, int &screenHeight, const char *windowName);
-    //delete the window once it's no longer needed
+    //delete the window scaleUpVehicle it's no longer needed
     ~OpenGL();
     //setup glfw and optionally glew
     bool setupOpenGL(GLFWwindow **window,const char *windowName);

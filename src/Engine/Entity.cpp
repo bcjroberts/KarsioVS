@@ -20,6 +20,17 @@ void Entity::addComponent(Component* c) {
     c->owner = this;
 }
 
+Component* Entity::getComponent(ComponentType type) {
+    for (auto & myComponent : myComponents)
+    {
+        if (myComponent->getComponentType() == type)
+        {
+            return myComponent;
+        }
+    }
+    return nullptr;
+}
+
 // Removes component based on unique identifier
 void Entity::removeComponent(Component* c) {
     removeComponent(c->id);

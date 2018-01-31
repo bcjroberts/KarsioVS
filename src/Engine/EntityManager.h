@@ -16,6 +16,7 @@ public:
     EntityManager();
 	void destroyEntity(int id);
 	Entity* createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 scale);
+    Entity* createBasicVehicleEntity(ShaderData* shaderThisShouldNotBePassedHere);
 	static EntityManager* getInstance();
     ~EntityManager();
 };

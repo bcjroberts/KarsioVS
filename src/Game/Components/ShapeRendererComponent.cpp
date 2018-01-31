@@ -1,6 +1,7 @@
 #include "ShapeRendererComponent.h"
 #include <glm/gtx/quaternion.hpp>
 #include <extensions/PxShapeExt.h>
+#include "../../Engine/Entity.h"
 
 ShapeRendererComponent::ShapeRendererComponent(MeshData* newMesh, ShaderData* newShader, physx::PxShape* newShape) : RendererComponent(newMesh, newShader)
 {

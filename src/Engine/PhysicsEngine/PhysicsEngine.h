@@ -19,11 +19,13 @@ struct vehicleData {
 class PhysicsEngine {
 private:
 	std::vector<vehicleData*> allVehicleData;
+    static PhysicsEngine* globalInstance;
 public:
     PhysicsEngine();
     void simulateTimeInSeconds(float timeInSeconds) const;
     void initPhysics(); // This method must be called before anything else physics related happens
     vehicleData* createVehicle(physx::PxVec3 startpos);
+    static PhysicsEngine* getInstance();
     ~PhysicsEngine();
 };
 

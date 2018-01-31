@@ -96,7 +96,7 @@
     <ClCompile Include="src\Game\Components\ShapeRendererComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Logic\AStar.cpp">
+    <ClCompile Include="src\Game\Components\VehiclePhysicsComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -185,7 +185,7 @@
     <ClInclude Include="src\Game\Components\ShapeRendererComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\Logic\AStar.h">
+    <ClInclude Include="src\Game\Components\VehiclePhysicsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
