@@ -31,8 +31,6 @@ physx::PxMaterial* gMaterial = NULL;
 
 physx::PxPvd* gPvd = NULL;
 
-physx::PxRigidStatic* gGroundPlane = NULL;
-
 snippetvehicle::VehicleSceneQueryData*	gVehicleSceneQueryData = NULL;
 physx::PxBatchQuery*			gBatchQuery = NULL;
 physx::PxVehicleDrivableSurfaceToTireFrictionPairs* gFrictionPairs = NULL;
@@ -106,16 +104,11 @@ void PhysicsEngine::initPhysics()
     PxVehicleSetUpdateMode(physx::PxVehicleUpdateMode::eVELOCITY_CHANGE);
 
     //Create the batched scene queries for the suspension raycasts.
-    gVehicleSceneQueryData = snippetvehicle::VehicleSceneQueryData::allocate(5, PX_MAX_NB_WHEELS, 1, 2, snippetvehicle::WheelSceneQueryPreFilterBlocking, NULL, gAllocator);
+    gVehicleSceneQueryData = snippetvehicle::VehicleSceneQueryData::allocate(PX_MAX_NB_VEHICLES, PX_MAX_NB_WHEELS, 1, 15, snippetvehicle::WheelSceneQueryPreFilterBlocking, NULL, gAllocator);
     gBatchQuery = snippetvehicle::VehicleSceneQueryData::setUpBatchedSceneQuery(0, *gVehicleSceneQueryData, gScene);
 
     //Create the friction table for each combination of tire and surface type.
     gFrictionPairs = snippetvehicle::createFrictionPairs(gMaterial);
-
-    //Create a plane to drive on. TODO: Move this elsewhere, should not happen here!
-    physx::PxFilterData groundPlaneSimFilterData(snippetvehicle::COLLISION_FLAG_GROUND, snippetvehicle::COLLISION_FLAG_GROUND_AGAINST, 0, 0);
-    gGroundPlane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
-    gScene->addActor(*gGroundPlane);
 }
 
 snippetvehicle::VehicleDesc initVehicleDesc()
@@ -160,6 +153,23 @@ snippetvehicle::VehicleDesc initVehicleDesc()
 
 bool scaleUpVehicle = false;
 
+physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
+
+	const physx::PxFilterData groundPlaneSimFilterData(snippetvehicle::COLLISION_FLAG_GROUND, snippetvehicle::COLLISION_FLAG_GROUND_AGAINST, 0, 0);
+	physx::PxRigidActor* plane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
+	gScene->addActor(*plane);
+	return plane;
+}
+
+physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) {
+	
+	/*const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics,physx::PxTransform(pos),physx::PxShape());
+	gScene->addActor(*box);
+	return box;*/
+	return nullptr;
+}
+
 vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
 
     // Create the vehicle
@@ -177,7 +187,7 @@ vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
     gVehicle4W->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
     gVehicle4W->mDriveDynData.setUseAutoGears(true);
 
-    // Do this scaleUpVehicle only
+    // Test of scaling vehicles up.
     if (scaleUpVehicle)
     {
         scaleUpVehicle = false;

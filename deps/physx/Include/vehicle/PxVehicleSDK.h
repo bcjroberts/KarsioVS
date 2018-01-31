@@ -83,7 +83,7 @@ PX_C_EXPORT void PX_CALL_CONV PxCloseVehicleSDK(PxSerializationRegistry* seriali
 /**
 \brief This number is the maximum number of vehicles allowed in total
  */
-#define PX_MAX_NB_VEHICLES (10)
+#define PX_MAX_NB_VEHICLES (25)
 
 /**
 \brief Compiler setting to enable recording of telemetry data

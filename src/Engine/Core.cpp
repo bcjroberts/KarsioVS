@@ -85,8 +85,6 @@ void Core::coreLoop() {
 
 
     PhysicsEngine::getInstance()->initPhysics();
-    // -----------Temp code, to initialize model/instance in rendering code...
-    // Obviously this should be moved elsewhere when it's being used for real...
 
     //initialize camera class, in theory if you modify the position/direction of
     // the camera class it will affect the rendered view
@@ -97,12 +95,6 @@ void Core::coreLoop() {
     // in actually that's never used
     MeshData cubeMesh("cubeMesh");
     cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
-    MeshData wheelMesh("wheelMesh");
-    wheelMesh.loadMeshData("data/assets/meshes/wheels.obj");
-    MeshData chassisMesh("chassisMesh");
-    chassisMesh.loadMeshData("data/assets/meshes/chassis.obj");
-    MeshData planeMesh("planeMesh");
-    planeMesh.loadMeshData("data/assets/meshes/plane.obj");
 
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;
@@ -117,10 +109,8 @@ void Core::coreLoop() {
     // END Brian's shenanigans
 
     ////////// NEW way to create vehicles. TODO: Should not have to pass in the shader data!
-    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(&shaderData);
-
-    auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
-    ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(10,10,100));
+    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0,0,0), &shaderData);
+	Entity* entity2 = EntityManager::getInstance()->createGroundPlane(&shaderData);
     
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -128,16 +118,9 @@ void Core::coreLoop() {
 	double previousTime = 0;
     float physicsTime = 0;
     const float physicsTimeStep = 1.0f / 60.0f;
-
-    // Used to move the camera alongside the cube vehicle
-	// Now used such that WASD is used to move camera
-    //Movement movement;
-    //movement.right = false;
-    //float previousZ = 0;
 	
 	// for yaw/pitch controlled by cursor
 	double xpos, ypos;
-	
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
@@ -167,10 +150,7 @@ void Core::coreLoop() {
                 physicsTime += physicsTimeStep;
                 PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
             }
-			
-            // set the movement of the vehicle
-            static_cast<DriveComponent*>(entity1->getComponent(DRIVE))->setInputs(tempPlayerInput);
-            
+
 			// Move camera by keyboard and cursor
 			glfwGetCursorPos(properties.window, &xpos, &ypos);
 			camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));

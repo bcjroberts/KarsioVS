@@ -24,7 +24,9 @@ public:
     PhysicsEngine();
     void simulateTimeInSeconds(float timeInSeconds) const;
     void initPhysics(); // This method must be called before anything else physics related happens
-    vehicleData* createVehicle(physx::PxVec3 startpos);
+	physx::PxRigidActor* createPhysicsPlane();
+	physx::PxRigidActor* createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale);
+	vehicleData* createVehicle(physx::PxVec3 startpos);
     static PhysicsEngine* getInstance();
     ~PhysicsEngine();
 };

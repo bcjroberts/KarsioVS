@@ -12,11 +12,12 @@ EntityManager *EntityManager::globalInstance = nullptr;
 
 MeshData wheelMesh("wheelMesh");
 MeshData chassisMesh("chassisMesh");
-
+MeshData planeMesh("planeMesh");
 
 EntityManager::EntityManager() {
     wheelMesh.loadMeshData("data/assets/meshes/wheels.obj");
     chassisMesh.loadMeshData("data/assets/meshes/chassis.obj");
+	planeMesh.loadMeshData("data/assets/meshes/plane.obj");
 }
 
 // Can globally access the EntityManager from anywhere
@@ -47,8 +48,8 @@ Entity* EntityManager::createEntity(glm::vec3 position, glm::quat rotation, glm:
 	return e;
 }
 
-Entity* EntityManager::createBasicVehicleEntity(ShaderData* shaderThisShouldNotBePassedHere) {
-    vehicleData* myVehicleData = PhysicsEngine::getInstance()->createVehicle(physx::PxVec3(0, 0, 0));
+Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos, ShaderData* shaderThisShouldNotBePassedHere) {
+    vehicleData* myVehicleData = PhysicsEngine::getInstance()->createVehicle(physx::PxVec3(startPos.x, startPos.y, startPos.z));
     physx::PxShape* shapes[5];
     physx::PxRigidDynamic* rigid1 = myVehicleData->myVehicle->getRigidDynamicActor();
     rigid1->getShapes(shapes, 5);
@@ -67,4 +68,11 @@ Entity* EntityManager::createBasicVehicleEntity(ShaderData* shaderThisShouldNotB
     ComponentManager::getInstance()->addDriveComponent(entity1, &myVehicleData->myInput);
 
     return entity1;
+}
+
+Entity* EntityManager::createGroundPlane(ShaderData* shaderThisShouldNotBePassedHere) {
+	Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.0f));
+	ComponentManager::getInstance()->addRendererComponent(entity, &planeMesh, shaderThisShouldNotBePassedHere, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, -1.57f)), glm::vec3(10, 10, 100));
+	ComponentManager::getInstance()->addPhysicsComponent(entity, PhysicsEngine::getInstance()->createPhysicsPlane());
+	return entity;
 }
