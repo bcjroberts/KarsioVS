@@ -102,6 +102,9 @@
     <ClCompile Include="src\Engine\MeshManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\PhysicsEngine\CollisionProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\art\MaterialData.h">
@@ -192,6 +195,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\MeshManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\PhysicsEngine\CollisionProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

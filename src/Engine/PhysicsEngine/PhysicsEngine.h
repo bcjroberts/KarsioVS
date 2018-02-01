@@ -9,6 +9,7 @@
 #include <vehicle/PxVehicleDrive4W.h>
 #include <vector>
 #include <vehicle/PxVehicleUtilControl.h>
+#include <glm/detail/type_vec3.hpp>
 
 struct vehicleData {
     bool isInAir = false;
@@ -28,6 +29,7 @@ public:
 	physx::PxRigidActor* createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale);
 	vehicleData* createVehicle(physx::PxVec3 startpos);
     static PhysicsEngine* getInstance();
+	static physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from);
     ~PhysicsEngine();
 };
 

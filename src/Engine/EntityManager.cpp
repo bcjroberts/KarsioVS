@@ -70,3 +70,10 @@ Entity* EntityManager::createGroundPlane(ShaderData* shaderThisShouldNotBePassed
 	ComponentManager::getInstance()->addPhysicsComponent(entity, PhysicsEngine::getInstance()->createPhysicsPlane());
 	return entity;
 }
+
+Entity* EntityManager::createBox(glm::vec3 startPos, glm::vec3 scale, ShaderData* shaderThisShouldNotBePassedHere) {
+	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
+	ComponentManager::getInstance()->addRendererComponent(entity, MeshManager::getMeshData("cube.obj"), shaderThisShouldNotBePassedHere, glm::vec3(0), glm::quat(), glm::vec3(1));
+	ComponentManager::getInstance()->addPhysicsComponent(entity, PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale)));
+	return entity;
+}

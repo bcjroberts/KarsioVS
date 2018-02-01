@@ -12,6 +12,8 @@
 #include "VehicleCreation/SnippetVehicleTireFriction.h"
 #include "VehicleCreation/SnippetVehicleFilterShader.h"
 #include "VehicleCreation/SnippetVehicleCreate.h"
+#include <glm/detail/type_vec3.hpp>
+#include "CollisionProcessor.h"
 
 // Initialize the Physics Manager global pointer
 PhysicsEngine *PhysicsEngine::globalInstance = nullptr;
@@ -67,6 +69,27 @@ physx::PxRigidStatic* createDrivablePlane(const physx::PxFilterData& simFilterDa
 	return groundPlane;
 }
 
+// TODO: This method needs to be modified to fit out reporting needs!
+physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
+	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
+	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize) {
+	PX_UNUSED(attributes0);
+	PX_UNUSED(attributes1);
+	PX_UNUSED(filterData0);
+	PX_UNUSED(filterData1);
+	PX_UNUSED(constantBlockSize);
+	PX_UNUSED(constantBlock);
+
+	// all initial and persisting reports for everything, with per-point data
+	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
+		| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+		//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+		| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	return physx::PxFilterFlag::eDEFAULT;
+}
+
+CollisionProcessor colproc;
+
 void PhysicsEngine::initPhysics()
 {
     gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);
@@ -83,7 +106,8 @@ void PhysicsEngine::initPhysics()
     physx::PxU32 numWorkers = 1;
     gDispatcher = physx::PxDefaultCpuDispatcherCreate(numWorkers);
     sceneDesc.cpuDispatcher = gDispatcher;
-    sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+    sceneDesc.filterShader = contactReportFilterShader;
+	sceneDesc.simulationEventCallback = &colproc;
 
     gScene = gPhysics->createScene(sceneDesc);
     physx::PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
@@ -153,6 +177,10 @@ snippetvehicle::VehicleDesc initVehicleDesc()
 
 bool scaleUpVehicle = false;
 
+physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from) {
+	return physx::PxVec3(from.x, from.y, from.z);
+}
+
 physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 
 	const physx::PxFilterData groundPlaneSimFilterData(snippetvehicle::COLLISION_FLAG_GROUND, snippetvehicle::COLLISION_FLAG_GROUND_AGAINST, 0, 0);
@@ -163,11 +191,16 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 
 physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) {
 	
-	/*const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-	physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics,physx::PxTransform(pos),physx::PxShape());
+	const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*gMaterial);
+
+	// If you want to set the box to be a trigger, uncomment the following
+	//boxShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+	//boxShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+
+	physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics,physx::PxTransform(pos),*boxShape);
 	gScene->addActor(*box);
-	return box;*/
-	return nullptr;
+	return box;
 }
 
 vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
