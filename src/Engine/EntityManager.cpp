@@ -6,18 +6,12 @@
 #include "PxPhysicsAPI.h"
 #include "ComponentManager.h"
 #include "../Engine/PhysicsEngine/PhysicsEngine.h"
+#include "MeshManager.h"
 
 // Initialize the Entity Manager global pointer.
 EntityManager *EntityManager::globalInstance = nullptr;
 
-MeshData wheelMesh("wheelMesh");
-MeshData chassisMesh("chassisMesh");
-MeshData planeMesh("planeMesh");
-
 EntityManager::EntityManager() {
-    wheelMesh.loadMeshData("data/assets/meshes/wheels.obj");
-    chassisMesh.loadMeshData("data/assets/meshes/chassis.obj");
-	planeMesh.loadMeshData("data/assets/meshes/plane.obj");
 }
 
 // Can globally access the EntityManager from anywhere
@@ -57,13 +51,13 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos, ShaderData* 
     // New Entity creation code, place at center of screen, no rotation, scale of 1.
     Entity* entity1 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &chassisMesh, shaderThisShouldNotBePassedHere, shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, MeshManager::getMeshData("chassis.obj"), shaderThisShouldNotBePassedHere, shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
     // Uncomment this if you want to see the physics hitbox
     //ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], glm::vec3(1.5f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, shaderThisShouldNotBePassedHere, shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, shaderThisShouldNotBePassedHere, shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, shaderThisShouldNotBePassedHere, shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.3f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity1, &wheelMesh, shaderThisShouldNotBePassedHere, shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, MeshManager::getMeshData("wheels.obj"), shaderThisShouldNotBePassedHere, shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.6f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, MeshManager::getMeshData("wheels.obj"), shaderThisShouldNotBePassedHere, shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, MeshManager::getMeshData("wheels.obj"), shaderThisShouldNotBePassedHere, shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.3f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity1, MeshManager::getMeshData("wheels.obj"), shaderThisShouldNotBePassedHere, shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
     ComponentManager::getInstance()->addPhysicsComponent(entity1, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity1, &myVehicleData->myInput);
 
@@ -72,7 +66,7 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos, ShaderData* 
 
 Entity* EntityManager::createGroundPlane(ShaderData* shaderThisShouldNotBePassedHere) {
 	Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.0f));
-	ComponentManager::getInstance()->addRendererComponent(entity, &planeMesh, shaderThisShouldNotBePassedHere, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, -1.57f)), glm::vec3(10, 10, 100));
+	ComponentManager::getInstance()->addRendererComponent(entity, MeshManager::getMeshData("plane.obj"), shaderThisShouldNotBePassedHere, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, -1.57f)), glm::vec3(10, 10, 100));
 	ComponentManager::getInstance()->addPhysicsComponent(entity, PhysicsEngine::getInstance()->createPhysicsPlane());
 	return entity;
 }
