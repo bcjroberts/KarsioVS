@@ -50,25 +50,6 @@ void setupDrivableSurface(physx::PxFilterData& filterData) {
 	filterData.word3 = static_cast<physx::PxU32>(DRIVABLE_SURFACE);
 }
 
-physx::PxRigidStatic* createDrivablePlane(const physx::PxFilterData& simFilterData, physx::PxMaterial* material, physx::PxPhysics* physics) {
-	//Add a plane to the scene.
-	physx::PxRigidStatic* groundPlane = PxCreatePlane(*physics, physx::PxPlane(0, 1, 0, 0), *material);
-
-	//Get the plane shape so we can set query and simulation filter data.
-	physx::PxShape* shapes[1];
-	groundPlane->getShapes(shapes, 1);
-
-	//Set the query filter data of the ground plane so that the vehicle raycasts can hit the ground.
-	physx::PxFilterData qryFilterData;
-	setupDrivableSurface(qryFilterData);
-	shapes[0]->setQueryFilterData(qryFilterData);
-
-	//Set the simulation filter data of the ground plane so that it collides with the chassis of a vehicle but not the wheels.
-	shapes[0]->setSimulationFilterData(simFilterData);
-
-	return groundPlane;
-}
-
 // TODO: This method needs to be modified to fit out reporting needs!
 physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes attributes0, physx::PxFilterData filterData0,
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
@@ -186,18 +167,35 @@ physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from) {
 	return physx::PxVec3(from.x, from.y, from.z);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// START: Section where physics objects are created
+
 physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 
 	const physx::PxFilterData groundPlaneSimFilterData(snippetvehicle::COLLISION_FLAG_GROUND, snippetvehicle::COLLISION_FLAG_GROUND_AGAINST, 0, 0);
-	physx::PxRigidActor* plane = createDrivablePlane(groundPlaneSimFilterData, gMaterial, gPhysics);
+    physx::PxRigidStatic* plane = PxCreatePlane(*gPhysics, physx::PxPlane(0, 1, 0, 0), *gMaterial);
+
+    //Get the plane shape so we can set query and simulation filter data.
+    physx::PxShape* shapes[1];
+    plane->getShapes(shapes, 1);
+
+    //Set the query filter data of the ground plane so that the vehicle raycasts can hit the ground.
+    physx::PxFilterData qryFilterData;
+    setupDrivableSurface(qryFilterData);
+    shapes[0]->setQueryFilterData(qryFilterData);
+
+    //Set the simulation filter data of the ground plane so that it collides with the chassis of a vehicle but not the wheels.
+    shapes[0]->setSimulationFilterData(groundPlaneSimFilterData);
+
 	gScene->addActor(*plane);
 	return plane;
 }
 
 physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) {
 	
-	const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	//const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*gMaterial);
+    boxShape->setSimulationFilterData(boxSimFilterData);
 
 	// If you want to set the box to be a trigger, uncomment the following
 	//boxShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
@@ -238,6 +236,8 @@ vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
 	allVehicleData.push_back(vd);
     return vd;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// END: Section where physics objects are created
 
 PhysicsEngine* PhysicsEngine::getInstance()
 {
@@ -305,6 +305,17 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 	physx::PxVehicleWheels* vehicles[PX_MAX_NB_VEHICLES];
 	for (int i = 0; i < numberOfVehicles; i++)
 	{
+        // Put the vehicle in the correct gear:
+        if (allVehicleData[i]->myInput.getDigitalBrake()) {
+            // if we are breaking, set accelration to true and ensure we are in the reverse gear
+            allVehicleData[i]->myInput.setDigitalAccel(true);
+            allVehicleData[i]->myInput.setDigitalBrake(false);
+            allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eREVERSE);
+        } else {
+            // otherwise ensure we are in first gear
+            allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
+        }
+
 		// Set the vehicle moving
 		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
 		//PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timeInSeconds, gIsVehicleInAir, *gVehicle4W);
