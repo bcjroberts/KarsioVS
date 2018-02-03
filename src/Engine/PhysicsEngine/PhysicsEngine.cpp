@@ -69,6 +69,8 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	// all initial and persisting reports for everything, with per-point data
 	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
 		| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+        | physx::PxPairFlag::ePRE_SOLVER_VELOCITY
+        //| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
 		//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
 		| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
 	return physx::PxFilterFlag::eDEFAULT;
