@@ -14,7 +14,9 @@
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
 
+// uh can get rid of these after... should be in car's AI system
 #include "../Game/Logic/AStar.h"
+#include <glm/gtx/matrix_decompose.hpp>
 
 Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -31,6 +33,7 @@ vehicleInput tempPlayerInput;
 
 // there has to be a better way than to make it this way
 Movement movement;
+
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -86,6 +89,8 @@ void Core::coreLoop() {
 	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 
+	
+
     PhysicsEngine::getInstance()->initPhysics();
     // -----------Temp code, to initialize model/instance in rendering code...
     // Obviously this should be moved elsewhere when it's being used for real...
@@ -104,7 +109,14 @@ void Core::coreLoop() {
     MeshData chassisMesh("chassisMesh");
     chassisMesh.loadMeshData("data/assets/meshes/chassis.obj");
     MeshData planeMesh("planeMesh");
-    planeMesh.loadMeshData("data/assets/meshes/naviTest.obj");
+    planeMesh.loadMeshData("data/assets/meshes/plane.obj");
+	MeshData crystalMesh("crystalMesh");
+	crystalMesh.loadMeshData("data/assets/meshes/smallCrystal1.obj");
+
+
+	
+	
+	
 
     //Following set of functions adds the shaders to the shader class and then links them
     ShaderData shaderData;
@@ -121,28 +133,35 @@ void Core::coreLoop() {
     ////////// NEW way to create vehicles. TODO: Should not have to pass in the shader data!
     Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(&shaderData);
 
-    auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
-    ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(5,5,5));
-    
+    auto entity2 = EntityManager::getInstance()->createEntity(glm::vec3(9.f, 0, 9.f), glm::quat(), glm::vec3(1.f));
+	//auto entity3 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
+	//auto entity4 = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
+
+    ComponentManager::getInstance()->addRendererComponent(entity2, &crystalMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(1,1,1));
+	//ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(5, 5, 5));
+	//ComponentManager::getInstance()->addRendererComponent(entity4, &bigcrystalMesh, &shaderData, glm::vec3(2, 0, 5), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(1, 1, 1));
+
+	//ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 2), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(5, 5, 5));
+	//ComponentManager::getInstance()->addRendererComponent(entity2, &planeMesh, &shaderData, glm::vec3(0, 0, 4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(5, 5, 5));
+
+
+
+
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
-
+	
 	double previousTime = 0;
     float physicsTime = 0;
     const float physicsTimeStep = 1.0f / 60.0f;
 
-    // Used to move the camera alongside the cube vehicle
-	// Now used such that WASD is used to move camera
-    //Movement movement;
-    //movement.right = false;
-    //float previousZ = 0;
-
-	AStar::Generator a;
-	a.importNavmesh();
-	
 	// for yaw/pitch controlled by cursor
 	double xpos, ypos;
-	
+
+	// should move these to AI system, but right now this is here
+	AStar::Generator generator;
+	generator.setWorldSize({ 10, 10 });
+		
+	logic.findPath(&generator, entity1, entity2);
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
@@ -175,13 +194,14 @@ void Core::coreLoop() {
 			
             // set the movement of the vehicle
             static_cast<DriveComponent*>(entity1->getComponent(DRIVE))->setInputs(tempPlayerInput);
-            
+            								
 			// Move camera by keyboard and cursor
 			glfwGetCursorPos(properties.window, &xpos, &ypos);
 			camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
 			camera.moveCamera(movement, 0.5f); // just some number for the time delta...
-            logic.cameraMovement(&movement);
-            logic.playerMovement(&tempPlayerInput, entity1);
+			logic.cameraMovement(&movement);
+			logic.playerMovement(&tempPlayerInput, entity1);
+
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();

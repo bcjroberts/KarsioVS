@@ -11,6 +11,8 @@
 #include "../../Main/initOpenGL/OpenGL.h"
 #include "../Camera.h"
 
+#include "AStar.h"
+
 class Logic {
 Camera * camera;
 Movement * moveCamera;
@@ -22,6 +24,7 @@ public:
     void cameraMovement(Movement* newMovement);
     void playerMovement(vehicleInput* newMovement, Entity* targetEnt);
     void bindCamera(Camera* aCamera);
+	void findPath(AStar::Generator* map, Entity* player, Entity* goal);
    ~Logic();
 };
 

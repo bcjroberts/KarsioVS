@@ -7,7 +7,6 @@
 #define __ASTAR_H
 
 #include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
 #include <vector>
 #include <functional>
 #include <set>
@@ -37,21 +36,19 @@ namespace AStar {
 
 	public:
 		Generator();
-		void importNavmesh();
 		void setWorldSize(vec2 aWorldSize);
-		void setDiagonalMovement(bool enable);
+		//void setDiagonalMovement(bool enable);
 		void setHeuristic(HeuristicFunction aHeuristic);
 		CoordinateList findPath(vec2 source, vec2 target);
-		// if using navmesh, shouldn't need collisions
 		void addCollision(vec2 coordinates);
 		void removeCollision(vec2 coodrinates);
 		void clearCollisions();
 
 	private:
 		HeuristicFunction heuristic;
-		CoordinateList direction, walls; // add destructableWalls later?
+		CoordinateList direction, walls; // add destructable walls later?
 		vec2 worldSize;
-		uint directions;
+		uint directions = 8;
 	};
 
 	class Heuristic {

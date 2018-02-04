@@ -55,7 +55,6 @@ void Entity::updateRotation(glm::quat nrotation) {
     rotation = nrotation;
 }
 
-
 glm::mat4 Entity::getMatrix() const {
     glm::mat4 myMatrix;
     myMatrix = glm::translate(myMatrix, position) * glm::toMat4(rotation) * glm::scale(myMatrix, scale);
