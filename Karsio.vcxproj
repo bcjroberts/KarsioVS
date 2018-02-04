@@ -124,6 +124,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Engine\PhysicsEngine\CollisionProcessor.cpp" />
+    <ClCompile Include="src\Engine\MeshManager.cpp" />
     <ClCompile Include="src\Game\Components\ShapeRendererComponent.cpp" />
     <ClCompile Include="src\Engine\ComponentManager.cpp" />
     <ClCompile Include="src\art\MaterialData.cpp" />
@@ -155,6 +157,8 @@
     <ClCompile Include="src\Game\Components\VehiclePhysicsComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Engine\PhysicsEngine\CollisionProcessor.h" />
+    <ClInclude Include="src\Engine\MeshManager.h" />
     <ClInclude Include="src\Game\Components\ShapeRendererComponent.h" />
     <ClInclude Include="src\Engine\ComponentManager.h" />
     <ClInclude Include="src\art\MaterialData.h" />

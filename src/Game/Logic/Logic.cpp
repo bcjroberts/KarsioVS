@@ -10,14 +10,8 @@ void Logic::cameraMovement(Movement* newMovement) {
     moveCamera = newMovement;
 }
 void Logic::playerMovement(vehicleInput* newMovement, Entity* targetEnt) {
-    for (int i = 0; i< targetEnt->myComponents.size(); i++)
-    {
-        if (targetEnt->myComponents[i]->getComponentType() == DRIVE)
-        {
-            static_cast<DriveComponent*>(targetEnt->myComponents[i])->setInputs(*newMovement);
-        }
-    }
-
+	DriveComponent* temp = static_cast<DriveComponent*>(targetEnt->getComponent(DRIVE));
+	if (temp) temp->setInputs(*newMovement);
 }
 void Logic::bindCamera(Camera* aCamera) {
     camera = aCamera;
