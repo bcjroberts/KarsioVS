@@ -81,7 +81,7 @@ void Core::coreLoop() {
     Logic logic;
 
 	glfwSetKeyCallback(properties.window, windowKeyInput);
-	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 
     PhysicsEngine::getInstance()->initPhysics();
@@ -130,6 +130,10 @@ void Core::coreLoop() {
 	    const auto timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
         
+		// should move these to AI system, but right now this is here
+		AStar::Generator generator;
+		generator.setWorldSize({ 10, 10 });
+		logic.findPath(&generator, entity1, boxEntity);
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
