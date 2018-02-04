@@ -20,10 +20,10 @@ public:
     // Components moved here temporarily
 
     ComponentManager();
-    RendererComponent* addRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader);
-    RendererComponent* addRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader, glm::vec3 position, glm::quat rotation, glm::vec3 scale);
-    ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader, physx::PxShape* newShape, glm::vec3 newScale);
-    ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader, physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos);
+    RendererComponent* addRendererComponent(Entity* addTo, ModelData* model);
+    RendererComponent* addRendererComponent(Entity* addTo, ModelData* model, glm::vec3 position, glm::quat rotation, glm::vec3 scale);
+    ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, ModelData* mesh, physx::PxShape* newShape, glm::vec3 newScale);
+    ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, ModelData* mesh,  physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos);
     PhysicsComponent* addPhysicsComponent(Entity* addTo, physx::PxRigidActor* nactor);
     DriveComponent* addDriveComponent(Entity* addTo, physx::PxVehicleDrive4WRawInputData* inputData);
     void performRendering(RenderEngine* re);

@@ -10,18 +10,16 @@
 #include <iostream>
 #include <string>
 
-#include "../Main/initOpenGL/OpenGL_Deps.h"
+#include "../../../Main/initOpenGL/OpenGL_Deps.h"
 
 class ShaderData {
 public:
-//private:
-    GLuint id = 0;
-//public:
+    GLuint shaderID = 0;
     ShaderData();
     ~ShaderData();
-    bool attachShader(std::string fileName, GLenum type);
-    bool link();
-    bool use();
+    void attachShader(std::string fileName, GLenum type);
+    void link();
+//    bool use();
     static void unbind();
 };
 

@@ -4,8 +4,8 @@
 
 #include "Core.h"
 #include "../Game/Logic/Logic.h"
-#include "../Art/MeshData.h"
-#include "../Art/ShaderData.h"
+#include "Importer/Data/ModelData.h"
+#include "Importer/Data/ShaderData.h"
 #include "../Game/Camera.h"
 #include "PhysicsEngine\PhysicsEngine.h"
 #include "../Engine/EntityManager.h"
@@ -90,17 +90,17 @@ void Core::coreLoop() {
     // the camera class it will affect the rendered view
     Camera camera(properties.screenWidth,properties.screenHeight);
 
-    //following set of functions opens an object file, I considered sticking an id
+    //following set of functions opens an object file, I considered sticking an shaderID
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
-    MeshData cubeMesh("cubeMesh");
-    cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
+//    ModelData cubeMesh("cubeMesh");
+//    cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
 
     //Following set of functions adds the shaders to the shader class and then links them
-    ShaderData shaderData;
-    shaderData.attachShader("data/shaderData/vertex.glsl",GL_VERTEX_SHADER);
-    shaderData.attachShader("data/shaderData/fragment.glsl",GL_FRAGMENT_SHADER);
-    shaderData.link();
+//    ShaderData shaderData;
+//    shaderData.attachShader("data/shaderData/vertex.glsl",GL_VERTEX_SHADER);
+//    shaderData.attachShader("data/shaderData/fragment.glsl",GL_FRAGMENT_SHADER);
+//    shaderData.link();
 
 
     // Brian's shenanigans go here
@@ -109,9 +109,9 @@ void Core::coreLoop() {
     // END Brian's shenanigans
 
     ////////// NEW way to create vehicles. TODO: Should not have to pass in the shader data!
-    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0,0,0), &shaderData);
-	Entity* entity2 = EntityManager::getInstance()->createGroundPlane(&shaderData);
-	Entity* boxEntity = EntityManager::getInstance()->createBox(glm::vec3(5,1.0f,5),glm::vec3(1,1,1),&shaderData);
+    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0,0,0));
+	Entity* entity2 = EntityManager::getInstance()->createGroundPlane();
+	Entity* boxEntity = EntityManager::getInstance()->createBox(glm::vec3(5,1.0f,5),glm::vec3(1,1,1));
 
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
