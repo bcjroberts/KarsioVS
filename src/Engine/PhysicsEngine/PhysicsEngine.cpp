@@ -72,6 +72,7 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
         | physx::PxPairFlag::ePRE_SOLVER_VELOCITY
         //| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
 		//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
+        | physx::PxPairFlag::eMODIFY_CONTACTS
 		| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
 	return physx::PxFilterFlag::eDEFAULT;
 }
@@ -95,6 +96,7 @@ void PhysicsEngine::initPhysics()
     gDispatcher = physx::PxDefaultCpuDispatcherCreate(numWorkers);
     sceneDesc.cpuDispatcher = gDispatcher;
     sceneDesc.filterShader = contactReportFilterShader;
+    sceneDesc.contactModifyCallback = &colproc;
 	sceneDesc.simulationEventCallback = &colproc;
 
     gScene = gPhysics->createScene(sceneDesc);

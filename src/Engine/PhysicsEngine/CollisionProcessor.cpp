@@ -88,3 +88,17 @@ void CollisionProcessor::onAdvance(const physx::PxRigidBody* const* bodyBuffer, 
 	const physx::PxU32 count)
 {
 }
+
+void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs, physx::PxU32 count)
+{
+    // printf("Ability to modify contacts!\n");
+    // The goal here is to make it ignore every contact and see what happens
+    /*for (int i = 0; i < count; i++)
+    {
+        for (int j = 0; j < pairs[i].contacts.size(); j++)
+        {
+            pairs[i].contacts.ignore(j);
+        }
+    }*/
+}
+
