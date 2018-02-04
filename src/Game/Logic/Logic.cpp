@@ -23,7 +23,7 @@ void Logic::findPath(AStar::Generator* generator, Entity* player, Entity* goal) 
 							  {vec2(goal->getMatrix()[3][0], goal->getMatrix()[3][2])});
 
 	for (auto& coordinate : path) {
-		std::cout << coordinate.x << " " << coordinate.y << "\n";
+		//std::cout << coordinate.x << " " << coordinate.y << "\n";
 	}
 }
 

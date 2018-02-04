@@ -56,9 +56,9 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("chassis"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
     // Uncomment this if you want to see the physics hitbox
     //ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], glm::vec3(1.5f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.6f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.6f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.2, 0, -1.3f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.3f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
     ComponentManager::getInstance()->addPhysicsComponent(entity, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput);
