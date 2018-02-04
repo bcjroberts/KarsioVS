@@ -8,10 +8,9 @@ mat4 RendererComponent::getMatrix() {
     return ownerMatrix * myMatrix;
 }
 
-RendererComponent::RendererComponent(MeshData* newMesh, ShaderData* newShader) : Component(RENDERER)
+RendererComponent::RendererComponent(ModelData* newModel) : Component(RENDERER)
 {
-    myMesh = newMesh;
-    myShader = newShader;
+    myModel = newModel;
 }
 
 RendererComponent::~RendererComponent() = default;

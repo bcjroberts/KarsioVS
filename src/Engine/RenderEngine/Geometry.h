@@ -1,5 +1,5 @@
 //
-// Created by Sebastian on 1/4/2018.
+// This will create the buffers given mesh data
 //
 
 #ifndef PROJECTKARSIO_GEOMETRY_H
@@ -7,7 +7,7 @@
 
 
 #include "../../Main/initOpenGL/OpenGL_Deps.h"
-#include "../../Art/MeshData.h"
+#include "../Importer/Data/ModelData.h"
 //#include "ArtData/RenderData.h"
 //#include "../../Art/Mesh.h"
 
@@ -16,11 +16,11 @@ private:
     GLuint VAO, VBO, EBO;
 
 public:
-    MeshData *meshDataPointer; //used as an ID for whether the model exists
+    ModelData *meshDataPointer; //used as an ID for whether the model exists
     int triangleCount;
 
     Geometry();
-    void makeBuffer(MeshData &mesh);
+    void makeBuffer(ModelData &mesh);
 
     void bindBuffer();
 

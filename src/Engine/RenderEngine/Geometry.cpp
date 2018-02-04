@@ -18,7 +18,7 @@ Geometry::Geometry() {
     glGenBuffers(1, &VBO);
 }
 
-void Geometry::makeBuffer(MeshData &mesh) {
+void Geometry::makeBuffer(ModelData &mesh) {
     meshDataPointer = &mesh;
     triangleCount = mesh.vertices.size();
     glBindVertexArray(this->VAO);

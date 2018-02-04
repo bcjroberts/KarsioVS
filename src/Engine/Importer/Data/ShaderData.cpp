@@ -8,16 +8,16 @@
 ShaderData::ShaderData() = default;
 
 ShaderData::~ShaderData(){
-    id = 0;
+    shaderID = 0;
 }
 
-bool ShaderData::attachShader(std::string path, GLenum type){
-    if (id == 0) {
-        id = glCreateProgram();
+void ShaderData::attachShader(std::string path, GLenum type){
+    if (shaderID == 0) {
+        shaderID = glCreateProgram();
         //if (OpenGL::error("glCreateProgram"))
         //	return false;
     }
-//	cout<<id<<endl;
+//	cout<<shaderID<<endl;
 
     std::ifstream in(path);
     std::string buffer = [&in] {
@@ -53,46 +53,43 @@ bool ShaderData::attachShader(std::string path, GLenum type){
         std::cerr << info << std::endl;
     }
     // Attach shader
-    glAttachShader(id, shader);
-//    cout<<id<<":"<<shader<<endl;
+    glAttachShader(shaderID, shader);
+//    cout<<shaderID<<":"<<shader<<endl;
     //if (OpenGL::error("glAttachShader"))
     //	return false;
-    return true;
+//    return true;
 }
 
-bool ShaderData::link(){
-    if (id <= 0) {
-        return false;
+void ShaderData::link(){
+    if (shaderID <= 0) {
+		std::cout << "Error linking shaders" << std::endl;
+//        return false;
     }
-    glLinkProgram(id);
+    glLinkProgram(shaderID);
     //if (OpenGL::error("glLinkProgram"))
     //	return false;
-//    cout<<"Linking: "<<id<<endl;
+//    cout<<"Linking: "<<shaderID<<endl;
 
     GLint state = 0;
-    glGetProgramiv(id, GL_LINK_STATUS, &state);
+    glGetProgramiv(shaderID, GL_LINK_STATUS, &state);
     if (state == GL_FALSE) {
-        glGetProgramiv(id, GL_INFO_LOG_LENGTH, &state);
+        glGetProgramiv(shaderID, GL_INFO_LOG_LENGTH, &state);
 
         char* buffer = new char[state];
-        glGetProgramInfoLog(id, state, &state, buffer);
+        glGetProgramInfoLog(shaderID, state, &state, buffer);
         buffer[state - 1] = '\0';         // ensure we're null-terminated
 
-        std::cerr << "ERROR: Program " << id << " did not link. The program log:" << std::endl;
+        std::cerr << "ERROR: Program " << shaderID << " did not link. The program log:" << std::endl;
         std::cerr << buffer << std::endl;
-
-        return false;
     }
-
-    return true;
 }
 
-bool ShaderData::use(){
-    glUseProgram(id);
-    //if (OpenGL::error("glUseProgram"))
-    //	return false;
-    return true;
-}
+//bool ShaderData::use(){
+//    glUseProgram(shaderID);
+//    //if (OpenGL::error("glUseProgram"))
+//    //	return false;
+//    return true;
+//}
 
 void ShaderData::unbind(){
     glUseProgram(0);

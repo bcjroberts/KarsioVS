@@ -1,2 +1,2 @@
-Me: cube.obj
+Me: plane.obj
 Ta testAlbedo.png

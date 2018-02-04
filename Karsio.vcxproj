@@ -68,6 +68,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(PROJECTDIR)\deps\include;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include</IncludePath>
+    <LibraryPath>$(PROJECTDIR)\deps\libs;$(PROJECTDIR)\deps\physx\PxShared\lib\vc14win32;$(PROJECTDIR)\deps\physx\Lib\vc14win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(PROJECTDIR)\deps\glew-2.1.0\include;$(PROJECTDIR)\deps\glfw3\include;$(PROJECTDIR)\deps\glm;$(PROJECTDIR)\deps\stb;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include;$(IncludePath)</IncludePath>
@@ -79,11 +81,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -94,8 +96,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
@@ -105,6 +106,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -124,13 +126,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Engine\Importer\Managers\ShaderManager.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\MeshData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Managers\ModelManager.cpp" />
+    <ClCompile Include="src\Engine\Importer\Managers\TextureManager.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\CollisionProcessor.cpp" />
-    <ClCompile Include="src\Engine\MeshManager.cpp" />
+    <ClCompile Include="src\Engine\Importer\Managers\MeshManager.cpp" />
     <ClCompile Include="src\Game\Components\ShapeRendererComponent.cpp" />
     <ClCompile Include="src\Engine\ComponentManager.cpp" />
-    <ClCompile Include="src\art\MaterialData.cpp" />
-    <ClCompile Include="src\art\MeshData.cpp" />
-    <ClCompile Include="src\art\ShaderData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\MaterialData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\ModelData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\ShaderData.cpp" />
     <ClCompile Include="src\engine\audioengine\AudioEngine.cpp" />
     <ClCompile Include="src\engine\Component.cpp" />
     <ClCompile Include="src\engine\Core.cpp" />
@@ -143,8 +149,6 @@
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleFilterShader.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleSceneQuery.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleTireFriction.cpp" />
-    <ClCompile Include="src\engine\renderengine\artdata\RenderData.cpp" />
-    <ClCompile Include="src\engine\renderengine\Geometry.cpp" />
     <ClCompile Include="src\engine\renderengine\RenderEngine.cpp" />
     <ClCompile Include="src\game\Camera.cpp" />
     <ClCompile Include="src\game\components\PhysicsComponent.cpp" />
@@ -154,15 +158,20 @@
     <ClCompile Include="src\main\initopengl\OpenGL.cpp" />
     <ClCompile Include="src\main\mainGame.cpp" />
     <ClCompile Include="src\Game\Components\VehiclePhysicsComponent.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\TextureData.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Engine\Importer\Managers\ShaderManager.h" />
+    <ClInclude Include="src\Engine\Importer\Data\MeshData.h" />
+    <ClInclude Include="src\Engine\Importer\Managers\ModelManager.h" />
+    <ClInclude Include="src\Engine\Importer\Managers\TextureManager.h" />
     <ClInclude Include="src\Engine\PhysicsEngine\CollisionProcessor.h" />
-    <ClInclude Include="src\Engine\MeshManager.h" />
+    <ClInclude Include="src\Engine\Importer\Managers\MeshManager.h" />
     <ClInclude Include="src\Game\Components\ShapeRendererComponent.h" />
     <ClInclude Include="src\Engine\ComponentManager.h" />
-    <ClInclude Include="src\art\MaterialData.h" />
-    <ClInclude Include="src\art\MeshData.h" />
-    <ClInclude Include="src\art\ShaderData.h" />
+    <ClInclude Include="src\Engine\Importer\Data\MaterialData.h" />
+    <ClInclude Include="src\Engine\Importer\Data\ModelData.h" />
+    <ClInclude Include="src\Engine\Importer\Data\ShaderData.h" />
     <ClInclude Include="src\engine\audioengine\AudioEngine.h" />
     <ClInclude Include="src\engine\Component.h" />
     <ClInclude Include="src\engine\Core.h" />
@@ -176,8 +185,6 @@
     <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleSceneQuery.h" />
     <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleTireFriction.h" />
     <ClInclude Include="src\Engine\PhysicsEngine\VehicleCreation\SnippetVehicleWheelQueryResult.h" />
-    <ClInclude Include="src\engine\renderengine\artdata\RenderData.h" />
-    <ClInclude Include="src\engine\renderengine\Geometry.h" />
     <ClInclude Include="src\engine\renderengine\RenderEngine.h" />
     <ClInclude Include="src\game\Camera.h" />
     <ClInclude Include="src\Game\Components\DriveComponent.h" />
@@ -187,6 +194,7 @@
     <ClInclude Include="src\main\initopengl\OpenGL.h" />
     <ClInclude Include="src\main\initopengl\OpenGL_Deps.h" />
     <ClInclude Include="src\Game\Components\VehiclePhysicsComponent.h" />
+    <ClInclude Include="src\Engine\Importer\Data\TextureData.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

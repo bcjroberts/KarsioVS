@@ -9,12 +9,12 @@ ComponentManager::ComponentManager() = default;
 
 ComponentManager::~ComponentManager() = default;
 
-RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader) {
-    return addRendererComponent(addTo, mesh, shader, glm::vec3(), glm::quat(), glm::vec3());
+RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, ModelData* model) {
+    return addRendererComponent(addTo, model, glm::vec3(), glm::quat(), glm::vec3());
 }
 
-RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader, glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
-    RendererComponent* rc = new RendererComponent(mesh, shader);
+RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, ModelData* model,  glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
+    RendererComponent* rc = new RendererComponent(model);
     rendererComponents.push_back(rc);
     addTo->addComponent(rc);
     rc->position = position;
@@ -24,10 +24,9 @@ RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, MeshDat
     return rc;
 }
 
-ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader,
-    physx::PxShape* newShape, glm::vec3 newScale)
+ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, ModelData* mesh, physx::PxShape* newShape, glm::vec3 newScale)
 {
-    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, shader, newShape);
+    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, newShape);
     rendererComponents.push_back(src);
     addTo->addComponent(src);
 
@@ -38,10 +37,9 @@ ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addT
     return src;
 }
 
-ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, MeshData* mesh, ShaderData* shader,
-    physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos)
+ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, ModelData* model, physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos)
 {
-    ShapeRendererComponent* src = addShapeRendererComponent(addTo, mesh, shader, newShape, newScale);
+    ShapeRendererComponent* src = addShapeRendererComponent(addTo, model, newShape, newScale);
     src->localPos = newLocalPos;
     return src;
 }
@@ -71,13 +69,13 @@ ComponentManager* ComponentManager::getInstance() {
 
 void ComponentManager::performRendering(RenderEngine* re) {
     for (auto rc : rendererComponents) {
-        re->updateInstance(*rc->myMesh, rc->id, rc->getMatrix());
+        re->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
     }
 }
 
 void ComponentManager::initializeRendering(RenderEngine* re) {
     for (auto rc : rendererComponents) {
-        re->addInstance(*rc->myMesh, rc->id, rc->getMatrix(),*rc->myShader);
+        re->addInstance(*rc->myModel, rc->id, rc->getMatrix());
     }
 }
 
