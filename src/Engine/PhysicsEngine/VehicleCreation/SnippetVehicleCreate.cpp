@@ -118,7 +118,7 @@ PxConvexMesh* createWheelMesh(const PxF32 width, const PxF32 radius, PxPhysics& 
 PxRigidDynamic* createVehicleActor
 (const PxVehicleChassisData& chassisData,
  PxMaterial** wheelMaterials, PxConvexMesh** wheelConvexMeshes, const PxU32 numWheels, const PxFilterData& wheelSimFilterData,
- PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxU32 numChassisMeshes, const PxFilterData& chassisSimFilterData,
+ PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxFilterData& chassisSimFilterData,
  PxPhysics& physics)
 {
 	//We need a rigid body actor for the vehicle.
@@ -143,13 +143,16 @@ PxRigidDynamic* createVehicleActor
 	}
 
 	//Add the chassis shapes to the actor.
-	for(PxU32 i = 0; i < numChassisMeshes; i++)
-	{
-		PxShape* chassisShape=PxRigidActorExt::createExclusiveShape(*vehActor, PxConvexMeshGeometry(chassisConvexMeshes[i]), *chassisMaterials[i]);
-		chassisShape->setQueryFilterData(chassisQryFilterData);
-		chassisShape->setSimulationFilterData(chassisSimFilterData);
-		chassisShape->setLocalPose(PxTransform(PxIdentity));
-	}
+	PxShape* chassisShape=PxRigidActorExt::createExclusiveShape(*vehActor, PxConvexMeshGeometry(chassisConvexMeshes[0]), *chassisMaterials[0]);
+	chassisShape->setQueryFilterData(chassisQryFilterData);
+	chassisShape->setSimulationFilterData(chassisSimFilterData);
+	chassisShape->setLocalPose(PxTransform(PxIdentity));
+
+    //Add the drill shape the actor
+    PxShape* drillShape = PxRigidActorExt::createExclusiveShape(*vehActor, PxConvexMeshGeometry(chassisConvexMeshes[1]), *chassisMaterials[0]);
+    drillShape->setQueryFilterData(chassisQryFilterData);
+    drillShape->setSimulationFilterData(chassisSimFilterData); // TODO: Change this to something special to denote its the drill part of the vehicle
+    drillShape->setLocalPose(PxTransform(PxVec3(0,-1.0f,3.0f)));
 
 	vehActor->setMass(chassisData.mMass);
 	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);

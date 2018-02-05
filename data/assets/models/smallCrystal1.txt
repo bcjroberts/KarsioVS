@@ -1,0 +1,2 @@
+Me: smallCrystal1.obj
+Ta testAlbedo.png

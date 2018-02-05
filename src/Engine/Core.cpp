@@ -108,7 +108,7 @@ void Core::coreLoop() {
     logic.bindCamera(&camera);
     // END Brian's shenanigans
 
-    ////////// NEW way to create vehicles. TODO: Should not have to pass in the shader data!
+    ////////// NEW way to create vehicles.
     Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0,0,0));
 	Entity* entity2 = EntityManager::getInstance()->createGroundPlane();
 	Entity* boxEntity = EntityManager::getInstance()->createBox(glm::vec3(5,1.0f,5),glm::vec3(1,1,1));

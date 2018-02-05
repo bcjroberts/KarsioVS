@@ -114,6 +114,9 @@
     <ClCompile Include="src\Engine\Importer\Managers\ShaderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Logic\AStar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\Component.h">
@@ -218,5 +221,11 @@
     <ClInclude Include="src\Engine\Importer\Managers\ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Logic\AStar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\assets\models\smallCrystal1.txt" />
   </ItemGroup>
 </Project>

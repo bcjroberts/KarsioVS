@@ -129,7 +129,7 @@ void customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDynamic* rig
 PxRigidDynamic* createVehicleActor
 (const PxVehicleChassisData& chassisData,
  PxMaterial** wheelMaterials, PxConvexMesh** wheelConvexMeshes, const PxU32 numWheels, const PxFilterData& wheelSimFilterData,
- PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxU32 numChassisMeshes, const PxFilterData& chassisSimFilterData,
+ PxMaterial** chassisMaterials, PxConvexMesh** chassisConvexMeshes, const PxFilterData& chassisSimFilterData,
  PxPhysics& physics);
 
 void configureUserData(PxVehicleWheels* vehicle, ActorUserData* actorUserData, ShapeUserData* shapeUserDatas);
