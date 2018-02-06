@@ -55,25 +55,29 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	physx::PxFilterObjectAttributes attributes1, physx::PxFilterData filterData1,
 	physx::PxPairFlags& pairFlags, const void* constantBlock, physx::PxU32 constantBlockSize) {
     
-    //if( physx::PxFilterObjectIsTrigger( attributes0 ) || physx::PxFilterObjectIsTrigger( attributes1 ) )
-    // Check if either is a trigger, though we may not be using triggers
-    
-
 	PX_UNUSED(attributes0);
 	PX_UNUSED(attributes1);
-	PX_UNUSED(filterData0);
-	PX_UNUSED(filterData1);
 	PX_UNUSED(constantBlockSize);
 	PX_UNUSED(constantBlock);
 
-	// all initial and persisting reports for everything, with per-point data
-	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
-		| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
-        | physx::PxPairFlag::ePRE_SOLVER_VELOCITY
-        //| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
-		//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
-        | physx::PxPairFlag::eMODIFY_CONTACTS
-		| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+    //if( physx::PxFilterObjectIsTrigger( attributes0 ) || physx::PxFilterObjectIsTrigger( attributes1 ) )
+    // Check if either is a trigger, though we may not be using triggers
+
+	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT;
+
+	// If neither are equal to 0, then we need to process some things
+    if (filterData0.word2 != 0 && filterData1.word2 != 0) {
+		printf("Special collision detected!\n");
+		// Yay this works!
+		pairFlags = pairFlags
+			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+			| physx::PxPairFlag::ePRE_SOLVER_VELOCITY
+			//| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
+			//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS // Not sure if we want this one.
+			| physx::PxPairFlag::eMODIFY_CONTACTS
+			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+    }
+	
 	return physx::PxFilterFlag::eDEFAULT;
 }
 
@@ -197,7 +201,7 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) {
 	
 	//const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, snippetvehicle::COLLISION_FLAG_CRYSTAL, 0);
 	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*gMaterial);
     boxShape->setSimulationFilterData(boxSimFilterData);
 
