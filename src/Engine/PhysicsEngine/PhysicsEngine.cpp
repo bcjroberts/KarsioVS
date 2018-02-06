@@ -66,18 +66,31 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT;
 
 	// If neither are equal to 0, then we need to process some things
-    if (filterData0.word2 != 0 && filterData1.word2 != 0) {
-		printf("Special collision detected!\n");
+    if ((filterData0.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData1.word3 == snippetvehicle::COLLISION_FLAG_CRYSTAL) || 
+		(filterData1.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData0.word3 == snippetvehicle::COLLISION_FLAG_CRYSTAL)) {
+		printf("Crystal collision detected!\n");
+		// Yay this works!
+		pairFlags = pairFlags
+			//| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+			//| physx::PxPairFlag::ePRE_SOLVER_VELOCITY
+			//| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
+			//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS // Not sure if we want this one.
+			| physx::PxPairFlag::eMODIFY_CONTACTS;
+			//| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+    }
+	
+	if ((filterData0.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData1.word3 == snippetvehicle::COLLISION_FLAG_CAR) ||
+		(filterData1.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData0.word3 == snippetvehicle::COLLISION_FLAG_CAR)) {
+		printf("Car collision detected!\n");
 		// Yay this works!
 		pairFlags = pairFlags
 			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
 			| physx::PxPairFlag::ePRE_SOLVER_VELOCITY
-			//| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
+			| physx::PxPairFlag::ePOST_SOLVER_VELOCITY;
 			//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS // Not sure if we want this one.
-			| physx::PxPairFlag::eMODIFY_CONTACTS
-			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
-    }
-	
+			//| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	}
+
 	return physx::PxFilterFlag::eDEFAULT;
 }
 
@@ -156,7 +169,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.chassisMOI = chassisMOI;
     vehicleDesc.chassisCMOffset = chassisCMOffset;
     vehicleDesc.chassisMaterial = gMaterial;
-    vehicleDesc.chassisSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_CHASSIS, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
+    vehicleDesc.chassisSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_CHASSIS, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CAR);
 
     vehicleDesc.wheelMass = wheelMass;
     vehicleDesc.wheelRadius = wheelRadius;
@@ -164,7 +177,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.wheelMOI = wheelMOI;
     vehicleDesc.numWheels = 4;
     vehicleDesc.wheelMaterial = gMaterial;
-    vehicleDesc.wheelSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_WHEEL, snippetvehicle::COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
+    vehicleDesc.wheelSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_WHEEL, snippetvehicle::COLLISION_FLAG_WHEEL_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CAR);
 
     return vehicleDesc;
 }
@@ -201,7 +214,7 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) {
 	
 	//const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, snippetvehicle::COLLISION_FLAG_CRYSTAL, 0);
+    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CRYSTAL);
 	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*gMaterial);
     boxShape->setSimulationFilterData(boxSimFilterData);
 

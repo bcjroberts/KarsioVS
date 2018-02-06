@@ -91,13 +91,30 @@ void CollisionProcessor::onAdvance(const physx::PxRigidBody* const* bodyBuffer, 
 
 void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs, physx::PxU32 count)
 {
-    // printf("Ability to modify contacts!\n");
-    // The goal here is to make it ignore every contact and see what happens
+    printf("Ability to modify contacts! %i %i\n", count, pairs[0].contacts.size());
+    
+	// First we need to figure out if the force is great enough to break the crystal.
+	// Need 3 things from the vehicles: Its mass, velocity magnitude, and level of drill (multiplier)
+	const physx::PxRigidActor* carActor = nullptr;
+
+	// is the first pair item a car
+	if (pairs[0].actor[0]->getNbShapes() > 5) {
+		carActor = pairs[0].actor[0];
+	} else { // the actor is the car
+		carActor = pairs[0].actor[1];
+	}
+	const physx::PxRigidBody* carBody = static_cast<const physx::PxRigidBody*>(carActor);
+
+
+	// Can use this to calculate the cars intertia to decide whether a crystal can be broken or not.
+	printf("Car inertia I think?: %f", carBody->getMass() * carBody->getLinearVelocity().magnitude());
+
+	// The goal here is to make it ignore every contact and see what happens
     /*for (int i = 0; i < count; i++)
     {
         for (int j = 0; j < pairs[i].contacts.size(); j++)
         {
-            pairs[i].contacts.ignore(j);
+			pairs[i].contacts.ignore(j);
         }
     }*/
 }
