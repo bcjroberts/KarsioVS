@@ -91,7 +91,6 @@ void CollisionProcessor::onAdvance(const physx::PxRigidBody* const* bodyBuffer, 
 
 void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs, physx::PxU32 count)
 {
-    printf("Ability to modify contacts! %i %i\n", count, pairs[0].contacts.size());
     
 	// First we need to figure out if the force is great enough to break the crystal.
 	// Need 3 things from the vehicles: Its mass, velocity magnitude, and level of drill (multiplier)

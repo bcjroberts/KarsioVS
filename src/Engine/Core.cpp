@@ -29,6 +29,7 @@ vehicleInput tempPlayerInput;
 
 // there has to be a better way than to make it this way
 Movement movement;
+int cameraMode = 0;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -71,6 +72,13 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
         tempPlayerInput.brake = set ? 1 : 0;
         break;
 	}
+
+	// Controls whether the camera is free or locked to the player vehicle
+	if (key == GLFW_KEY_1) {
+		cameraMode = 1;
+	} else if (key == GLFW_KEY_0) {
+		cameraMode = 0;
+	}
 }
 
 
@@ -108,8 +116,11 @@ void Core::coreLoop() {
     logic.bindCamera(&camera);
     // END Brian's shenanigans
 
-    ////////// NEW way to create vehicles.
-    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0,0,0));
+	// Perform some minor world generation.
+
+
+    // Create the starting Entities
+    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 0, 0));
 	Entity* entity5 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(10, 0, 0));
 	Entity* entity2 = EntityManager::getInstance()->createGroundPlane();
 	Entity* boxEntity = EntityManager::getInstance()->createBox(glm::vec3(5,1.0f,5),glm::vec3(1,1,1));
@@ -151,18 +162,28 @@ void Core::coreLoop() {
             renderEngine.render(camera);
         }else{
             
+//			printf("FrameTime: %f", timeDiff);
+
             // Simulate physics in a Fixed Timestep style
             while(physicsTime < currentTime) {
+//				printf(" *");
                 physicsTime += physicsTimeStep;
                 PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
             }
+//			printf("\n");
 
-			// Move camera by keyboard and cursor
-			glfwGetCursorPos(properties.window, &xpos, &ypos);
-			camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
-			camera.moveCamera(movement, 0.5f); // just some number for the time delta...
-            logic.cameraMovement(&movement);
-            logic.playerMovement(&tempPlayerInput, entity1);
+			if (cameraMode == 0) {
+				// Move camera by keyboard and cursor
+				glfwGetCursorPos(properties.window, &xpos, &ypos);
+				camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
+				camera.moveCamera(movement, timeDiff * 50.0f);
+			} else if (cameraMode == 1) {
+				// Force the camera to follow the vehicle
+				camera.rotateCameraTowardPoint(entity1->getPosition() + entity1->getForwardVector() * 10.0f, 0.2f * timeDiff);
+				camera.lerpCameraTowardPoint(entity1->getPosition() + entity1->getForwardVector() * -8.0f + glm::vec3(0,8,0), 10.0f * timeDiff);
+			}
+
+			logic.playerMovement(&tempPlayerInput, entity1);
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();

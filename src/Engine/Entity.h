@@ -28,6 +28,8 @@ public:
     void removeComponent(int cid);
     void updatePosition(glm::vec3 nposition);
     void updateRotation(glm::quat nrotation);
+	glm::vec3 getPosition() const;
+	glm::vec3 getForwardVector() const;
     glm::mat4 getMatrix() const;
     ~Entity();
 };

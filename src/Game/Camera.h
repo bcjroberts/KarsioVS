@@ -58,6 +58,8 @@ public:
     //void moveCamera(bool forward, bool backward, bool right, bool left);
     void moveCamera(Movement movement, float deltaTime);
     void rotateView(vec2 mouseOffset);
+	void rotateCameraTowardPoint(glm::vec3 point, float amount);
+	void lerpCameraTowardPoint(glm::vec3 point, float amount);
     void changeCameraSpeed(float changeSpeed);
 
     void setupCameraTransformationMatrices(GLint viewLocation, GLint projectionLocation, GLint viewPosLoc);

@@ -3,6 +3,7 @@
 //
 
 #include "Camera.h"
+#include <glm/gtx/vector_angle.hpp>
 
 void Camera::setupCameraTransformationMatrices(GLint viewLocation, GLint projectionLocation, GLint viewPosLoc){
     // Create camera transformation
@@ -74,6 +75,17 @@ void Camera::rotateView(vec2 mouseOffset) {
     cameraFront = normalize(front);
 
 	//std::cout << xRoll << " : " << yRoll << std::endl;
+}
+
+void Camera::rotateCameraTowardPoint(glm::vec3 point, float amount) {
+	glm::vec3 toPoint = normalize(point - cameraPosition);
+	cameraFront = toPoint;
+	//float angle = glm::orientedAngle(cameraFront, toPoint, glm::vec3(0, 1, 0)) * amount;
+	//cameraFront = normalize(glm::rotate(cameraFront, angle,glm::vec3(0, 1, 0)));
+}
+
+void Camera::lerpCameraTowardPoint(glm::vec3 point, float amount) {
+	cameraPosition = glm::mix(cameraPosition, point, amount);
 }
 
 
