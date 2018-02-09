@@ -188,6 +188,10 @@ physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from) {
 	return physx::PxVec3(from.x, from.y, from.z);
 }
 
+glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from) {
+    return glm::vec3(from.x, from.y, from.z);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// START: Section where physics objects are created
 
 physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {

@@ -7,7 +7,7 @@
 
 void Camera::setupCameraTransformationMatrices(GLint viewLocation, GLint projectionLocation, GLint viewPosLoc){
     // Create camera transformation
-    view = lookAt(cameraPosition, /*lookAtPos*/cameraPosition + cameraFront, cameraUp);
+    view = lookAt(cameraPosition, lookAtPos, cameraUp);
     //view = lookAt(vec3(0,0,5.85537815),vec3(0,0,4.85537815),vec3(0,1,0));
     projection = perspective(cameraFOV, (GLfloat)window_width/(GLfloat)window_height, 0.1f, 1000.0f);
 
@@ -42,6 +42,7 @@ void Camera::moveCamera(Movement movement, float deltaTime) {
     if(movement.down){
         cameraPosition -= cameraUp * velocity;
     }
+    lookAtPos = cameraPosition + cameraFront;
     //printf("new camera pos: (%f,%f,%f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
 
@@ -73,15 +74,12 @@ void Camera::rotateView(vec2 mouseOffset) {
                       sin(radians(yRoll)),
                       sin(radians(xRoll)) * cos(radians(yRoll)));
     cameraFront = normalize(front);
-
+    lookAtPos = cameraPosition + cameraFront;
 	//std::cout << xRoll << " : " << yRoll << std::endl;
 }
 
 void Camera::rotateCameraTowardPoint(glm::vec3 point, float amount) {
-	glm::vec3 toPoint = normalize(point - cameraPosition);
-	cameraFront = toPoint;
-	//float angle = glm::orientedAngle(cameraFront, toPoint, glm::vec3(0, 1, 0)) * amount;
-	//cameraFront = normalize(glm::rotate(cameraFront, angle,glm::vec3(0, 1, 0)));
+    lookAtPos = glm::mix(lookAtPos, point, amount);
 }
 
 void Camera::lerpCameraTowardPoint(glm::vec3 point, float amount) {

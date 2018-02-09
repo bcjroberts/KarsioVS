@@ -134,6 +134,7 @@ void Core::coreLoop() {
 	
 	// for yaw/pitch controlled by cursor
 	double xpos, ypos;
+    bool movingForward = true;
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
@@ -172,22 +173,39 @@ void Core::coreLoop() {
             }
 //			printf("\n");
 
-			if (cameraMode == 0) {
-				// Move camera by keyboard and cursor
-				glfwGetCursorPos(properties.window, &xpos, &ypos);
-				camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
-				camera.moveCamera(movement, timeDiff * 50.0f);
-			} else if (cameraMode == 1) {
-				// Force the camera to follow the vehicle
-				camera.rotateCameraTowardPoint(entity1->getPosition() + entity1->getForwardVector() * 10.0f, 0.2f * timeDiff);
-				camera.lerpCameraTowardPoint(entity1->getPosition() + entity1->getForwardVector() * -8.0f + glm::vec3(0,8,0), 10.0f * timeDiff);
-			}
-
 			logic.playerMovement(&tempPlayerInput, entity1);
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
             ComponentManager::getInstance()->performRendering(&renderEngine);
+
+            if (cameraMode == 0)
+            {
+                // Move camera by keyboard and cursor
+                glfwGetCursorPos(properties.window, &xpos, &ypos);
+                camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
+                camera.moveCamera(movement, timeDiff * 50.0f);
+            }
+            else if (cameraMode == 1)
+            {
+                // Force the camera to follow the vehicle
+                // get the velocity of the vehicle
+                glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(entity1->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
+                glm::vec3 offset = entity1->getForwardVector();
+
+                float dotProd = glm::dot(velocity, entity1->getForwardVector());
+
+                if (dotProd < -2.5f && tempPlayerInput.brake) {
+                    movingForward = false;
+                } else if (dotProd > -2.0f && tempPlayerInput.accel) {
+                    movingForward = true;
+                }
+
+                if (!movingForward) offset = -offset;
+
+                camera.rotateCameraTowardPoint(entity1->getPosition() + offset * 10.0f, 10.0f * timeDiff);
+                camera.lerpCameraTowardPoint(entity1->getPosition() + offset * -8.0f + glm::vec3(0, 8, 0), 5.0f * timeDiff);
+            }
 
             renderEngine.render(camera);
             audioEngine.simulate();

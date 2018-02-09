@@ -30,6 +30,7 @@ public:
 	vehicleData* createVehicle(physx::PxVec3 startpos);
     static PhysicsEngine* getInstance();
 	static physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from);
+    static glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from);
     ~PhysicsEngine();
 };
 
