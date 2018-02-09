@@ -76,7 +76,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	// Controls whether the camera is free or locked to the player vehicle
 	if (key == GLFW_KEY_1) {
 		cameraMode = 1;
-	} else if (key == GLFW_KEY_0) {
+	} else if (key == GLFW_KEY_2) {
 		cameraMode = 0;
 	}
 }
@@ -120,8 +120,8 @@ void Core::coreLoop() {
 
 
     // Create the starting Entities
-    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 0, 0));
-	Entity* entity5 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(10, 0, 0));
+    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 1, 0));
+	Entity* entity5 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(10, 1, 0));
 	Entity* entity2 = EntityManager::getInstance()->createGroundPlane();
 	Entity* boxEntity = EntityManager::getInstance()->createBox(glm::vec3(5,1.0f,5),glm::vec3(1,1,1));
 
