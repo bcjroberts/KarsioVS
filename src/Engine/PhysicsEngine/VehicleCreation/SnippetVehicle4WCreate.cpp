@@ -225,7 +225,7 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 
 		//Chassis just has a single convex shape for simplicity.
 		PxConvexMesh* chassisConvexMesh = createChassisMesh(chassisDims, *physics, *cooking);
-        PxConvexMesh* drillConvexMesh = createChassisMesh(PxVec3(chassisDims.x-0.4f, 1.0f, 2.0f), *physics, *cooking);
+        PxConvexMesh* drillConvexMesh = createChassisMesh(PxVec3(chassisDims.x-1.5f, 1.0f, 2.0f), *physics, *cooking);
 		PxConvexMesh* chassisConvexMeshes[2] = {chassisConvexMesh, drillConvexMesh};
 		PxMaterial* chassisMaterials[1] = {vehicle4WDesc.chassisMaterial};
 

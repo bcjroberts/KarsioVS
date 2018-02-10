@@ -215,22 +215,31 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 	return plane;
 }
 
-physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) const {
+physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) {
 	
-	const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+	//const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CRYSTAL);
 	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*gMaterial);
     boxShape->setSimulationFilterData(boxSimFilterData);
+
+	// If you want to set the box to be a trigger, uncomment the following
+	//boxShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+	//boxShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 
 	physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics,physx::PxTransform(pos),*boxShape);
 	gScene->addActor(*box);
 	return box;
 }
 
-physx::PxRigidActor* PhysicsEngine::createCrystalBoxCollider(physx::PxVec3 pos, physx::PxVec3 scale) const {
-
-    const physx::PxFilterData crystalSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CRYSTAL);
+physx::PxRigidActor* PhysicsEngine::createCrystalBoxCollider(physx::PxVec3 pos, physx::PxVec3 scale) {
+    //const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
+    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CRYSTAL);
     physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale), *gMaterial);
-    boxShape->setSimulationFilterData(crystalSimFilterData);
+    boxShape->setSimulationFilterData(boxSimFilterData);
+
+    // If you want to set the box to be a trigger, uncomment the following
+    //boxShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+    //boxShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 
     physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics, physx::PxTransform(pos), *boxShape);
     gScene->addActor(*box);

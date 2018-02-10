@@ -199,6 +199,8 @@
     <ClInclude Include="src\Engine\Importer\Data\TextureData.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="data\assets\models\bigCrystal1.txt" />
+    <Text Include="data\assets\models\ram5.txt" />
     <Text Include="data\assets\models\smallCrystal1.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

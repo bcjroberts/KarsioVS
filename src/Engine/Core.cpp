@@ -118,12 +118,17 @@ void Core::coreLoop() {
 
 	// Perform some minor world generation.
 
-
     // Create the starting Entities
     Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 1, 0));
 	Entity* entity5 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(10, 1, 0));
 	Entity* entity2 = EntityManager::getInstance()->createGroundPlane();
-	Entity* boxEntity = EntityManager::getInstance()->createBox(glm::vec3(5,1.0f,5),glm::vec3(1,1,1));
+
+    // Creating crytsal entities. A value for the size of the crystal can be speicifed if wanted
+    Entity* boxEntity1 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 5));
+    Entity* boxEntity2 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 15));
+    Entity* boxEntity3 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 25));
+    Entity* boxEntity4 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 35));
+    Entity* boxEntity5 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 45), 2.0f);
 
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -146,7 +151,7 @@ void Core::coreLoop() {
 		// should move these to AI system, but right now this is here
 		AStar::Generator generator;
 		generator.setWorldSize({ 10, 10 });
-		logic.findPath(&generator, entity1, boxEntity);
+		logic.findPath(&generator, entity1, boxEntity1);
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
@@ -184,7 +189,7 @@ void Core::coreLoop() {
                 // Move camera by keyboard and cursor
                 glfwGetCursorPos(properties.window, &xpos, &ypos);
                 camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
-                camera.moveCamera(movement, timeDiff * 50.0f);
+                camera.moveCamera(movement, timeDiff * 250.0f);
             }
             else if (cameraMode == 1)
             {

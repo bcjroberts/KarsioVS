@@ -104,9 +104,11 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 	}
 	const physx::PxRigidBody* carBody = static_cast<const physx::PxRigidBody*>(carActor);
 
+    // Use this value to determine if a crystal can be broken with the current ramming force
+    const float force = carBody->getMass() * carBody->getLinearVelocity().magnitude();
 
 	// Can use this to calculate the cars intertia to decide whether a crystal can be broken or not.
-	printf("Car inertia I think?: %f", carBody->getMass() * carBody->getLinearVelocity().magnitude());
+	//printf("Car inertia I think?: %f", carBody->getMass() * carBody->getLinearVelocity().magnitude());
 
 	// The goal here is to make it ignore every contact and see what happens
     /*for (int i = 0; i < count; i++)
