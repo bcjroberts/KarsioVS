@@ -3,7 +3,7 @@
 #include <iostream>
 #include <PxRigidActor.h>
 #include <PxRigidBody.h>
-#include <extensions/PxRigidActorExt.h>
+#include "../../Game/Components/HealthComponent.h"
 
 
 CollisionProcessor::CollisionProcessor() {
@@ -95,28 +95,37 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 	// First we need to figure out if the force is great enough to break the crystal.
 	// Need 3 things from the vehicles: Its mass, velocity magnitude, and level of drill (multiplier)
 	const physx::PxRigidActor* carActor = nullptr;
+    Entity* crystalEntity = nullptr;
 
 	// is the first pair item a car
 	if (pairs[0].actor[0]->getNbShapes() > 5) {
 		carActor = pairs[0].actor[0];
+        crystalEntity = static_cast<Entity*>(pairs[0].actor[1]->userData);
 	} else { // the actor is the car
 		carActor = pairs[0].actor[1];
+        crystalEntity = static_cast<Entity*>(pairs[0].actor[0]->userData);
 	}
 	const physx::PxRigidBody* carBody = static_cast<const physx::PxRigidBody*>(carActor);
 
     // Use this value to determine if a crystal can be broken with the current ramming force
-    const float force = carBody->getMass() * carBody->getLinearVelocity().magnitude();
+    const float damage = carBody->getMass() * carBody->getLinearVelocity().magnitude() / 250.0f;
 
-	// Can use this to calculate the cars intertia to decide whether a crystal can be broken or not.
-	//printf("Car inertia I think?: %f", carBody->getMass() * carBody->getLinearVelocity().magnitude());
+    // Apply the ramming damage to the crystal. If the crystal is destroyed, ignore all contacts with it.
+    HealthComponent* crystalHealth = static_cast<HealthComponent*>(crystalEntity->getComponent(HEALTH));
+    crystalHealth->applyDamage(damage);
 
-	// The goal here is to make it ignore every contact and see what happens
-    /*for (int i = 0; i < count; i++)
+    if (crystalHealth->isDead())
     {
-        for (int j = 0; j < pairs[i].contacts.size(); j++)
+        // Mark the crystal for destruction
+        destroyedEntities.push_back(crystalEntity);
+
+        for (int i = 0; i < count; i++)
         {
-			pairs[i].contacts.ignore(j);
+            for (int j = 0; j < pairs[i].contacts.size(); j++)
+            {
+                pairs[i].contacts.ignore(j);
+            }
         }
-    }*/
+    }
 }
 

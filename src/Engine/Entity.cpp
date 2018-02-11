@@ -39,9 +39,7 @@ void Entity::removeComponent(Component* c) {
 void Entity::removeComponent(int cid) {
     for (int i = 0; i < myComponents.size(); ++i) {
         if (myComponents[i]->id == cid) {
-            Component* c = myComponents[i]; // keep for cleanup purpose
             myComponents.erase(myComponents.begin() + i);
-            delete c;
             break;
         }
     }

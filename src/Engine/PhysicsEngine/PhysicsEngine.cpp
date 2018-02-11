@@ -14,6 +14,8 @@
 #include "VehicleCreation/SnippetVehicleCreate.h"
 #include <glm/detail/type_vec3.hpp>
 #include "CollisionProcessor.h"
+#include "../../game/components/PhysicsComponent.h"
+#include "../EntityManager.h"
 
 // Initialize the Physics Manager global pointer
 PhysicsEngine *PhysicsEngine::globalInstance = nullptr;
@@ -374,6 +376,15 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 
     gScene->simulate(timeInSeconds);
     gScene->fetchResults(true);
+
+    // Remove all of the destroyed physics stuff from the scene
+    for (int i = 0; i < colproc.destroyedEntities.size(); ++i) {
+        physx::PxRigidActor* temp = static_cast<PhysicsComponent*>(colproc.destroyedEntities[i]->getComponent(PHYSICS))->myActor;
+        gScene->removeActor(*temp);
+        EntityManager::getInstance()->destroyEntity(colproc.destroyedEntities[i]->id);
+    }
+    // Clear the array so items are not removed twice
+    colproc.destroyedEntities.clear();
 }
 
 PhysicsEngine::~PhysicsEngine() = default;

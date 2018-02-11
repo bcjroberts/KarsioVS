@@ -31,6 +31,7 @@ void EntityManager::destroyEntity(int id) {
 		if (entities[i]->id == id) {
 			Entity* e = entities[i]; // keep for cleanup purposes
 			entities.erase(entities.begin() + i);
+            ComponentManager::getInstance()->cleanupComponents(e);
 			delete e;
 			break;
 		}
@@ -64,6 +65,7 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
     ComponentManager::getInstance()->addPhysicsComponent(entity, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput);
+    ComponentManager::getInstance()->addHealthComponent(entity, 200.f);
 
     return entity;
 }
@@ -109,6 +111,7 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     startPos.y = resourceAmount * 2.0f;
     Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), glm::vec3(1));
     ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(0, float(rand() % 314) / 100.0f,0)), modelScale);
+    ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
     
     // Render the physics hitbox for the crystal
     // ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModelData("cube"), glm::vec3(0), glm::quat(), physicsScale);

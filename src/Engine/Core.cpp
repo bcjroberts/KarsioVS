@@ -182,7 +182,7 @@ void Core::coreLoop() {
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
-            ComponentManager::getInstance()->performRendering(&renderEngine);
+            ComponentManager::getInstance()->performRendering();
 
             if (cameraMode == 0)
             {
