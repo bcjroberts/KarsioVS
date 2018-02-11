@@ -200,9 +200,9 @@ void Core::coreLoop() {
 
                 float dotProd = glm::dot(velocity, entity1->getForwardVector());
 
-                if (dotProd < -2.5f && tempPlayerInput.brake) {
+                if (dotProd < -10.0f && tempPlayerInput.brake) {
                     movingForward = false;
-                } else if (dotProd > -2.0f && tempPlayerInput.accel) {
+                } else if (dotProd > -5.0f) {
                     movingForward = true;
                 }
 
