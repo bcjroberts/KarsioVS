@@ -12,7 +12,7 @@
 #include "../Importer/Data/ModelData.h"
 #include "../Importer/Data/ShaderData.h"
 #include "../../Game/Camera.h"
-#include "Geometry.h"
+//#include "Geometry.h"
 
 //Include glm
 #include <glm/glm.hpp>

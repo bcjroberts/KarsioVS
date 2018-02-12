@@ -1,2 +1,6 @@
 Me: cube.obj
+S: {
+    sF: default
+    sV: default
+}
 Ta testAlbedo.png

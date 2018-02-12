@@ -9,6 +9,11 @@ void MaterialData::addShader(std::string path, GLenum type) {
 	shaderData.attachShader(path, type);
 }
 
+void MaterialData::clearShader() {
+//	ShaderData newShader;
+	shaderData = ShaderData();
+}
+
 MaterialData::MaterialData() {
 	addShader("data/assets/shaderData/default.vert", GL_VERTEX_SHADER);
 	addShader("data/assets/shaderData/default.frag", GL_FRAGMENT_SHADER);

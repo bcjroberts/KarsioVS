@@ -37,7 +37,7 @@ uniform vec3 lightPos = vec3(5.0f,5.0f,5.0f);
 uniform vec3 viewPos;
 uniform TextureData textureData;
 uniform UseTexture useTexture;
-uniform Material material = {vec3(0.8f,0.8f,0.8f),vec3(0.2f,0.2f,0.2f),vec3(0.5f,0.5f,0.5f),32};
+uniform Material material = {vec3(0.05f,0.8f,0.8f),vec3(0.25f,0.25f,0.25f),vec3(0.5f,0.5f,0.5f),32};
 //material.diffuse=vec3(0.75f,0.25f,0.0f);
 
 //declare functions

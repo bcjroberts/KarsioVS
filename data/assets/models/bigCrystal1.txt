@@ -1,2 +1,6 @@
 Me: bigCrystal1.obj
+S: {
+    sF: defaultBlue
+    sV: default
+}
 Ta testAlbedo.png
