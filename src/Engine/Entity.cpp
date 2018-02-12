@@ -57,6 +57,10 @@ glm::vec3 Entity::getPosition() const {
 	return position;
 }
 
+glm::quat Entity::getRotation() const {
+    return rotation;
+}
+
 glm::vec3 Entity::getForwardVector() const {
 	glm::vec3 forwardVec(0, 0, 1);
 	forwardVec = glm::rotate(rotation, forwardVec);

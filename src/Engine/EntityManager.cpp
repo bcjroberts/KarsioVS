@@ -70,6 +70,14 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     return entity;
 }
 
+Entity* EntityManager::createAIVehicleEntity(glm::vec3 startPos) {
+    Entity* aiCar = createBasicVehicleEntity(startPos);
+
+    // We now have a regular car, lets AI-ify it.
+    ComponentManager::getInstance()->addAIComponent(aiCar);
+    return aiCar;
+}
+
 Entity* EntityManager::createGroundPlane() {
 	Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.0f));
 	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModelData("plane"), glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, -1.57f)), glm::vec3(100, 10, 100));

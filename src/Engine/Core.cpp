@@ -119,16 +119,28 @@ void Core::coreLoop() {
 	// Perform some minor world generation.
 
     // Create the starting Entities
-    Entity* entity1 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 1, 0));
-	Entity* entity5 = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(10, 1, 0));
-	Entity* entity2 = EntityManager::getInstance()->createGroundPlane();
+    Entity* playerVehicle = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 1, 0));
+	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 1, 0));
+	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 
     // Creating crytsal entities. A value for the size of the crystal can be speicifed if wanted
-    Entity* boxEntity1 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 5));
-    Entity* boxEntity2 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 15));
-    Entity* boxEntity3 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 25));
-    Entity* boxEntity4 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 35));
-    Entity* boxEntity5 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 45), 2.0f);
+    Entity* crystalEntity1 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 5), 0.5f);
+    Entity* crystalEntity2 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 15), 1.0f);
+    Entity* crystalEntity3 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 25), 1.5f);
+    Entity* crystalEntity4 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 35), 2.0f);
+    Entity* crystalEntity5 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 45), 2.5f);
+
+    // These crystals mark the ai path
+    Entity* crystalEntity6 = EntityManager::getInstance()->createCrystal(glm::vec3(50, 1.0f, 50), 0.5f);
+    Entity* crystalEntity7 = EntityManager::getInstance()->createCrystal(glm::vec3(-50, 1.0f, 50), 0.65f);
+    Entity* crystalEntity8 = EntityManager::getInstance()->createCrystal(glm::vec3(-50, 1.0f, -50), 0.85f);
+    Entity* crystalEntity9 = EntityManager::getInstance()->createCrystal(glm::vec3(50, 1.0f, -50), 1.0f);
+
+    // Create some temporary walls around the outside to prevent people from escaping.
+    Entity* wall1 = EntityManager::getInstance()->createBox(glm::vec3(-100,2,0), glm::vec3(2, 4, 100));
+    Entity* wall2 = EntityManager::getInstance()->createBox(glm::vec3(100, 2, 0), glm::vec3(2, 4, 100));
+    Entity* wall3 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, 100), glm::vec3(100, 4, 2));
+    Entity* wall4 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, -100), glm::vec3(100, 4, 2));
 
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -151,7 +163,7 @@ void Core::coreLoop() {
 		// should move these to AI system, but right now this is here
 		AStar::Generator generator;
 		generator.setWorldSize({ 10, 10 });
-		logic.findPath(&generator, entity1, boxEntity1);
+		logic.findPath(&generator, playerVehicle, crystalEntity1);
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
@@ -178,7 +190,8 @@ void Core::coreLoop() {
             }
 //			printf("\n");
 
-			logic.playerMovement(&tempPlayerInput, entity1);
+			logic.playerMovement(&tempPlayerInput, playerVehicle);
+            logic.aiMovement(aiVehicle);
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
@@ -195,10 +208,10 @@ void Core::coreLoop() {
             {
                 // Force the camera to follow the vehicle
                 // get the velocity of the vehicle
-                glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(entity1->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
-                glm::vec3 offset = entity1->getForwardVector();
+                glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(playerVehicle->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
+                glm::vec3 offset = playerVehicle->getForwardVector();
 
-                float dotProd = glm::dot(velocity, entity1->getForwardVector());
+                float dotProd = glm::dot(velocity, playerVehicle->getForwardVector());
 
                 if (dotProd < -10.0f && tempPlayerInput.brake) {
                     movingForward = false;
@@ -208,8 +221,8 @@ void Core::coreLoop() {
 
                 if (!movingForward) offset = -offset;
 
-                camera.rotateCameraTowardPoint(entity1->getPosition() + offset * 10.0f, 10.0f * timeDiff);
-                camera.lerpCameraTowardPoint(entity1->getPosition() + offset * -8.0f + glm::vec3(0, 8, 0), 5.0f * timeDiff);
+                camera.rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 10.0f * timeDiff);
+                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f + glm::vec3(0, 8, 0), 5.0f * timeDiff);
             }
 
             renderEngine.render(camera);

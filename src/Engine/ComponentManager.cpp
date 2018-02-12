@@ -70,6 +70,13 @@ HealthComponent* ComponentManager::addHealthComponent(Entity* addTo, float healt
     return hc;
 }
 
+AIComponent* ComponentManager::addAIComponent(Entity* addTo) {
+    AIComponent* aic = new AIComponent();
+    addTo->addComponent(aic);
+    aic->owner = addTo;
+    return aic;
+}
+
 ComponentManager* ComponentManager::getInstance() {
     if (!globalInstance) {
         globalInstance = new ComponentManager;

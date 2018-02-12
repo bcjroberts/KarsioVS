@@ -17,6 +17,7 @@ public:
 	void destroyEntity(int id);
 	Entity* createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 scale);
     Entity* createBasicVehicleEntity(glm::vec3 startPos);
+    Entity* createAIVehicleEntity(glm::vec3 startPos);
 	Entity* createGroundPlane();
 	Entity* createBox(glm::vec3 startPos, glm::vec3 scale);
     Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount = 0);
