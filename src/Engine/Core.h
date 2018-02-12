@@ -16,7 +16,7 @@ class Core {
 private:
     struct Properties{
         GLFWwindow *window; // Create glfw window
-        int screenWidth,screenHeight;
+        int *screenWidth,*screenHeight;
         //OpenGL openGL_Program;
         bool isRunning;
         //all the stuff we might want to allow the game logic to modify but will take effect within the core engine
@@ -25,7 +25,7 @@ private:
     Properties properties;
 
 public:
-    Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused);
+    Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused);
     void coreLoop();
     ~Core();
 

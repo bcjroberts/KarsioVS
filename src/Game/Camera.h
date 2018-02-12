@@ -44,15 +44,15 @@ private:
     GLfloat xRoll = -90.0f;
     GLfloat yRoll = 0.0f;
 
-    int window_width;
-    int window_height;
+    int *window_width;
+    int *window_height;
     mat4 view;
     mat4 projection;
     //void updateCameraVectors();
 
 public:
     vec3 lookAtPos;
-    Camera(int window_width, int window_height);
+    Camera(int *window_width, int *window_height);
     //void centerView(int scaleX, int scaleY);
     //void fpsMouseMovement();
     //void moveCamera(bool forward, bool backward, bool right, bool left);

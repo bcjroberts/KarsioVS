@@ -14,7 +14,7 @@
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
 
-Core::Core(int screenWidth,int screenHeight, GLFWwindow *window, bool gamePaused) {
+Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
     this->properties.screenWidth = screenWidth;
@@ -201,7 +201,7 @@ void Core::coreLoop() {
             {
                 // Move camera by keyboard and cursor
                 glfwGetCursorPos(properties.window, &xpos, &ypos);
-                camera.rotateView(vec2(xpos / properties.screenWidth, -ypos / properties.screenHeight));
+                camera.rotateView(vec2(xpos / *properties.screenWidth, -ypos / *properties.screenHeight));
                 camera.moveCamera(movement, timeDiff * 250.0f);
             }
             else if (cameraMode == 1)

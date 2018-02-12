@@ -201,6 +201,7 @@
     <ClInclude Include="src\main\initopengl\OpenGL_Deps.h" />
     <ClInclude Include="src\Game\Components\VehiclePhysicsComponent.h" />
     <ClInclude Include="src\Engine\Importer\Data\TextureData.h" />
+    <ClInclude Include="src\Main\mainGame.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\assets\models\bigCrystal1.txt" />
