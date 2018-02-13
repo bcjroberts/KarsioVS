@@ -77,9 +77,11 @@ Entity* EntityManager::createGroundPlane() {
 
 Entity* EntityManager::createBox(glm::vec3 startPos, glm::vec3 scale) {
 	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
-	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModelData("cube"), glm::vec3(0), glm::quat(), glm::vec3(1));
+	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModelData("ram5"), glm::vec3(0), glm::quat(), glm::vec3(1));
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
 	return entity;
 }
+
+

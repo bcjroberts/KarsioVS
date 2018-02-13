@@ -1,0 +1,2 @@
+Me: ram5.obj
+Ta testAlbedo.png

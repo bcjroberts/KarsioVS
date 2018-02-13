@@ -19,6 +19,8 @@ public:
     Entity* createBasicVehicleEntity(glm::vec3 startPos);
 	Entity* createGroundPlane();
 	Entity* createBox(glm::vec3 startPos, glm::vec3 scale);
+
+
 	static EntityManager* getInstance();
     ~EntityManager();
 };
