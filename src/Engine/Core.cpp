@@ -157,7 +157,6 @@ void Core::coreLoop() {
         glfwPollEvents();
 
 		const auto currentTime = glfwGetTime();
-	    const auto timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
         
 		// should move these to AI system, but right now this is here
@@ -181,15 +180,16 @@ void Core::coreLoop() {
         }else{
             
 //			printf("FrameTime: %f", timeDiff);
-
+			float timeDiff = 0.0f;
             // Simulate physics in a Fixed Timestep style
             while(physicsTime < currentTime) {
 //				printf(" *");
                 physicsTime += physicsTimeStep;
                 PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
+				timeDiff += 1.0f / 60.0f;
             }
 //			printf("\n");
-
+			
 			logic.playerMovement(&tempPlayerInput, playerVehicle);
             logic.aiMovement(aiVehicle);
 
