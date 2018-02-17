@@ -39,9 +39,7 @@ void Entity::removeComponent(Component* c) {
 void Entity::removeComponent(int cid) {
     for (int i = 0; i < myComponents.size(); ++i) {
         if (myComponents[i]->id == cid) {
-            Component* c = myComponents[i]; // keep for cleanup purpose
             myComponents.erase(myComponents.begin() + i);
-            delete c;
             break;
         }
     }
@@ -53,6 +51,20 @@ void Entity::updatePosition(glm::vec3 nposition) {
 
 void Entity::updateRotation(glm::quat nrotation) {
     rotation = nrotation;
+}
+
+glm::vec3 Entity::getPosition() const {
+	return position;
+}
+
+glm::quat Entity::getRotation() const {
+    return rotation;
+}
+
+glm::vec3 Entity::getForwardVector() const {
+	glm::vec3 forwardVec(0, 0, 1);
+	forwardVec = glm::rotate(rotation, forwardVec);
+	return forwardVec;
 }
 
 glm::mat4 Entity::getMatrix() const {

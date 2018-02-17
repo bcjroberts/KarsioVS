@@ -6,5 +6,9 @@ PhysicsComponent::PhysicsComponent(physx::PxRigidActor* nactor) : Component(PHYS
 	myActor = nactor;
 }
 
+physx::PxRigidBody* PhysicsComponent::getRigidBody() const {
+    return static_cast<physx::PxRigidBody*>(myActor);
+}
+
 PhysicsComponent::~PhysicsComponent() = default;
 

@@ -7,6 +7,8 @@
 #include <PxRigidDynamic.h>
 #include "../game/components/PhysicsComponent.h"
 #include "../Game/Components/DriveComponent.h"
+#include "../Game/Components/HealthComponent.h"
+#include "../Game/Components/AIComponent.h"
 
 class ComponentManager
 {
@@ -26,9 +28,12 @@ public:
     ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, ModelData* mesh,  physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos);
     PhysicsComponent* addPhysicsComponent(Entity* addTo, physx::PxRigidActor* nactor);
     DriveComponent* addDriveComponent(Entity* addTo, physx::PxVehicleDrive4WRawInputData* inputData);
-    void performRendering(RenderEngine* re);
+    HealthComponent* addHealthComponent(Entity* addTo, float health, bool healthIsThreshold = false);
+    AIComponent* addAIComponent(Entity* addTo);
+    void performRendering();
     void initializeRendering(RenderEngine* re);
     void performPhysicsLogic();
+    void cleanupComponents(Entity* entity);
     static ComponentManager* getInstance();
     ~ComponentManager();
 };

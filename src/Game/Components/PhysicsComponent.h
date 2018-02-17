@@ -9,6 +9,7 @@ class PhysicsComponent: public Component
 public:
 	physx::PxRigidActor* myActor;
 	PhysicsComponent(physx::PxRigidActor* nactor);
+    physx::PxRigidBody* getRigidBody() const;
 	~PhysicsComponent();
 };
 

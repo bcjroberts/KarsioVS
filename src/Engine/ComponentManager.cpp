@@ -1,5 +1,6 @@
 #include "ComponentManager.h"
 #include "Entity.h"
+#include "../Game/Components/HealthComponent.h"
 
 // Initialize the Component Manager global pointer.
 ComponentManager *ComponentManager::globalInstance = nullptr;
@@ -23,6 +24,8 @@ RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, ModelDa
     rc->owner = addTo;
     return rc;
 }
+
+RenderEngine* renderEngine = nullptr;
 
 ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, ModelData* mesh, physx::PxShape* newShape, glm::vec3 newScale)
 {
@@ -60,6 +63,20 @@ DriveComponent* ComponentManager::addDriveComponent(Entity* addTo, physx::PxVehi
     return dc;
 }
 
+HealthComponent* ComponentManager::addHealthComponent(Entity* addTo, float health, bool healthIsThreshold) {
+    HealthComponent* hc = new HealthComponent(health, healthIsThreshold);
+    addTo->addComponent(hc);
+    hc->owner = addTo;
+    return hc;
+}
+
+AIComponent* ComponentManager::addAIComponent(Entity* addTo) {
+    AIComponent* aic = new AIComponent();
+    addTo->addComponent(aic);
+    aic->owner = addTo;
+    return aic;
+}
+
 ComponentManager* ComponentManager::getInstance() {
     if (!globalInstance) {
         globalInstance = new ComponentManager;
@@ -67,13 +84,14 @@ ComponentManager* ComponentManager::getInstance() {
     return globalInstance;
 }
 
-void ComponentManager::performRendering(RenderEngine* re) {
+void ComponentManager::performRendering() {
     for (auto rc : rendererComponents) {
-        re->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
+        renderEngine->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
     }
 }
 
 void ComponentManager::initializeRendering(RenderEngine* re) {
+    renderEngine = re;
     for (auto rc : rendererComponents) {
         re->addInstance(*rc->myModel, rc->id, rc->getMatrix());
     }
@@ -84,5 +102,41 @@ void ComponentManager::performPhysicsLogic() {
         physx::PxTransform gp = pc->myActor->getGlobalPose();
         pc->owner->updatePosition(glm::vec3(gp.p.x,gp.p.y,gp.p.z));
         pc->owner->updateRotation(glm::quat(gp.q.w, gp.q.x, gp.q.y, gp.q.z));
+    }
+}
+
+glm::mat4 hiddenMat4 = glm::translate(glm::mat4(), glm::vec3(0, -25, 0));
+
+// Removes all of the components, and cleans up their traces
+void ComponentManager::cleanupComponents(Entity* entity) {
+
+    Component* toRemove = entity->getComponent(RENDERER);
+    while (toRemove != nullptr) {
+        RendererComponent* rc = static_cast<RendererComponent*>(toRemove);
+
+        // ********************** TEMPORARY ************************
+        // Hide the destroyed object below the map
+        renderEngine->updateInstance(*rc->myModel, rc->id, hiddenMat4);
+
+        // This is the spot where I would remove the component from the renderer rc->myModel;
+        for (int i = 0; i < rendererComponents.size(); ++i)
+        {
+            if (rendererComponents[i]->id == rc->id) {
+                rendererComponents.erase(rendererComponents.begin() + i);
+                break;
+            }
+        }
+        entity->removeComponent(toRemove);
+        toRemove = entity->getComponent(RENDERER);
+    }
+
+    toRemove = entity->getComponent(PHYSICS);
+    if (toRemove != nullptr) {
+        for (int i = 0; i < physicsComponents.size(); ++i) {
+            if (physicsComponents[i]->id == toRemove->id) {
+                physicsComponents.erase(physicsComponents.begin() + i);
+                break;
+            }
+        }
     }
 }

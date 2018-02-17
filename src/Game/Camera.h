@@ -44,20 +44,22 @@ private:
     GLfloat xRoll = -90.0f;
     GLfloat yRoll = 0.0f;
 
-    int window_width;
-    int window_height;
+    int *window_width;
+    int *window_height;
     mat4 view;
     mat4 projection;
     //void updateCameraVectors();
 
 public:
     vec3 lookAtPos;
-    Camera(int window_width, int window_height);
+    Camera(int *window_width, int *window_height);
     //void centerView(int scaleX, int scaleY);
     //void fpsMouseMovement();
     //void moveCamera(bool forward, bool backward, bool right, bool left);
     void moveCamera(Movement movement, float deltaTime);
     void rotateView(vec2 mouseOffset);
+	void rotateCameraTowardPoint(glm::vec3 point, float amount);
+	void lerpCameraTowardPoint(glm::vec3 point, float amount);
     void changeCameraSpeed(float changeSpeed);
 
     void setupCameraTransformationMatrices(GLint viewLocation, GLint projectionLocation, GLint viewPosLoc);

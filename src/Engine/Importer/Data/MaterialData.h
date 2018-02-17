@@ -22,6 +22,7 @@ public:
 	void addShader(std::string path, GLenum type);
 	void linkShader();
 	void addTexture();
+	void clearShader();
 	MaterialData();
 	~MaterialData() = default;
 };

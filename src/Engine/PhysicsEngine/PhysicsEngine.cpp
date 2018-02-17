@@ -14,6 +14,8 @@
 #include "VehicleCreation/SnippetVehicleCreate.h"
 #include <glm/detail/type_vec3.hpp>
 #include "CollisionProcessor.h"
+#include "../../game/components/PhysicsComponent.h"
+#include "../EntityManager.h"
 
 // Initialize the Physics Manager global pointer
 PhysicsEngine *PhysicsEngine::globalInstance = nullptr;
@@ -66,18 +68,31 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT;
 
 	// If neither are equal to 0, then we need to process some things
-    if (filterData0.word2 != 0 && filterData1.word2 != 0) {
-		printf("Special collision detected!\n");
+    if ((filterData0.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData1.word3 == snippetvehicle::COLLISION_FLAG_CRYSTAL) || 
+		(filterData1.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData0.word3 == snippetvehicle::COLLISION_FLAG_CRYSTAL)) {
+		printf("Crystal collision detected!\n");
+		// Yay this works!
+		pairFlags = pairFlags
+			//| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
+			//| physx::PxPairFlag::ePRE_SOLVER_VELOCITY
+			//| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
+			//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS // Not sure if we want this one.
+			| physx::PxPairFlag::eMODIFY_CONTACTS;
+			//| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+    }
+	
+	if ((filterData0.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData1.word3 == snippetvehicle::COLLISION_FLAG_CAR) ||
+		(filterData1.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData0.word3 == snippetvehicle::COLLISION_FLAG_CAR)) {
+		printf("Car collision detected!\n");
 		// Yay this works!
 		pairFlags = pairFlags
 			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
 			| physx::PxPairFlag::ePRE_SOLVER_VELOCITY
-			//| physx::PxPairFlag::ePOST_SOLVER_VELOCITY
+			| physx::PxPairFlag::ePOST_SOLVER_VELOCITY;
 			//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS // Not sure if we want this one.
-			| physx::PxPairFlag::eMODIFY_CONTACTS
-			| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
-    }
-	
+			//| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
+	}
+
 	return physx::PxFilterFlag::eDEFAULT;
 }
 
@@ -156,7 +171,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.chassisMOI = chassisMOI;
     vehicleDesc.chassisCMOffset = chassisCMOffset;
     vehicleDesc.chassisMaterial = gMaterial;
-    vehicleDesc.chassisSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_CHASSIS, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, 0);
+    vehicleDesc.chassisSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_CHASSIS, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CAR);
 
     vehicleDesc.wheelMass = wheelMass;
     vehicleDesc.wheelRadius = wheelRadius;
@@ -164,7 +179,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.wheelMOI = wheelMOI;
     vehicleDesc.numWheels = 4;
     vehicleDesc.wheelMaterial = gMaterial;
-    vehicleDesc.wheelSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_WHEEL, snippetvehicle::COLLISION_FLAG_WHEEL_AGAINST, 0, 0);
+    vehicleDesc.wheelSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_WHEEL, snippetvehicle::COLLISION_FLAG_WHEEL_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CAR);
 
     return vehicleDesc;
 }
@@ -173,6 +188,10 @@ bool scaleUpVehicle = false;
 
 physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from) {
 	return physx::PxVec3(from.x, from.y, from.z);
+}
+
+glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from) {
+    return glm::vec3(from.x, from.y, from.z);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// START: Section where physics objects are created
@@ -198,20 +217,26 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 	return plane;
 }
 
-physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) {
+physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) const {
 	
-	//const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-    const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, snippetvehicle::COLLISION_FLAG_CRYSTAL, 0);
+	const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*gMaterial);
     boxShape->setSimulationFilterData(boxSimFilterData);
-
-	// If you want to set the box to be a trigger, uncomment the following
-	//boxShape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
-	//boxShape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
 
 	physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics,physx::PxTransform(pos),*boxShape);
 	gScene->addActor(*box);
 	return box;
+}
+
+physx::PxRigidActor* PhysicsEngine::createCrystalBoxCollider(physx::PxVec3 pos, physx::PxVec3 scale) const {
+
+    const physx::PxFilterData crystalSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CRYSTAL);
+    physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale), *gMaterial);
+    boxShape->setSimulationFilterData(crystalSimFilterData);
+
+    physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics, physx::PxTransform(pos), *boxShape);
+    gScene->addActor(*box);
+    return box;
 }
 
 vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
@@ -351,6 +376,15 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 
     gScene->simulate(timeInSeconds);
     gScene->fetchResults(true);
+
+    // Remove all of the destroyed physics stuff from the scene
+    for (int i = 0; i < colproc.destroyedEntities.size(); ++i) {
+        physx::PxRigidActor* temp = static_cast<PhysicsComponent*>(colproc.destroyedEntities[i]->getComponent(PHYSICS))->myActor;
+        gScene->removeActor(*temp);
+        EntityManager::getInstance()->destroyEntity(colproc.destroyedEntities[i]->id);
+    }
+    // Clear the array so items are not removed twice
+    colproc.destroyedEntities.clear();
 }
 
 PhysicsEngine::~PhysicsEngine() = default;

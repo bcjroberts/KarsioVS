@@ -1,2 +1,6 @@
 Me: smallCrystal1.obj
+S: {
+    sF: defaultCyan
+    sV: default
+}
 Ta testAlbedo.png

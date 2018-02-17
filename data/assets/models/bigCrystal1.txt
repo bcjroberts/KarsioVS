@@ -1,6 +1,6 @@
-Me: cube.obj
+Me: bigCrystal1.obj
 S: {
-    sF: default
+    sF: defaultBlue
     sV: default
 }
 Ta testAlbedo.png

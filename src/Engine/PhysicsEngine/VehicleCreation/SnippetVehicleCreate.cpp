@@ -151,7 +151,7 @@ PxRigidDynamic* createVehicleActor
     //Add the drill shape the actor
     PxShape* drillShape = PxRigidActorExt::createExclusiveShape(*vehActor, PxConvexMeshGeometry(chassisConvexMeshes[1]), *chassisMaterials[0]);
     drillShape->setQueryFilterData(chassisQryFilterData);
-	const PxFilterData drillFilterData(chassisSimFilterData.word0, chassisSimFilterData.word1, snippetvehicle::COLLISION_FLAG_DRILL, 0);
+	const PxFilterData drillFilterData(chassisSimFilterData.word0, chassisSimFilterData.word1, snippetvehicle::COLLISION_FLAG_DRILL, chassisSimFilterData.word3);
     drillShape->setSimulationFilterData(drillFilterData);
     drillShape->setLocalPose(PxTransform(PxVec3(0,-1.0f,3.0f)));
 

@@ -73,8 +73,37 @@ void ModelData::loadModelData(std::string filepath) {
 //			std::cout << meshes[0].vertices[0].position.x << std::endl;
 //			std::cout << meshName << std::endl;
 		}
-		else if (line.substr(0, 1) == "S") {
+		else if (line.substr(0, 4) == "S: {") {
+//			std::cout << line << " << \"S{\" detected" << std::endl;
+			materialData.clearShader();
+			std::string shaderName = "";
+			std::string shaderSuffix = "";
+			while (line.substr(0, 1) != "}") {
+//				std::cout << "reading: " << line << std::endl;
+				if(line.size()>8) {
+					shaderName = "data/assets/shaderData/" + line.substr(8, line.size());
+					shaderSuffix = line.substr(4, 4);
+				}
+//				std::cout << "opening: '" << shaderName << "'" << std::endl;
+//				std::cout << "using: '" << shaderSuffix << "'" << std::endl;
 
+				if (shaderSuffix == "sF: ") {
+//					std::cout << line << " << frag detected" << std::endl;
+					materialData.addShader(shaderName + ".frag", GL_FRAGMENT_SHADER);
+				}
+				if (shaderSuffix == "sV: ") {
+//					std::cout << line << " << vert detected" << std::endl;
+					materialData.addShader(shaderName + ".vert", GL_VERTEX_SHADER);
+				}
+				if (shaderSuffix == "sG: ") {
+					materialData.addShader(shaderName + ".geom", GL_GEOMETRY_SHADER);
+				}
+				if (shaderSuffix == "sC: ") {
+					materialData.addShader(shaderName + ".comp", GL_COMPUTE_SHADER);
+				}
+				getline(file, line); //get the next line
+			}
+			materialData.linkShader();
 			//Include shader based on the kind
 			// link when no more shaders -> check for Sq}; or something
 		}

@@ -3,12 +3,13 @@
 //
 
 #include "Camera.h"
+#include <glm/gtx/vector_angle.hpp>
 
 void Camera::setupCameraTransformationMatrices(GLint viewLocation, GLint projectionLocation, GLint viewPosLoc){
     // Create camera transformation
-    view = lookAt(cameraPosition, /*lookAtPos*/cameraPosition + cameraFront, cameraUp);
+    view = lookAt(cameraPosition, lookAtPos, cameraUp);
     //view = lookAt(vec3(0,0,5.85537815),vec3(0,0,4.85537815),vec3(0,1,0));
-    projection = perspective(cameraFOV, (GLfloat)window_width/(GLfloat)window_height, 0.1f, 1000.0f);
+    projection = perspective(cameraFOV, (GLfloat)*window_width/(GLfloat)*window_height, 0.1f, 1000.0f);
 
     // Pass the matrices to the shader
     glUniformMatrix4fv(viewLocation, 1, GL_FALSE, value_ptr(view));
@@ -41,6 +42,7 @@ void Camera::moveCamera(Movement movement, float deltaTime) {
     if(movement.down){
         cameraPosition -= cameraUp * velocity;
     }
+    lookAtPos = cameraPosition + cameraFront;
     //printf("new camera pos: (%f,%f,%f)\n", cameraPosition.x, cameraPosition.y, cameraPosition.z);
 }
 
@@ -72,8 +74,16 @@ void Camera::rotateView(vec2 mouseOffset) {
                       sin(radians(yRoll)),
                       sin(radians(xRoll)) * cos(radians(yRoll)));
     cameraFront = normalize(front);
-
+    lookAtPos = cameraPosition + cameraFront;
 	//std::cout << xRoll << " : " << yRoll << std::endl;
+}
+
+void Camera::rotateCameraTowardPoint(glm::vec3 point, float amount) {
+    lookAtPos = glm::mix(lookAtPos, point, amount);
+}
+
+void Camera::lerpCameraTowardPoint(glm::vec3 point, float amount) {
+	cameraPosition = glm::mix(cameraPosition, point, amount);
 }
 
 
@@ -85,7 +95,7 @@ mat4 Camera::getProjection(){
     return projection;
 }
 
-Camera::Camera(int window_width, int window_height) {
+Camera::Camera(int *window_width, int *window_height) {
     this->window_width=window_width;
     this->window_height=window_height;
     cameraPosition = vec3(-15.0,5,5.0);

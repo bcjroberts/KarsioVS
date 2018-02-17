@@ -1,21 +1,26 @@
 //
-// This will start the game component of the project ignoring the editor.
+// This file contains the main functions and window callbacks for the game
 //
 
-#include <iostream>
-#include "../Engine/Core.h"
-#include "initOpenGL/OpenGL.h"
+#include "mainGame.h"
 
 int main(){
-    int screenWidth = 1024;
-    int screenHeight = 1024;
-
     OpenGL openGL_Program(screenWidth,screenHeight,"Project Karsio");
+	GLFWwindow *window = openGL_Program.getWindow();
 
-    Core core(screenWidth,screenHeight,openGL_Program.getWindow(),false);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	// Maybe add the other callbacks here too?
+
+    Core core(&screenWidth,&screenHeight, window,false);
     core.coreLoop();
 
     // final thing that will be printed to inform the programmer that stuff didn't crash ungracefully
     std::cout<<"exiting project"<<std::endl;
     return 0;
+}
+
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+	glViewport(0, 0, width, height);
+	screenWidth = width;
+	screenHeight = height;
 }

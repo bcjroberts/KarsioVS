@@ -2,10 +2,13 @@
 
 #include <PxSimulationEventCallback.h>
 #include <PxContactModifyCallback.h>
+#include <vector>
+#include "../Entity.h"
 
 class CollisionProcessor : public physx::PxSimulationEventCallback, public physx::PxContactModifyCallback
 {
 public:
+    std::vector<Entity*> destroyedEntities;
 	CollisionProcessor();
 	~CollisionProcessor();
 	void onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs) override;
