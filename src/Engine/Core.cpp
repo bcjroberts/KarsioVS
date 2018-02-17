@@ -58,19 +58,19 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 		break;
 
     // Vehicle movement, adding to the pile of broken stuff
+		case GLFW_KEY_LEFT:
+			tempPlayerInput.steerRight = set ? 1 : 0;
+			break;
+		case GLFW_KEY_RIGHT:
+			tempPlayerInput.steerLeft = set ? 1 : 0;
+			break;
+		case GLFW_KEY_UP:
+			tempPlayerInput.accel = set ? 1 : 0;
+			break;
+		case GLFW_KEY_DOWN:
+			tempPlayerInput.brake = set ? 1 : 0;
+			break;
 
-    case GLFW_KEY_LEFT:
-        tempPlayerInput.steerRight = set ? 1 : 0;
-        break;
-    case GLFW_KEY_RIGHT:
-        tempPlayerInput.steerLeft = set ? 1 : 0;
-        break;
-    case GLFW_KEY_UP:
-        tempPlayerInput.accel = set ? 1 : 0;
-        break;
-    case GLFW_KEY_DOWN:
-        tempPlayerInput.brake = set ? 1 : 0;
-        break;
 	}
 
 	// Controls whether the camera is free or locked to the player vehicle
@@ -81,6 +81,47 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	}
 }
 
+void joystick(const unsigned char *buttons, const float *axes) {
+	
+	if (buttons[0] == GLFW_PRESS) {			// A
+		
+	}
+	if (buttons[1] == GLFW_PRESS) {			// B
+
+	}
+	if (buttons[2] == GLFW_PRESS) {			// X
+		
+	}
+	if (buttons[3] == GLFW_PRESS) {			// Y
+
+	}
+	if (buttons[4] == GLFW_PRESS) {			// LB
+		
+	}
+	if (buttons[5] == GLFW_PRESS) {			// RB
+		
+	}
+	if (buttons[6] == GLFW_PRESS) {			// BACK
+		
+	}
+	if (buttons[7] == GLFW_PRESS) {			// START
+
+	}
+
+	//std::cout << "left x joystick: " << axes[0] << std::endl;
+	//std::cout << "left y joystick: " << axes[1] << std::endl;
+	//std::cout << "right x joystick: " << axes[2] << std::endl;
+	//std::cout << "right y joystick: " << axes[3] << std::endl;
+	//std::cout << "l trigger " << axes[4] << std::endl;
+	//std::cout << "r trigger " << axes[5] << std::endl;
+	
+	// right x/y axis (axes[2], axes[3] respectively) to be used for gun aiming
+
+	tempPlayerInput.brake = (axes[4] > 0) ? true : false;	// LEFT TRIGGER
+	tempPlayerInput.accel = (axes[5] > 0) ?  true : false;	// RIGHT TRIGGER
+	tempPlayerInput.steerLeft = (axes[0] > 0) ? true : false; // LEFT X JOYSTICK
+	tempPlayerInput.steerRight = (axes[0] < 0) ? true : false; // LEFT X JOYSTICK
+}
 
 //Main game loop
 void Core::coreLoop() {
@@ -118,11 +159,19 @@ void Core::coreLoop() {
 
 	// Perform some minor world generation.
 
+	// Create some obstacles										// location				size
+	Entity* obstacle1 = EntityManager::getInstance()->createBox(glm::vec3(5.f, 1.f, 25.f), glm::vec3(1.f));
+	Entity* obstacle2 = EntityManager::getInstance()->createBox(glm::vec3(6.f, 1.f, 25.f), glm::vec3(1.f));
+	Entity* obstacle3 = EntityManager::getInstance()->createBox(glm::vec3(7.f, 1.f, 25.f), glm::vec3(1.f));
+	Entity* obstacle4 = EntityManager::getInstance()->createBox(glm::vec3(8.f, 1.f, 25.f), glm::vec3(1.f));
+	Entity* obstacle5 = EntityManager::getInstance()->createBox(glm::vec3(9.f, 1.f, 25.f), glm::vec3(1.f));
+	Entity* obstacle6 = EntityManager::getInstance()->createBox(glm::vec3(10.f, 1.f, 25.f), glm::vec3(1.f));
+	
     // Create the starting Entities
     Entity* playerVehicle = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 1, 0));
 	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 1, 0));
 	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
-
+	
     // Creating crytsal entities. A value for the size of the crystal can be speicifed if wanted
     Entity* crystalEntity1 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 5), 0.5f);
     Entity* crystalEntity2 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 15), 1.0f);
@@ -131,7 +180,7 @@ void Core::coreLoop() {
     Entity* crystalEntity5 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 45), 2.5f);
 
     // These crystals mark the ai path
-    Entity* crystalEntity6 = EntityManager::getInstance()->createCrystal(glm::vec3(50, 1.0f, 50), 0.5f);
+    Entity* crystalEntity6 = EntityManager::getInstance()->createCrystal(glm::vec3(40, 1.0f, 40), 0.5f);
     Entity* crystalEntity7 = EntityManager::getInstance()->createCrystal(glm::vec3(-50, 1.0f, 50), 0.65f);
     Entity* crystalEntity8 = EntityManager::getInstance()->createCrystal(glm::vec3(-50, 1.0f, -50), 0.85f);
     Entity* crystalEntity9 = EntityManager::getInstance()->createCrystal(glm::vec3(50, 1.0f, -50), 1.0f);
@@ -142,6 +191,39 @@ void Core::coreLoop() {
     Entity* wall3 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, 100), glm::vec3(100, 4, 2));
     Entity* wall4 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, -100), glm::vec3(100, 4, 2));
 
+	std::vector<Entity*> obstacles;
+	obstacles.push_back(obstacle1);
+	obstacles.push_back(obstacle2);
+	obstacles.push_back(obstacle3);
+	obstacles.push_back(obstacle4);
+	obstacles.push_back(obstacle5);
+	obstacles.push_back(obstacle6);
+	obstacles.push_back(crystalEntity1);
+	obstacles.push_back(crystalEntity2);
+	obstacles.push_back(crystalEntity3);
+	obstacles.push_back(crystalEntity4);
+	obstacles.push_back(crystalEntity5);
+	//obstacles.push_back(crystalEntity6);
+	//obstacles.push_back(crystalEntity7);
+	obstacles.push_back(crystalEntity8);
+	obstacles.push_back(crystalEntity9);
+	
+	for (int i = 1; i < 100; i++) {
+		Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-70+i, 1.f, 25.f), glm::vec3(.5f));
+		obstacles.push_back(obstacle);
+	}
+
+	AStar::Generator gen;
+	gen.setWorldSize({ 15, 15 });
+
+	float x, y;
+	for (int i = 0; i < obstacles.size() - 1; i++) {
+		x = obstacles[i]->getCoarsePosition().x;
+		y = obstacles[i]->getCoarsePosition().z;
+		gen.addCollision(vec2(x, y));
+	}
+	logic.findPath(&gen, aiVehicle, crystalEntity7);
+	
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
@@ -155,15 +237,20 @@ void Core::coreLoop() {
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
-
+		
 		const auto currentTime = glfwGetTime();
 	    const auto timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
-        
-		// should move these to AI system, but right now this is here
-		AStar::Generator generator;
-		generator.setWorldSize({ 10, 10 });
-		logic.findPath(&generator, playerVehicle, crystalEntity1);
+	
+		// joystick controller stuff
+		int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+		if (present == 1) {
+			int axesCount;
+			const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+			int buttonCount;
+			const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+			joystick(buttons, axes);
+		}
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
@@ -189,7 +276,7 @@ void Core::coreLoop() {
                 PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
             }
 //			printf("\n");
-
+			//std::cout << "current position " << playerVehicle->getCoarsePosition().x << " " << playerVehicle->getCoarsePosition().z << std::endl;
 			logic.playerMovement(&tempPlayerInput, playerVehicle);
             logic.aiMovement(aiVehicle);
 

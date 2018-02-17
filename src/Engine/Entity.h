@@ -29,6 +29,7 @@ public:
     void updatePosition(glm::vec3 nposition);
     void updateRotation(glm::quat nrotation);
 	glm::vec3 getPosition() const;
+	glm::vec3 getCoarsePosition() const;
     glm::quat getRotation() const;
 	glm::vec3 getForwardVector() const;
     glm::mat4 getMatrix() const;

@@ -20,11 +20,11 @@ AStar::uint AStar::Node::getScore() {
 }
 
 
-// heuristic is euclidean, manhattan, or octagonal (um last two not added)
+// heuristic is euclidean, manhattan, or octagonal
 // square grid + moving diagonally
 AStar::Generator::Generator() {
 	//setDiagonalMovement(true);
-	setHeuristic(&Heuristic::euclidean);
+	setHeuristic(&Heuristic::manhattan);
 	direction = {
 		{0,1}, {1,0}, {0,-1},{-1,0},
 		{-1,-1}, {1,1}, {-1,1}, {1,-1}
@@ -99,9 +99,9 @@ AStar::CoordinateList AStar::Generator::findPath(vec2 source, vec2 target) {
 			}
 
 			// get total cost
-			// diagonal == extra cost
 			// if i==4 then diagonal begins
-			uint totalCost = current->G + ((i < 4) ? 10 : 14);
+			//uint totalCost = current->G + ((i < 4) ? 10 : 14);
+			uint totalCost = current->G + 10;
 
 			Node *successor = findNodeOnList(openSet, newCoordinates);
 			if (successor == nullptr) {
@@ -149,8 +149,8 @@ void AStar::Generator::releaseNodes(NodeSet& nodes) {
 }
 
 bool AStar::Generator::detectCollision(vec2 coordinates) {
-	if (coordinates.x < 0 || coordinates.x >= worldSize.x ||
-		coordinates.y < 0 || coordinates.y >= worldSize.y ||
+	if (coordinates.x <= -worldSize.x || coordinates.x >= worldSize.x ||
+		coordinates.y <= -worldSize.y || coordinates.y >= worldSize.y ||
 		std::find(walls.begin(), walls.end(), coordinates) != walls.end()) {
 		return true;
 	}
@@ -165,5 +165,11 @@ vec2 AStar::Heuristic::getDelta(vec2 source, vec2 target) {
 AStar::uint AStar::Heuristic::euclidean(vec2 source, vec2 target) {
 	auto delta = std::move(getDelta(source, target));
 	return static_cast<uint>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
+}
+
+AStar::uint AStar::Heuristic::manhattan(vec2 source, vec2 target)
+{
+	auto delta = std::move(getDelta(source, target));
+	return static_cast<uint>(10 * (delta.x + delta.y));
 }
 

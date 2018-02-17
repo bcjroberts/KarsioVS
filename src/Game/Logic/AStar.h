@@ -56,6 +56,7 @@ namespace AStar {
 
 	public:
 		static uint euclidean(vec2 source, vec2 target);
+		static uint manhattan(vec2 source, vec2 target);
 	};
 	
 }

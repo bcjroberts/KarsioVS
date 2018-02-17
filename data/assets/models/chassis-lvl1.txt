@@ -1,0 +1,6 @@
+Me: chassis-lvl1.obj
+S: {
+    sF: defaultOrange
+    sV: default
+}
+Ta testAlbedo.png

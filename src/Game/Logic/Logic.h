@@ -12,6 +12,7 @@
 #include "../Camera.h"
 
 #include "AStar.h"
+#include "../../Engine/PhysicsEngine/PhysicsEngine.h"
 
 class Logic {
 Camera * camera;
@@ -19,6 +20,7 @@ Movement * moveCamera;
 Entity * player;
 vehicleInput * movePlayer;
 DriveComponent * playerDrive;
+std::vector<vec3> path;
 public:        
     Logic();
     void cameraMovement(Movement* newMovement);

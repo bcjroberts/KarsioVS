@@ -57,6 +57,18 @@ glm::vec3 Entity::getPosition() const {
 	return position;
 }
 
+glm::vec3 Entity::getCoarsePosition() const {
+	float x = position.x;
+	float y = position.y;
+	float z = position.z;
+	float gridSize = 10; // larger size = larger grid
+	x = (x >= 0) ? (x - fmod(x, gridSize)) / gridSize : (x + fmod(x, gridSize)) / gridSize;
+	y = (y - fmod(y, gridSize)) / gridSize;
+	z = (z >= 0) ? (z - fmod(z, gridSize)) / gridSize : (z + fmod(z, gridSize)) / gridSize;
+
+	return glm::vec3(x, y, z);
+}
+
 glm::quat Entity::getRotation() const {
     return rotation;
 }
