@@ -268,13 +268,14 @@ void Core::coreLoop() {
         }else{
             
 //			printf("FrameTime: %f", timeDiff);
-
-            // Simulate physics in a Fixed Timestep style
-            while(physicsTime < currentTime) {
-//				printf(" *");
-                physicsTime += physicsTimeStep;
-                PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
-            }
+			float timeDiff = 0.0f;
+			// Simulate physics in a Fixed Timestep style
+			while (physicsTime < currentTime) {
+				//				printf(" *");
+				physicsTime += physicsTimeStep;
+				PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
+				timeDiff += 1.0f / 60.0f;
+			}
 //			printf("\n");
 			//std::cout << "current position " << playerVehicle->getCoarsePosition().x << " " << playerVehicle->getCoarsePosition().z << std::endl;
 			logic.playerMovement(&tempPlayerInput, playerVehicle);
