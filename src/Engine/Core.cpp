@@ -4,7 +4,7 @@
 
 #include "Core.h"
 #include "../Game/Logic/Logic.h"
-#include "Importer/Data/ModelData.h"
+#include "Importer/Data/Model.h"
 #include "Importer/Data/ShaderData.h"
 #include "../Game/Camera.h"
 #include "PhysicsEngine\PhysicsEngine.h"
@@ -101,7 +101,7 @@ void Core::coreLoop() {
     //following set of functions opens an object file, I considered sticking an shaderID
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
-//    ModelData cubeMesh("cubeMesh");
+//    Model cubeMesh("cubeMesh");
 //    cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
 
     //Following set of functions adds the shaders to the shader class and then links them

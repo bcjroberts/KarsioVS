@@ -9,7 +9,7 @@
 #include <vector>
 #include "../../Main/initOpenGL/OpenGL_Deps.h"
 //#include "ArtData/RenderData.h"
-#include "../Importer/Data/ModelData.h"
+#include "../Importer/Data/Model.h"
 #include "../Importer/Data/ShaderData.h"
 #include "../../Game/Camera.h"
 //#include "Geometry.h"
@@ -28,7 +28,7 @@ private:
         //ALl the texture data here
     };
 //    struct Mesh{
-//        ModelData *meshDataPointer; //used as an ID for whether the model exists
+//        Model *meshDataPointer; //used as an ID for whether the model exists
 //        std::vector<int> vertexIndices;
 //        std::vector<int> uvIndices;
 //        std::vector<int> normalIndices;
@@ -70,8 +70,8 @@ public:
     //void removeInstance(RenderData model);
 
     //Need the model that is being used and the instance that will be added to that model
-    void addInstance(ModelData &model, int id, mat4 transform);
-    void updateInstance(ModelData &model, int id, mat4 transform);
+    void addInstance(Model &model, int id, mat4 transform);
+    void updateInstance(Model &model, int id, mat4 transform);
 };
 
 

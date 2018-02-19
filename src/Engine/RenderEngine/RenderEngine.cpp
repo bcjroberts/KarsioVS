@@ -82,11 +82,11 @@ void RenderEngine::renderElements(Camera camera) {
     //std::cout<<"rendering"<<std::endl;
 }
 
-void RenderEngine::addInstance(ModelData &model, int id, mat4 transform) {
+void RenderEngine::addInstance(Model &model, int id, mat4 transform) {
     bool createNewModelGroup = true;
     Instance instance = {id,transform};
     for (int i = 0; i < sceneModels.size(); ++i) {
-        if(sceneModels[i].meshes[0].VAO == model.meshes[0].VAO){
+        if(sceneModels[i].meshes[0].VAO == model.modelData.meshes[0].VAO){
             sceneModels[i].instances.push_back(instance);
             createNewModelGroup = false;
         }
@@ -95,10 +95,10 @@ void RenderEngine::addInstance(ModelData &model, int id, mat4 transform) {
 		RendererModel rendererModel; //deep copy values from main model data to render specific model list
 		rendererModel.shaderID = model.materialData.shaderData.shaderID;
 //		model.geometry.makeBuffer(model);
-		for (int i = 0; i < model.meshes.size(); i++) {
+		for (int i = 0; i < model.modelData.meshes.size(); i++) {
 			Geometry mesh;
-			mesh.VAO = model.meshes[i].VAO;
-			mesh.trisCount = model.meshes[i].indices.size();
+			mesh.VAO = model.modelData.meshes[i].VAO;
+			mesh.trisCount = model.modelData.meshes[i].indices.size();
 			rendererModel.meshes.push_back(mesh);
 		}
 		rendererModel.instances.push_back(instance);
@@ -107,9 +107,9 @@ void RenderEngine::addInstance(ModelData &model, int id, mat4 transform) {
     }
 }
 
-void RenderEngine::updateInstance(ModelData &model, int id, mat4 transform) {
+void RenderEngine::updateInstance(Model &model, int id, mat4 transform) {
     for (int i = 0; i < sceneModels.size(); ++i) {
-        if (sceneModels[i].meshes[0].VAO == model.meshes[0].VAO) {
+        if (sceneModels[i].meshes[0].VAO == model.modelData.meshes[0].VAO) {
             for (int j = 0; j < sceneModels[i].instances.size(); ++j) {
                 if(sceneModels[i].instances[j].ID==id){
                     sceneModels[i].instances[j].transform = transform;

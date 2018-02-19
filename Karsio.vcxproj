@@ -126,19 +126,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Game\Components\AIComponent.cpp" />
-    <ClCompile Include="src\Game\Components\HealthComponent.cpp" />
-    <ClCompile Include="src\Engine\Importer\Managers\ShaderManager.cpp" />
-    <ClCompile Include="src\Engine\Importer\Data\MeshData.cpp" />
-    <ClCompile Include="src\Engine\Importer\Managers\ModelManager.cpp" />
-    <ClCompile Include="src\Engine\Importer\Managers\TextureManager.cpp" />
-    <ClCompile Include="src\Engine\PhysicsEngine\CollisionProcessor.cpp" />
-    <ClCompile Include="src\Engine\Importer\Managers\MeshManager.cpp" />
-    <ClCompile Include="src\Game\Components\ShapeRendererComponent.cpp" />
-    <ClCompile Include="src\Engine\ComponentManager.cpp" />
     <ClCompile Include="src\Engine\Importer\Data\MaterialData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\MeshData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\Model.cpp" />
     <ClCompile Include="src\Engine\Importer\Data\ModelData.cpp" />
     <ClCompile Include="src\Engine\Importer\Data\ShaderData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Data\TextureData.cpp" />
+    <ClCompile Include="src\Engine\Importer\Managers\MaterialDataManager.cpp" />
+    <ClCompile Include="src\Engine\Importer\Managers\ModelDataManager.cpp" />
+    <ClCompile Include="src\Engine\Importer\Managers\ModelManager.cpp" />
+    <ClCompile Include="src\Engine\Importer\Managers\ShaderDataManager.cpp" />
+    <ClCompile Include="src\Game\Components\AIComponent.cpp" />
+    <ClCompile Include="src\Game\Components\HealthComponent.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\CollisionProcessor.cpp" />
+    <ClCompile Include="src\Game\Components\ShapeRendererComponent.cpp" />
+    <ClCompile Include="src\Engine\ComponentManager.cpp" />
     <ClCompile Include="src\engine\audioengine\AudioEngine.cpp" />
     <ClCompile Include="src\engine\Component.cpp" />
     <ClCompile Include="src\engine\Core.cpp" />
@@ -161,22 +163,23 @@
     <ClCompile Include="src\main\initopengl\OpenGL.cpp" />
     <ClCompile Include="src\main\mainGame.cpp" />
     <ClCompile Include="src\Game\Components\VehiclePhysicsComponent.cpp" />
-    <ClCompile Include="src\Engine\Importer\Data\TextureData.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Game\Components\AIComponent.h" />
-    <ClInclude Include="src\Game\Components\HealthComponent.h" />
-    <ClInclude Include="src\Engine\Importer\Managers\ShaderManager.h" />
-    <ClInclude Include="src\Engine\Importer\Data\MeshData.h" />
-    <ClInclude Include="src\Engine\Importer\Managers\ModelManager.h" />
-    <ClInclude Include="src\Engine\Importer\Managers\TextureManager.h" />
-    <ClInclude Include="src\Engine\PhysicsEngine\CollisionProcessor.h" />
-    <ClInclude Include="src\Engine\Importer\Managers\MeshManager.h" />
-    <ClInclude Include="src\Game\Components\ShapeRendererComponent.h" />
-    <ClInclude Include="src\Engine\ComponentManager.h" />
     <ClInclude Include="src\Engine\Importer\Data\MaterialData.h" />
+    <ClInclude Include="src\Engine\Importer\Data\MeshData.h" />
+    <ClInclude Include="src\Engine\Importer\Data\Model.h" />
     <ClInclude Include="src\Engine\Importer\Data\ModelData.h" />
     <ClInclude Include="src\Engine\Importer\Data\ShaderData.h" />
+    <ClInclude Include="src\Engine\Importer\Data\TextureData.h" />
+    <ClInclude Include="src\Engine\Importer\Managers\MaterialDataManager.h" />
+    <ClInclude Include="src\Engine\Importer\Managers\ModelDataManager.h" />
+    <ClInclude Include="src\Engine\Importer\Managers\ModelManager.h" />
+    <ClInclude Include="src\Engine\Importer\Managers\ShaderDataManager.h" />
+    <ClInclude Include="src\Game\Components\AIComponent.h" />
+    <ClInclude Include="src\Game\Components\HealthComponent.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\CollisionProcessor.h" />
+    <ClInclude Include="src\Game\Components\ShapeRendererComponent.h" />
+    <ClInclude Include="src\Engine\ComponentManager.h" />
     <ClInclude Include="src\engine\audioengine\AudioEngine.h" />
     <ClInclude Include="src\engine\Component.h" />
     <ClInclude Include="src\engine\Core.h" />
@@ -200,7 +203,6 @@
     <ClInclude Include="src\main\initopengl\OpenGL.h" />
     <ClInclude Include="src\main\initopengl\OpenGL_Deps.h" />
     <ClInclude Include="src\Game\Components\VehiclePhysicsComponent.h" />
-    <ClInclude Include="src\Engine\Importer\Data\TextureData.h" />
     <ClInclude Include="src\Main\mainGame.h" />
   </ItemGroup>
   <ItemGroup>

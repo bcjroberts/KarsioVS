@@ -9,7 +9,7 @@ private:
     physx::PxShape* myShape;
 public:
     vec3 localPos;
-    ShapeRendererComponent(ModelData* newModel, physx::PxShape* newShape);
+    ShapeRendererComponent(Model* newModel, physx::PxShape* newShape);
     mat4 getMatrix() override;
     ~ShapeRendererComponent();
 };

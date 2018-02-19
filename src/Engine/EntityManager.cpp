@@ -6,7 +6,7 @@
 #include "PxPhysicsAPI.h"
 #include "ComponentManager.h"
 #include "../Engine/PhysicsEngine/PhysicsEngine.h"
-#include "Importer/Managers/MeshManager.h"
+//#include "Importer/Managers/MeshManager.h"
 #include "Importer/Managers/ModelManager.h"
 
 // Initialize the Entity Manager global pointer.
@@ -54,15 +54,15 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     rigid1->userData = entity;
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("chassis"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("ram5"), shapes[5], glm::vec3(0.8f), glm::vec3(0, -0.7f, -0.7f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("ram5"), shapes[5], glm::vec3(0.8f), glm::vec3(0, -0.7f, -0.7f));
 
     // Uncomment this if you want to see the physics hitbox for the chassis
     //ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], glm::vec3(1.5f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.3f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("wheels"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.6f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.3f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
     ComponentManager::getInstance()->addPhysicsComponent(entity, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput);
     ComponentManager::getInstance()->addHealthComponent(entity, 200.f);
@@ -80,7 +80,7 @@ Entity* EntityManager::createAIVehicleEntity(glm::vec3 startPos) {
 
 Entity* EntityManager::createGroundPlane() {
 	Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.0f));
-	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModelData("plane"), glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, -1.57f)), glm::vec3(100, 10, 100));
+	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("plane"), glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, -1.57f)), glm::vec3(100, 10, 100));
     physx::PxRigidActor* plane = PhysicsEngine::getInstance()->createPhysicsPlane();
     plane->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, plane);
@@ -89,7 +89,7 @@ Entity* EntityManager::createGroundPlane() {
 
 Entity* EntityManager::createBox(glm::vec3 startPos, glm::vec3 scale) {
 	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
-	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModelData("cube"), glm::vec3(0), glm::quat(), glm::vec3(1));
+	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), glm::vec3(1));
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
@@ -103,15 +103,15 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
 
     glm::vec3 physicsScale = glm::vec3(1.0f, 4.0f, 1.0f) * resourceAmount;
     glm::vec3 modelScale = glm::vec3(1.0f) * resourceAmount;
-    ModelData* crystalModel = nullptr;
+    Model* crystalModel = nullptr;
     float heightOffset = 0;
     if (resourceAmount <= 1.5f) {
-        crystalModel = ModelManager::getModelData("smallCrystal1");
+        crystalModel = ModelManager::getModel("smallCrystal1");
         heightOffset = (physicsScale.y - (modelScale.y + resourceAmount * 2.75f) + 4.0f) / 2.0f;
     } else {
         modelScale *= 0.5f;
         physicsScale *= 1.0f;
-        crystalModel = ModelManager::getModelData("bigCrystal1");
+        crystalModel = ModelManager::getModel("bigCrystal1");
         heightOffset = (physicsScale.y - (modelScale.y + resourceAmount * 3.5f) + 8.0f) / 2.0f;
     }
 
@@ -122,7 +122,7 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
     
     // Render the physics hitbox for the crystal
-    // ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModelData("cube"), glm::vec3(0), glm::quat(), physicsScale);
+    // ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), physicsScale);
 
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createCrystalBoxCollider(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(physicsScale));
     box->userData = entity;

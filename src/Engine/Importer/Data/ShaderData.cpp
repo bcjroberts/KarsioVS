@@ -1,17 +1,17 @@
 //
 // Created by Sebastian on 06/01/2018.
 //
-
+#include <fstream>
+#include <sstream>
 #include "ShaderData.h"
-
-
-ShaderData::ShaderData() = default;
 
 ShaderData::~ShaderData(){
     shaderID = 0;
 }
 
-void ShaderData::attachShader(std::string path, GLenum type){
+void ShaderData::attachShader(std::string shaderPath, GLenum type){
+	shaderPath = "data/assets/shaderData/" + shaderPath;
+	std::cout << shaderPath << std::endl;
     if (shaderID == 0) {
         shaderID = glCreateProgram();
         //if (OpenGL::error("glCreateProgram"))
@@ -19,7 +19,7 @@ void ShaderData::attachShader(std::string path, GLenum type){
     }
 //	cout<<shaderID<<endl;
 
-    std::ifstream in(path);
+    std::ifstream in(shaderPath);
     std::string buffer = [&in] {
         std::ostringstream ss{};
         ss << in.rdbuf();
@@ -84,13 +84,50 @@ void ShaderData::link(){
     }
 }
 
-//bool ShaderData::use(){
-//    glUseProgram(shaderID);
-//    //if (OpenGL::error("glUseProgram"))
-//    //	return false;
-//    return true;
-//}
+void ShaderData::readFile(std::ifstream &file) {
+	std::string line; // a buffer to store lines in, and separators
+	std::string comment = ";";
+	std::string vert = "vertex=";
+	std::string geom = "geometry=";
+	std::string frag = "fragment=";
 
-void ShaderData::unbind(){
-    glUseProgram(0);
+	while (getline(file, line)) {	// while we have data, read in a line
+		if ((line.size() >= comment.size()) && (line.substr(0, comment.size()) == comment))
+		{
+			//if comment don't bother checking anything else and just go to the next line
+		}
+		else if ((line.size() >= vert.size()) && (line.substr(0, vert.size()) == vert))
+		{
+			// attach the shader
+			std::string shaderName = line.substr(vert.size(), line.size()) + ".vert";
+			attachShader(shaderName,GL_VERTEX_SHADER);
+		}
+		else if ((line.size() >= geom.size()) && (line.substr(0, geom.size()) == geom))
+		{
+			// attach the shader
+			std::string shaderName = line.substr(geom.size(), line.size()) + ".geom";
+			attachShader(shaderName, GL_GEOMETRY_SHADER);
+		}
+		else if ((line.size() >= frag.size()) && (line.substr(0, frag.size()) == frag))
+		{
+			// attach the shader
+			std::string shaderName = line.substr(frag.size(), line.size()) + ".frag";
+			attachShader(shaderName, GL_FRAGMENT_SHADER);
+		}
+	}
+	link(); //link the shaders so that they are usuable.
 }
+
+void ShaderData::loadShader(std::string filepath) {
+	//	std::string filename = filepath;
+	// try to open the file
+	std::ifstream file;
+	file.open(filepath, std::fstream::in);
+	// didn't work? fail!
+	if (file.fail()) {
+		std::cout << "ERROR: ModelConfig: Couldn't load: "
+			<< filepath << std::endl;
+	}
+	readFile(file);
+}
+
