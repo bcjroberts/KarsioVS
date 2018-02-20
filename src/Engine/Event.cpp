@@ -3,3 +3,12 @@
 //
 
 #include "Event.h"
+Event::Event(EventType atype) {
+    myEventType = atype;
+}
+EventType Event::getEventType() {
+    return myEventType;
+}
+Event::~Event() {
+
+}
