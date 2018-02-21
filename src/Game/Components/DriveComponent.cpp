@@ -31,7 +31,7 @@ void DriveComponent::setInputs(vehicleInput in) {
     steerRight = in.steerRight;
     gearUp = in.gearUp;
     gearDown = in.gearDown;
-
+	
     // Setting of the input right here
     myInput->setDigitalBrake(in.brake);
     myInput->setDigitalAccel(in.accel);

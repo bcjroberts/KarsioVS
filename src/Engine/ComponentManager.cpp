@@ -77,6 +77,13 @@ AIComponent* ComponentManager::addAIComponent(Entity* addTo) {
     return aic;
 }
 
+ControllableComponent* ComponentManager::addControllableComponent(Entity* addTo, bool player) {
+	ControllableComponent* cc = new ControllableComponent(player);
+	addTo->addComponent(cc);
+	cc->owner = addTo;
+	return cc;
+}
+
 ComponentManager* ComponentManager::getInstance() {
     if (!globalInstance) {
         globalInstance = new ComponentManager;

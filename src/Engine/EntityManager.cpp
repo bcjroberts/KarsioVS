@@ -71,11 +71,20 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     return entity;
 }
 
+Entity* EntityManager::createPlayerVehicleEntity(glm::vec3 startPos) {
+	Entity* playerCar = createBasicVehicleEntity(startPos);
+
+	ComponentManager::getInstance()->addControllableComponent(playerCar, true);
+	
+	return playerCar;
+}
+
 Entity* EntityManager::createAIVehicleEntity(glm::vec3 startPos) {
     Entity* aiCar = createBasicVehicleEntity(startPos);
 
     // We now have a regular car, lets AI-ify it.
     ComponentManager::getInstance()->addAIComponent(aiCar);
+	ComponentManager::getInstance()->addControllableComponent(aiCar, false);
     return aiCar;
 }
 

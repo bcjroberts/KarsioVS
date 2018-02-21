@@ -25,9 +25,10 @@ public:
     Logic();
     void cameraMovement(Movement* newMovement);
     void playerMovement(vehicleInput* newMovement, Entity* targetEnt);
+	void playerMovement(Entity* targetEnt);
     void aiMovement(Entity* entity);
     void bindCamera(Camera* aCamera);
-	void findPath(AStar::Generator* map, Entity* player, Entity* goal);
+	void findPath(AStar::Generator* generator, Entity* start, Entity* goal);
    ~Logic();
 };
 

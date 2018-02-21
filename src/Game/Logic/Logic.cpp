@@ -10,9 +10,14 @@ Logic::Logic(){
 void Logic::cameraMovement(Movement* newMovement) {
     moveCamera = newMovement;
 }
-void Logic::playerMovement(vehicleInput* newMovement, Entity* targetEnt) {
+
+//void Logic::playerMovement(vehicleInput *newMovement, Entity* targetEnt) {
+void Logic::playerMovement(Entity* targetEnt) {
+	ControllableComponent* con = static_cast<ControllableComponent*>(targetEnt->getComponent(CONTROLLABLE));
 	DriveComponent* temp = static_cast<DriveComponent*>(targetEnt->getComponent(DRIVE));
-	if (temp) temp->setInputs(*newMovement);
+	//if (temp) temp->setInputs(*newMovement);
+	con->getInput();
+	temp->setInputs(con->input);
 }
 
 void Logic::aiMovement(Entity* entity) {
@@ -72,7 +77,8 @@ void Logic::findPath(AStar::Generator* generator, Entity* start, Entity* goal) {
 	for (int i = p.size() - 1; i > 0; i--) {	
 		path[i] = vec3(p[i].x, 0, p[i].y);
 	}
-	// add exact position of goal
+
+	// add exact position of goal to the end
 	path[0] = vec3(goal->getPosition().x, 0, goal->getPosition().z);
 }
 

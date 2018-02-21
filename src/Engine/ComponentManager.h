@@ -9,6 +9,7 @@
 #include "../Game/Components/DriveComponent.h"
 #include "../Game/Components/HealthComponent.h"
 #include "../Game/Components/AIComponent.h"
+#include "../Game/Components/ControllableComponent.h"
 
 class ComponentManager
 {
@@ -30,6 +31,7 @@ public:
     DriveComponent* addDriveComponent(Entity* addTo, physx::PxVehicleDrive4WRawInputData* inputData);
     HealthComponent* addHealthComponent(Entity* addTo, float health, bool healthIsThreshold = false);
     AIComponent* addAIComponent(Entity* addTo);
+	ControllableComponent* addControllableComponent(Entity* addTo, bool player);
     void performRendering();
     void initializeRendering(RenderEngine* re);
     void performPhysicsLogic();

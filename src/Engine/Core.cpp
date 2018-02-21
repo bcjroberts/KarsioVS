@@ -81,47 +81,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	}
 }
 
-void joystick(const unsigned char *buttons, const float *axes) {
-	
-	if (buttons[0] == GLFW_PRESS) {			// A
-		
-	}
-	if (buttons[1] == GLFW_PRESS) {			// B
 
-	}
-	if (buttons[2] == GLFW_PRESS) {			// X
-		
-	}
-	if (buttons[3] == GLFW_PRESS) {			// Y
-
-	}
-	if (buttons[4] == GLFW_PRESS) {			// LB
-		
-	}
-	if (buttons[5] == GLFW_PRESS) {			// RB
-		
-	}
-	if (buttons[6] == GLFW_PRESS) {			// BACK
-		
-	}
-	if (buttons[7] == GLFW_PRESS) {			// START
-
-	}
-
-	//std::cout << "left x joystick: " << axes[0] << std::endl;
-	//std::cout << "left y joystick: " << axes[1] << std::endl;
-	//std::cout << "right x joystick: " << axes[2] << std::endl;
-	//std::cout << "right y joystick: " << axes[3] << std::endl;
-	//std::cout << "l trigger " << axes[4] << std::endl;
-	//std::cout << "r trigger " << axes[5] << std::endl;
-	
-	// right x/y axis (axes[2], axes[3] respectively) to be used for gun aiming
-
-	tempPlayerInput.brake = (axes[4] > 0) ? true : false;	// LEFT TRIGGER
-	tempPlayerInput.accel = (axes[5] > 0) ?  true : false;	// RIGHT TRIGGER
-	tempPlayerInput.steerLeft = (axes[0] > 0) ? true : false; // LEFT X JOYSTICK
-	tempPlayerInput.steerRight = (axes[0] < 0) ? true : false; // LEFT X JOYSTICK
-}
 
 //Main game loop
 void Core::coreLoop() {
@@ -168,7 +128,7 @@ void Core::coreLoop() {
 	Entity* obstacle6 = EntityManager::getInstance()->createBox(glm::vec3(10.f, 1.f, 25.f), glm::vec3(1.f));
 	
     // Create the starting Entities
-    Entity* playerVehicle = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(0, 1, 0));
+    Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 1, 0));
 	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 1, 0));
 	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 	
@@ -242,15 +202,7 @@ void Core::coreLoop() {
 	    const auto timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
 	
-		// joystick controller stuff
-		int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
-		if (present == 1) {
-			int axesCount;
-			const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-			int buttonCount;
-			const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-			joystick(buttons, axes);
-		}
+		
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
@@ -278,9 +230,10 @@ void Core::coreLoop() {
 			}
 //			printf("\n");
 			//std::cout << "current position " << playerVehicle->getCoarsePosition().x << " " << playerVehicle->getCoarsePosition().z << std::endl;
-			logic.playerMovement(&tempPlayerInput, playerVehicle);
+			//logic.playerMovement(&tempPlayerInput, playerVehicle);
+			logic.playerMovement(playerVehicle);
             logic.aiMovement(aiVehicle);
-
+			
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
             ComponentManager::getInstance()->performRendering();
