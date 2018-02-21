@@ -14,6 +14,8 @@
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
 
+GLFWwindow* Core::globalWindow = nullptr;
+
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
@@ -21,6 +23,7 @@ Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaus
     this->properties.screenHeight = screenHeight;
     this->properties.isRunning = true;
     this->properties.isPaused = gamePaused;
+    globalWindow = properties.window;
 }
 
 Core::~Core() = default;

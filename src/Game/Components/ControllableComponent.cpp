@@ -1,4 +1,5 @@
 #include "ControllableComponent.h"
+#include "../../Engine/Core.h"
 
 #define GAMEPAD_A		0
 #define GAMEPAD_B		1
@@ -35,6 +36,11 @@ void ControllableComponent::getInput() {
 		input.accel = (axes[GAMEPAD_RIGHT_TRIGGER] > 0) ? true : false;
 		input.steerLeft = (axes[GAMEPAD_LEFT_JOYSTICK_X] > 0) ? true : false;
 		input.steerRight = (axes[GAMEPAD_LEFT_JOYSTICK_X] < 0) ? true : false;	
+	} else { //Use keyboard inputs instead if no controller is present.
+        input.brake = glfwGetKey(Core::globalWindow, GLFW_KEY_DOWN);
+        input.accel = glfwGetKey(Core::globalWindow, GLFW_KEY_UP);
+        input.steerLeft = glfwGetKey(Core::globalWindow, GLFW_KEY_RIGHT);
+        input.steerRight = glfwGetKey(Core::globalWindow, GLFW_KEY_LEFT);
 	}
 }
 
