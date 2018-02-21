@@ -8,6 +8,6 @@ ModelData* ModelDataManager::getModelData(std::string modelDataName) {
 		result->importMesh("data/assets/meshes/" + modelDataName);
 		modelDataMap.insert_or_assign(modelDataName, result);
 	}
-	std::cout << modelDataName << std::endl;
+//	std::cout << modelDataName << std::endl;
 	return result;
 }

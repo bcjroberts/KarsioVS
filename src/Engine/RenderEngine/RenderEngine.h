@@ -23,20 +23,16 @@ using namespace glm;
 
 class RenderEngine{
 private:
-    struct Material{
+	int NUM_LIGHTS = 10;
 
-        //ALl the texture data here
+    struct Textures{
+		//ALl the texture data here
+		GLuint albedo;
+		GLuint roughness;
+		GLuint metalness;
+		GLuint normal;
+		GLuint emission;
     };
-//    struct Mesh{
-//        Model *meshDataPointer; //used as an ID for whether the model exists
-//        std::vector<int> vertexIndices;
-//        std::vector<int> uvIndices;
-//        std::vector<int> normalIndices;
-//        std::vector<vec3> verticies;
-//        std::vector<vec3> normals;
-//        std::vector<vec2> uvs;
-//    };
-
     struct Instance{
         int ID; //Is this needed? If so maybe also use this to figure out whether a given instance is an actual object?
         mat4 transform; //some kind of info regarding where to draw the object
@@ -50,17 +46,31 @@ private:
         //RenderData model;
 //        ShaderData shaderData;
 		GLuint shaderID;
-        Material materialData;
+		Textures texture;
         //Mesh meshData;
 //        Geometry geometry;
 		std::vector<Geometry> meshes;
         std::vector<Instance> instances; //list of instances that will be drawn using a single model
     };
     std::vector<RendererModel> sceneModels; //list of all the models in the scene
+	
+	struct Light {
+		vec3 position;
+		vec3 color;
+//		vec3 falloff;
+	};
+	
+	std::vector<Light> lights;
 
     GLFWwindow *window;
 
-    void renderElements(Camera camera);
+	void passLights(GLuint shaderID);
+	void passTextures(RendererModel sModel);
+	void renderElements(Camera camera);
+
+	const void setShaderVec3(GLuint shaderID, const std::string &name, const glm::vec3 &value);
+	const void setShaderInt(GLuint shaderID, const std::string& name, int value);
+
 
 public:
     RenderEngine(GLFWwindow *window);
@@ -68,6 +78,8 @@ public:
 
     void render(Camera camera);
     //void removeInstance(RenderData model);
+
+	void setLight(int index, vec3 position, vec3 color);
 
     //Need the model that is being used and the instance that will be added to that model
     void addInstance(Model &model, int id, mat4 transform);

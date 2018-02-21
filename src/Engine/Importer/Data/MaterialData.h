@@ -11,20 +11,21 @@ private:
 	void readFile(std::ifstream& file);
 	
 public:
-	ShaderData shaderData;
+//	ShaderData shaderData;
+	GLuint shaderID = 0;
 //	GLuint shaderDataID;
 	struct Texture {
-		TextureData albedo;
-		TextureData roughness;
-		TextureData texture1;
-		TextureData texture2;
-		TextureData texture3;
+		GLuint albedo;
+		GLuint roughness;
+		GLuint metalness;
+		GLuint normal;
+		GLuint emission;
 	};
+	Texture texture;
 	void loadMaterial(std::string path);
 
 	void addTexture();
-	void clearShader();
-	MaterialData() = default;
+	MaterialData();
 	~MaterialData() = default;
 };
 

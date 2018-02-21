@@ -8,6 +8,6 @@ MaterialData* MaterialDataManager::getMaterialData(std::string materialName) {
 		result->loadMaterial("data/configs/materials/" + materialName + ".ini");
 		materialDataMap.insert_or_assign(materialName, result);
 	}
-	std::cout << materialName << std::endl;
+//	std::cout << materialName << std::endl;
 	return result;
 }

@@ -9,6 +9,6 @@ ShaderData* ShaderDataManager::getShaderData(std::string shaderName) {
 		result->loadShader("data/configs/shaders/" + shaderName + ".ini");
 		shaderDataMap.insert_or_assign(shaderName, result);
 	}
-	std::cout << shaderName << std::endl;
+//	std::cout << shaderName << std::endl;
 	return result;
 }

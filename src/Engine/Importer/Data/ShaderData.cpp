@@ -11,7 +11,7 @@ ShaderData::~ShaderData(){
 
 void ShaderData::attachShader(std::string shaderPath, GLenum type){
 	shaderPath = "data/assets/shaderData/" + shaderPath;
-	std::cout << shaderPath << std::endl;
+//	std::cout << shaderPath << std::endl;
     if (shaderID == 0) {
         shaderID = glCreateProgram();
         //if (OpenGL::error("glCreateProgram"))
@@ -26,8 +26,6 @@ void ShaderData::attachShader(std::string shaderPath, GLenum type){
         return ss.str();
     }();
     const char *buffer_array[] = { buffer.c_str() };
-
-
 
     GLuint shader = glCreateShader(type);
     //if (OpenGL::error("glCreateShader"))

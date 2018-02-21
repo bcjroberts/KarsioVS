@@ -126,6 +126,9 @@
     <ClCompile Include="src\Engine\Importer\Managers\ShaderDataManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Importer\Managers\TextureDataManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\Component.h">
@@ -243,6 +246,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Importer\Managers\ShaderDataManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\Importer\Managers\TextureDataManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

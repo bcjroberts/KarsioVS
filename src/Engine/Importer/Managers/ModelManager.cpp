@@ -12,6 +12,6 @@ Model* ModelManager::getModel(std::string modelName) {
         result->loadModel("data/configs/models/" + modelName + ".ini");
         modelMap.insert_or_assign(modelName, result);
     }
-	std::cout << modelName << std::endl;
+//	std::cout << modelName << std::endl;
     return result;
 }
