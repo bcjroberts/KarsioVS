@@ -42,17 +42,17 @@ void MeshData::setVerticies(aiMesh* mesh) {
 			vertex.uvCoords = glm::vec2(0.0f, 0.0f);
 		}
 
-		// tangent
-		tvec3.x = mesh->mTangents[i].x;
-		tvec3.y = mesh->mTangents[i].y;
-		tvec3.z = mesh->mTangents[i].z;
-		vertex.tangent = tvec3;
-
-		// bitangent
-		tvec3.x = mesh->mBitangents[i].x;
-		tvec3.y = mesh->mBitangents[i].y;
-		tvec3.z = mesh->mBitangents[i].z;
-		vertex.bitangent = tvec3;
+//		// tangent
+//		tvec3.x = mesh->mTangents[i].x;
+//		tvec3.y = mesh->mTangents[i].y;
+//		tvec3.z = mesh->mTangents[i].z;
+//		vertex.tangent = tvec3;
+//
+//		// bitangent
+//		tvec3.x = mesh->mBitangents[i].x;
+//		tvec3.y = mesh->mBitangents[i].y;
+//		tvec3.z = mesh->mBitangents[i].z;
+//		vertex.bitangent = tvec3;
 		this->vertices.push_back(vertex);
 	}
 }
@@ -97,11 +97,11 @@ void MeshData::setupBuffers() {
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uvCoords));
 	// vertex tangent
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
-	// vertex bitangent
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+//	glEnableVertexAttribArray(3);
+//	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+//	// vertex bitangent
+//	glEnableVertexAttribArray(4);
+//	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
 
 	glBindVertexArray(0);
 }
