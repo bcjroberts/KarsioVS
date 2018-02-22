@@ -3,7 +3,7 @@
 #include <extensions/PxShapeExt.h>
 #include "../../Engine/Entity.h"
 
-ShapeRendererComponent::ShapeRendererComponent(ModelData* newModel,  physx::PxShape* newShape) : RendererComponent(newModel) {
+ShapeRendererComponent::ShapeRendererComponent(Model* newModel,  physx::PxShape* newShape) : RendererComponent(newModel) {
     myShape = newShape;
 }
 

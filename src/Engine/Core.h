@@ -28,7 +28,7 @@ public:
     Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused);
     void coreLoop();
     ~Core();
-
+    static GLFWwindow* globalWindow;
 };
 
 

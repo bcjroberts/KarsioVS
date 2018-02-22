@@ -8,7 +8,7 @@ mat4 RendererComponent::getMatrix() {
     return ownerMatrix * myMatrix;
 }
 
-RendererComponent::RendererComponent(ModelData* newModel) : Component(RENDERER)
+RendererComponent::RendererComponent(Model* newModel) : Component(RENDERER)
 {
     myModel = newModel;
 }

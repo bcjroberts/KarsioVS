@@ -1,6 +1,0 @@
-Me: chassis.obj
-S: {
-    sF: defaultRed
-    sV: default
-}
-Ta testAlbedo.png

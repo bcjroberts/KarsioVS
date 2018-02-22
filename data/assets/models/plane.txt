@@ -1,6 +1,0 @@
-Me: plane.obj
-S: {
-    sF: defaultGreen
-    sV: default
-}
-Ta testAlbedo.png

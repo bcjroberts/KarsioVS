@@ -6,21 +6,22 @@
 #define PROJECTKARSIO_SHADERS_H
 
 #include <fstream>
-#include <sstream>
 #include <iostream>
 #include <string>
 
 #include "../../../Main/initOpenGL/OpenGL_Deps.h"
 
 class ShaderData {
+private:
+	void attachShader(std::string shaderPath, GLenum type);
+	void link();
+	void readFile(std::ifstream &file);
+
 public:
     GLuint shaderID = 0;
-    ShaderData();
+	ShaderData() = default;
     ~ShaderData();
-    void attachShader(std::string fileName, GLenum type);
-    void link();
-//    bool use();
-    static void unbind();
+	void loadShader(std::string filepath);
 };
 
 
