@@ -126,18 +126,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <ClCompile Include="src\Engine\AudioObserver.cpp" />
-    <ClCompile Include="src\Engine\Observable.cpp" />
     <ClCompile Include="src\Engine\CollideEvent.cpp" />
-    <ClCompile Include="src\Engine\Observer.cpp" />
-    <ClCompile Include="src\Game\Components\AIComponent.cpp" />
-    <ClCompile Include="src\Game\Components\ControllableComponent.cpp" />
-    <ClCompile Include="src\Game\Components\HealthComponent.cpp" />
-    <ClCompile Include="src\Engine\Importer\Managers\ShaderManager.cpp" />
-=======
     <ClCompile Include="src\Engine\Importer\Data\MaterialData.cpp" />
->>>>>>> origin/rendering
     <ClCompile Include="src\Engine\Importer\Data\MeshData.cpp" />
     <ClCompile Include="src\Engine\Importer\Data\Model.cpp" />
     <ClCompile Include="src\Engine\Importer\Data\ModelData.cpp" />
@@ -148,7 +139,10 @@
     <ClCompile Include="src\Engine\Importer\Managers\ModelManager.cpp" />
     <ClCompile Include="src\Engine\Importer\Managers\ShaderDataManager.cpp" />
     <ClCompile Include="src\Engine\Importer\Managers\TextureDataManager.cpp" />
+    <ClCompile Include="src\Engine\Observable.cpp" />
+    <ClCompile Include="src\Engine\Observer.cpp" />
     <ClCompile Include="src\Game\Components\AIComponent.cpp" />
+    <ClCompile Include="src\Game\Components\ControllableComponent.cpp" />
     <ClCompile Include="src\Game\Components\HealthComponent.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\CollisionProcessor.cpp" />
     <ClCompile Include="src\Game\Components\ShapeRendererComponent.cpp" />
@@ -196,8 +190,6 @@
     <ClInclude Include="src\Engine\Importer\Managers\ModelManager.h" />
     <ClInclude Include="src\Engine\Importer\Managers\ShaderDataManager.h" />
     <ClInclude Include="src\Engine\Importer\Managers\TextureDataManager.h" />
-    <ClInclude Include="src\Game\Components\AIComponent.h" />
-    <ClInclude Include="src\Game\Components\HealthComponent.h" />
     <ClInclude Include="src\Engine\PhysicsEngine\CollisionProcessor.h" />
     <ClInclude Include="src\Game\Components\ShapeRendererComponent.h" />
     <ClInclude Include="src\Engine\ComponentManager.h" />
