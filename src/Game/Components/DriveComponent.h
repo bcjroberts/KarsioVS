@@ -21,16 +21,15 @@ class DriveComponent : public Component
 {
 private:
     physx::PxVehicleDrive4WRawInputData* myInput;
-public:
     bool accel;
     bool brake;
     bool handbrake;
-    bool steerLeft;     
-    bool steerRight;    
+    bool steerLeft;
+    bool steerRight;
     bool gearUp;
     bool gearDown;
     bool inReverse;
-
+public:
     void setInputs(const bool inAccel, const bool inBrake, const bool inHandbrake, const bool inSteerLeft, const bool inSteerRight, const bool inGearUp, const bool inGearDown);
     void setInputs(vehicleInput);
 

@@ -28,8 +28,6 @@ Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaus
 
 Core::~Core() = default;
 
-vehicleInput tempPlayerInput;
-
 // there has to be a better way than to make it this way
 Movement movement;
 int cameraMode = 0;
@@ -59,21 +57,6 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	case GLFW_KEY_C:
 		movement.down = set ? 1 : 0;
 		break;
-
-    // Vehicle movement, adding to the pile of broken stuff
-		case GLFW_KEY_LEFT:
-			tempPlayerInput.steerRight = set ? 1 : 0;
-			break;
-		case GLFW_KEY_RIGHT:
-			tempPlayerInput.steerLeft = set ? 1 : 0;
-			break;
-		case GLFW_KEY_UP:
-			tempPlayerInput.accel = set ? 1 : 0;
-			break;
-		case GLFW_KEY_DOWN:
-			tempPlayerInput.brake = set ? 1 : 0;
-			break;
-
 	}
 
 	// Controls whether the camera is free or locked to the player vehicle
@@ -257,7 +240,7 @@ void Core::coreLoop() {
 
                 float dotProd = glm::dot(velocity, playerVehicle->getForwardVector());
 
-                if (dotProd < -10.0f && tempPlayerInput.brake) {
+                if (dotProd < -10.0f && static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getBrake()) {
                     movingForward = false;
                 } else if (dotProd > -5.0f) {
                     movingForward = true;
