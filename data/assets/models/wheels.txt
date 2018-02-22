@@ -1,6 +1,0 @@
-Me: wheels.obj
-S: {
-    sF: defaultBlack
-    sV: default
-}
-Ta testAlbedo.png
