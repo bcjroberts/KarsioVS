@@ -13,6 +13,7 @@
 
 #include "AStar.h"
 #include "../../Engine/PhysicsEngine/PhysicsEngine.h"
+#include "../World.h"
 
 class Logic {
 Camera * camera;
@@ -24,11 +25,11 @@ std::vector<vec3> path;
 public:        
     Logic();
     void cameraMovement(Movement* newMovement);
-    void playerMovement(vehicleInput* newMovement, Entity* targetEnt);
+    //void playerMovement(vehicleInput* newMovement, Entity* targetEnt);
 	void playerMovement(Entity* targetEnt);
     void aiMovement(Entity* entity);
     void bindCamera(Camera* aCamera);
-	void findPath(AStar::Generator* generator, Entity* start, Entity* goal);
+	void findPath(World* world, Entity* start, Entity* goal);
    ~Logic();
 };
 

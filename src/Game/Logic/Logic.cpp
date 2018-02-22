@@ -30,7 +30,7 @@ void Logic::aiMovement(Entity* entity) {
 	}
 	
     // Check if the distance is less than some threshold. If so, then we have "arrived at the waypoint", head to the next waypoint.
-    if (glm::distance(ai->getCurrentWaypoint(), entity->getCoarsePosition()) < 1.0f) {
+    if (glm::distance(ai->getCurrentWaypoint(), entity->getCoarsePosition()) < 2.0f) {
         ai->nextWaypoint();
     }	
 	
@@ -50,14 +50,14 @@ void Logic::aiMovement(Entity* entity) {
 	float speed = glm::dot(velocity, entity->getForwardVector());
 
 	// TODO this should be refined so that the AI doesn't spin out
-    if (oangle > .1f) {
+    if (oangle > .3f) {
         steerLeft = true;
 		
-    } else if (oangle < -.1f){
+    } else if (oangle < -.3f){
         steerRight = true;
     }
 	// slow down when turning
-	if (speed > 5 && (steerLeft || steerRight)) {
+	if (speed > 10 && (steerLeft || steerRight)) {
 		accel = false;
 	}
 					// accel, brake, handbrake
@@ -69,17 +69,20 @@ void Logic::bindCamera(Camera* aCamera) {
 }
 
 // rukiya's added stuff
-void Logic::findPath(AStar::Generator* generator, Entity* start, Entity* goal) {
-	std::vector<vec2> p = generator->findPath({vec2(start->getCoarsePosition().x, start->getCoarsePosition().z)}, 
-							  {vec2(goal->getCoarsePosition().x, goal->getCoarsePosition().z)});
+void Logic::findPath(World* world, Entity* start, Entity* goal) {
+	std::vector<vec2> p = world->getPositions().findPath({ vec2(start->getCoarsePosition().x, start->getCoarsePosition().z) },
+	{ vec2(goal->getCoarsePosition().x, goal->getCoarsePosition().z) });
 	// convert back to vec3 ...
-	path.resize(p.size()+1);
-	for (int i = p.size() - 1; i > 0; i--) {	
+	path.resize(p.size() + 1);
+	for (int i = p.size() - 1; i > 0; i--) {
 		path[i] = vec3(p[i].x, 0, p[i].y);
 	}
 
 	// add exact position of goal to the end
 	path[0] = vec3(goal->getPosition().x, 0, goal->getPosition().z);
+	for (int i = path.size() - 1; i > -1; i--) {
+		std::cout << path[i].x << " " << path[i].z << std::endl;
+	}
 }
 
 

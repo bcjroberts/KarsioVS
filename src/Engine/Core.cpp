@@ -14,6 +14,8 @@
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
 
+#include "../Game/World.h"
+
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
@@ -118,7 +120,13 @@ void Core::coreLoop() {
     // END Brian's shenanigans
 
 	// Perform some minor world generation.
+	
+    // Create the starting Entities
+    Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 1, 0));
+	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 1, 0));
+	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 
+	/*
 	// Create some obstacles										// location				size
 	Entity* obstacle1 = EntityManager::getInstance()->createBox(glm::vec3(5.f, 1.f, 25.f), glm::vec3(1.f));
 	Entity* obstacle2 = EntityManager::getInstance()->createBox(glm::vec3(6.f, 1.f, 25.f), glm::vec3(1.f));
@@ -126,11 +134,6 @@ void Core::coreLoop() {
 	Entity* obstacle4 = EntityManager::getInstance()->createBox(glm::vec3(8.f, 1.f, 25.f), glm::vec3(1.f));
 	Entity* obstacle5 = EntityManager::getInstance()->createBox(glm::vec3(9.f, 1.f, 25.f), glm::vec3(1.f));
 	Entity* obstacle6 = EntityManager::getInstance()->createBox(glm::vec3(10.f, 1.f, 25.f), glm::vec3(1.f));
-	
-    // Create the starting Entities
-    Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 1, 0));
-	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 1, 0));
-	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 	
     // Creating crytsal entities. A value for the size of the crystal can be speicifed if wanted
     Entity* crystalEntity1 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 5), 0.5f);
@@ -150,7 +153,7 @@ void Core::coreLoop() {
     Entity* wall2 = EntityManager::getInstance()->createBox(glm::vec3(100, 2, 0), glm::vec3(2, 4, 100));
     Entity* wall3 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, 100), glm::vec3(100, 4, 2));
     Entity* wall4 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, -100), glm::vec3(100, 4, 2));
-
+	
 	std::vector<Entity*> obstacles;
 	obstacles.push_back(obstacle1);
 	obstacles.push_back(obstacle2);
@@ -174,6 +177,8 @@ void Core::coreLoop() {
 	}
 
 	AStar::Generator gen;
+	World w;
+	gen = w.getWorld();
 	gen.setWorldSize({ 15, 15 });
 
 	float x, y;
@@ -182,8 +187,19 @@ void Core::coreLoop() {
 		y = obstacles[i]->getCoarsePosition().z;
 		gen.addCollision(vec2(x, y));
 	}
-	logic.findPath(&gen, aiVehicle, crystalEntity7);
+	*/
 	
+	
+	World world;
+	world.generateWorld();
+
+	aiVehicle->updatePosition(glm::vec3(10, 1, 0));
+	
+	int num = rand() % (8 - 0 + 1) + 0;
+
+	logic.findPath(&world, aiVehicle, world.crystals[num]);
+	std::cout << num << std::endl;
+
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
@@ -229,7 +245,7 @@ void Core::coreLoop() {
 				timeDiff += 1.0f / 60.0f;
 			}
 //			printf("\n");
-			//std::cout << "current position " << playerVehicle->getCoarsePosition().x << " " << playerVehicle->getCoarsePosition().z << std::endl;
+			//std::cout << "current position " << aiVehicle->getCoarsePosition().x << " " << aiVehicle->getCoarsePosition().z << std::endl;
 			//logic.playerMovement(&tempPlayerInput, playerVehicle);
 			logic.playerMovement(playerVehicle);
             logic.aiMovement(aiVehicle);

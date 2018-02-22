@@ -11,52 +11,53 @@
 #include <functional>
 #include <set>
 
-using namespace glm;
-
 namespace AStar {
 	
 	using uint = unsigned int;
-	using HeuristicFunction = std::function<uint(vec2, vec2)>;
-	using CoordinateList = std::vector<vec2>;
+	using HeuristicFunction = std::function<uint(glm::vec2, glm::vec2)>;
+	using CoordinateList = std::vector<glm::vec2>;
 
 	struct Node {
 		uint G, H;
-		vec2 coordinates;
+		glm::vec2 coordinates;
 		Node *parent;
-		Node(vec2 aCoordinates, Node *aParent = nullptr);
+		Node(glm::vec2 aCoordinates, Node *aParent = nullptr);
 		uint getScore();
 	};
 
 	using NodeSet = std::set<Node*>;
 
 	class Generator {
-		bool detectCollision(vec2 coordinates);
-		Node* findNodeOnList(NodeSet& aNodes, vec2 aCoordinates);
+		bool detectCollision(glm::vec2 coordinates);
+		bool detectCrystal (glm::vec2 coordinates);
+		Node* findNodeOnList(NodeSet& aNodes, glm::vec2 aCoordinates);
 		void releaseNodes(NodeSet& nodes);
 
 	public:
 		Generator();
-		void setWorldSize(vec2 aWorldSize);
+		void setWorldSize(glm::vec2 aWorldSize);
 		//void setDiagonalMovement(bool enable);
 		void setHeuristic(HeuristicFunction aHeuristic);
-		CoordinateList findPath(vec2 source, vec2 target);
-		void addCollision(vec2 coordinates);
-		void removeCollision(vec2 coodrinates);
+		CoordinateList findPath(glm::vec2 source, glm::vec2 target);
+		void addCollision(glm::vec2 coordinates);
+		void addCrystal(glm::vec2 coordinates);
+		void removeCrystal(glm::vec2 coordinates);
+		void removeCollision(glm::vec2 coodrinates);
 		void clearCollisions();
 
 	private:
 		HeuristicFunction heuristic;
-		CoordinateList direction, walls; // add destructable walls later?
-		vec2 worldSize;
+		CoordinateList direction, walls, crystals; // add destructable walls later?
+		glm::vec2 worldSize;
 		uint directions = 8;
 	};
 
 	class Heuristic {
-		static vec2 getDelta(vec2 source, vec2 target);
+		static glm::vec2 getDelta(glm::vec2 source, glm::vec2 target);
 
 	public:
-		static uint euclidean(vec2 source, vec2 target);
-		static uint manhattan(vec2 source, vec2 target);
+		static uint euclidean(glm::vec2 source, glm::vec2 target);
+		static uint manhattan(glm::vec2 source, glm::vec2 target);
 	};
 	
 }

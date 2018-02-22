@@ -8,7 +8,7 @@
 
 using namespace std::placeholders;
 
-AStar::Node::Node(vec2 aCoordinates, Node *aParent) {
+AStar::Node::Node(glm::vec2 aCoordinates, Node *aParent) {
 	parent = aParent;
 	coordinates = aCoordinates;
 	G = H = 0;
@@ -32,7 +32,7 @@ AStar::Generator::Generator() {
 }
 
 // based on generated map
-void AStar::Generator::setWorldSize(vec2 aWorldSize) {
+void AStar::Generator::setWorldSize(glm::vec2 aWorldSize) {
 	worldSize = aWorldSize;
 }
 
@@ -48,11 +48,22 @@ void AStar::Generator::setHeuristic(HeuristicFunction aHeuristic) {
 
 // unbreakable objects, add another for breakable later?
 // based on generated map
-void AStar::Generator::addCollision(vec2 coordinates) {
+void AStar::Generator::addCollision(glm::vec2 coordinates) {
 	walls.push_back(coordinates);
 }
 
-void AStar::Generator::removeCollision(vec2 coordinates) {
+void AStar::Generator::addCrystal(glm::vec2 coordinates) {
+	crystals.push_back(coordinates);
+}
+
+void AStar::Generator::removeCrystal(glm::vec2 coordinates) {
+	auto it = std::find(crystals.begin(), crystals.end(), coordinates);
+	if (it != crystals.end()) {
+		crystals.erase(it);
+	}
+}
+
+void AStar::Generator::removeCollision(glm::vec2 coordinates) {
 	auto it = std::find(walls.begin(), walls.end(), coordinates);
 	if (it != walls.end()) {
 		walls.erase(it);
@@ -65,7 +76,7 @@ void AStar::Generator::clearCollisions() {
 
 
 // the actual path finding algorithm
-AStar::CoordinateList AStar::Generator::findPath(vec2 source, vec2 target) {
+AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 target) {
 	Node *current = nullptr;
 	NodeSet openSet, closedSet;
 	openSet.insert(new Node(source));
@@ -92,9 +103,10 @@ AStar::CoordinateList AStar::Generator::findPath(vec2 source, vec2 target) {
 		// search each direction
 		for (uint i = 0; i < directions; ++i) {
 			// get coordinates of each possible direction
-			vec2 newCoordinates(current->coordinates + direction[i]);
+			glm::vec2 newCoordinates(current->coordinates + direction[i]);
 			// don't consider coordinate if is collision or already on list
-			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates)) {
+			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates) ||
+				detectCrystal(newCoordinates)) {
 				continue;
 			}
 
@@ -132,7 +144,7 @@ AStar::CoordinateList AStar::Generator::findPath(vec2 source, vec2 target) {
 	return path;
 }
 
-AStar::Node* AStar::Generator::findNodeOnList(NodeSet& aNodes, vec2 aCoordinates) {
+AStar::Node* AStar::Generator::findNodeOnList(NodeSet& aNodes, glm::vec2 aCoordinates) {
 	for (auto node : aNodes) {
 		if (node->coordinates == aCoordinates) {
 			return node;
@@ -148,7 +160,7 @@ void AStar::Generator::releaseNodes(NodeSet& nodes) {
 	}
 }
 
-bool AStar::Generator::detectCollision(vec2 coordinates) {
+bool AStar::Generator::detectCollision(glm::vec2 coordinates) {
 	if (coordinates.x <= -worldSize.x || coordinates.x >= worldSize.x ||
 		coordinates.y <= -worldSize.y || coordinates.y >= worldSize.y ||
 		std::find(walls.begin(), walls.end(), coordinates) != walls.end()) {
@@ -157,17 +169,26 @@ bool AStar::Generator::detectCollision(vec2 coordinates) {
 	return false;
 }
 
-vec2 AStar::Heuristic::getDelta(vec2 source, vec2 target) {
-	return vec2(abs(source.x - target.x), abs(source.y - target.y));
+bool AStar::Generator::detectCrystal(glm::vec2 coordinates) {
+	if (coordinates.x <= -worldSize.x || coordinates.x >= worldSize.x ||
+		coordinates.y <= -worldSize.y || coordinates.y >= worldSize.y ||
+		std::find(crystals.begin(),crystals.end(), coordinates) != crystals.end()) {
+		return true;
+	}
+	return false;
+}
+
+glm::vec2 AStar::Heuristic::getDelta(glm::vec2 source, glm::vec2 target) {
+	return glm::vec2(abs(source.x - target.x), abs(source.y - target.y));
 }
 
 
-AStar::uint AStar::Heuristic::euclidean(vec2 source, vec2 target) {
+AStar::uint AStar::Heuristic::euclidean(glm::vec2 source, glm::vec2 target) {
 	auto delta = std::move(getDelta(source, target));
 	return static_cast<uint>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
 }
 
-AStar::uint AStar::Heuristic::manhattan(vec2 source, vec2 target)
+AStar::uint AStar::Heuristic::manhattan(glm::vec2 source, glm::vec2 target)
 {
 	auto delta = std::move(getDelta(source, target));
 	return static_cast<uint>(10 * (delta.x + delta.y));
