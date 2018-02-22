@@ -64,6 +64,26 @@ void MaterialData::readFile(std::ifstream& file) {
 //			shaderData = *ShaderDataManager::getShaderData(shaderName);
 			shaderID = ShaderDataManager::getShaderData(shaderName)->shaderID;
 		}
-		//todo::parse the texture data from the texture files
+		else {
+//			std::cout << texture.albedo << std::endl;
+			parseLine(line, albedo, texture.albedo);
+//			std::cout << texture.albedo << std::endl;
+			parseLine(line, roughness, texture.roughness);
+			parseLine(line, metalness, texture.metalness);
+			parseLine(line, normal, texture.normal);
+			parseLine(line, emission, texture.emission);
+		}
+	}
+}
+
+void MaterialData::parseLine(const std::string& line, const std::string& textureKey, GLuint &textureStore) {
+	if ((line.size() >= textureKey.size()) && (line.substr(0, textureKey.size()) == textureKey)) {
+		std::string textureName = line.substr(textureKey.size(), line.size());
+//		std::cout << textureName << std::endl;
+//		std::cout << textureKey << std::endl;
+//		std::cout << textureStore << std::endl;
+		textureStore = TextureDataManager::getTextureData(textureName)->textureID;
+//		std::cout << TextureDataManager::getTextureData(textureName)->textureID << std::endl;
+//		std::cout << textureStore << std::endl;
 	}
 }

@@ -14,29 +14,41 @@ TextureData::~TextureData()
 {
 }
 
+void TextureData::createTextureFromFile(unsigned char* image, GLenum open_format, int image_width, int image_height, GLenum use_format) {
+	glTexImage2D(GL_TEXTURE_2D, 0, open_format, image_width, image_height, 0, use_format, GL_UNSIGNED_BYTE, image);
+}
+
+
 void TextureData::loadTexture(std::string filename) {
 //	GLuint textureID;
 	int imageLayers, imageWidth, imageHeight;
 	//Bind texture
 	glGenTextures(1, &textureID);
-
+//	std::cout << filename << std::endl;
 	unsigned char* image = stbi_load(filename.c_str(), &imageWidth, &imageHeight, &imageLayers, STBI_rgb);
 
 	if (image) {
 
-		GLenum format;
+		GLenum openFormat;
+		GLenum useFormat;
+
 		if (imageLayers == 1) {
-			format = GL_RED;
+			openFormat = GL_RED;
+			useFormat = GL_RED;
 		} 
 		else if (imageLayers == 3) {
-			format = GL_RGB;
+			openFormat = GL_RGB;
+			useFormat = GL_RGB;
 		} 
 		else {
-			format = GL_RGBA;
+			openFormat = GL_RGBA;
+			useFormat = GL_RGB;
 		}
+//		std::cout << openFormat << std::endl;
 
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, imageWidth, imageHeight, 0, format, GL_UNSIGNED_BYTE, image);
+		createTextureFromFile(image, openFormat, imageWidth,imageHeight,useFormat);
+//		glTexImage2D(GL_TEXTURE_2D, 0, format, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 //		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
