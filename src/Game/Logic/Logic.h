@@ -28,6 +28,7 @@ public:
 	void playerMovement(Entity* targetEnt);
     void aiMovement(Entity* entity);
     void bindCamera(Camera* aCamera);
+	void findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal);
 	void findPath(AStar::Generator* generator, Entity* start, Entity* goal);
    ~Logic();
 };

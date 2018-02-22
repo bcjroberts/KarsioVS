@@ -13,6 +13,7 @@
 #include "../Engine/Entity.h"
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
+#include "../Game/Logic/WorldGenerator.h"
 
 GLFWwindow* Core::globalWindow = nullptr;
 
@@ -103,72 +104,25 @@ void Core::coreLoop() {
     logic.bindCamera(&camera);
     // END Brian's shenanigans
 
-	// Perform some minor world generation.
-
-	// Create some obstacles										// location				size
-	Entity* obstacle1 = EntityManager::getInstance()->createBox(glm::vec3(5.f, 1.f, 25.f), glm::vec3(1.f));
-	Entity* obstacle2 = EntityManager::getInstance()->createBox(glm::vec3(6.f, 1.f, 25.f), glm::vec3(1.f));
-	Entity* obstacle3 = EntityManager::getInstance()->createBox(glm::vec3(7.f, 1.f, 25.f), glm::vec3(1.f));
-	Entity* obstacle4 = EntityManager::getInstance()->createBox(glm::vec3(8.f, 1.f, 25.f), glm::vec3(1.f));
-	Entity* obstacle5 = EntityManager::getInstance()->createBox(glm::vec3(9.f, 1.f, 25.f), glm::vec3(1.f));
-	Entity* obstacle6 = EntityManager::getInstance()->createBox(glm::vec3(10.f, 1.f, 25.f), glm::vec3(1.f));
-	
     // Create the starting Entities
     Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 1, 0));
 	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 1, 0));
 	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
-	
-    // Creating crytsal entities. A value for the size of the crystal can be speicifed if wanted
-    Entity* crystalEntity1 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 5), 0.5f);
-    Entity* crystalEntity2 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 15), 1.0f);
-    Entity* crystalEntity3 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 25), 1.5f);
-    Entity* crystalEntity4 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 35), 2.0f);
-    Entity* crystalEntity5 = EntityManager::getInstance()->createCrystal(glm::vec3(5, 1.0f, 45), 2.5f);
 
-    // These crystals mark the ai path
-    Entity* crystalEntity6 = EntityManager::getInstance()->createCrystal(glm::vec3(40, 1.0f, 40), 0.5f);
-    Entity* crystalEntity7 = EntityManager::getInstance()->createCrystal(glm::vec3(-50, 1.0f, 50), 0.65f);
-    Entity* crystalEntity8 = EntityManager::getInstance()->createCrystal(glm::vec3(-50, 1.0f, -50), 0.85f);
-    Entity* crystalEntity9 = EntityManager::getInstance()->createCrystal(glm::vec3(50, 1.0f, -50), 1.0f);
-
-    // Create some temporary walls around the outside to prevent people from escaping.
-    Entity* wall1 = EntityManager::getInstance()->createBox(glm::vec3(-100,2,0), glm::vec3(2, 4, 100));
-    Entity* wall2 = EntityManager::getInstance()->createBox(glm::vec3(100, 2, 0), glm::vec3(2, 4, 100));
-    Entity* wall3 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, 100), glm::vec3(100, 4, 2));
-    Entity* wall4 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, -100), glm::vec3(100, 4, 2));
-
-	std::vector<Entity*> obstacles;
-	obstacles.push_back(obstacle1);
-	obstacles.push_back(obstacle2);
-	obstacles.push_back(obstacle3);
-	obstacles.push_back(obstacle4);
-	obstacles.push_back(obstacle5);
-	obstacles.push_back(obstacle6);
-	obstacles.push_back(crystalEntity1);
-	obstacles.push_back(crystalEntity2);
-	obstacles.push_back(crystalEntity3);
-	obstacles.push_back(crystalEntity4);
-	obstacles.push_back(crystalEntity5);
-	//obstacles.push_back(crystalEntity6);
-	//obstacles.push_back(crystalEntity7);
-	obstacles.push_back(crystalEntity8);
-	obstacles.push_back(crystalEntity9);
-	
-	for (int i = 1; i < 100; i++) {
-		Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-70+i, 1.f, 25.f), glm::vec3(.5f));
-		obstacles.push_back(obstacle);
-	}
+	WorldGenerator worldGen;
+	worldGen.generateWorld();
 
 	AStar::Generator gen;
 	gen.setWorldSize({ 15, 15 });
 
+	std::vector<Entity*>* obstacles = worldGen.getObstacles();
 	float x, y;
-	for (int i = 0; i < obstacles.size() - 1; i++) {
-		x = obstacles[i]->getCoarsePosition().x;
-		y = obstacles[i]->getCoarsePosition().z;
+	for (int i = 0; i < obstacles->size() - 1; i++) {
+		x = (*obstacles)[i]->getCoarsePosition().x;
+		y = (*obstacles)[i]->getCoarsePosition().z;
 		gen.addCollision(vec2(x, y));
 	}
-	logic.findPath(&gen, aiVehicle, crystalEntity7);
+	logic.findPath(&gen, aiVehicle->getPosition(), glm::vec3(-50, 1.0f, 50));
 	
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -185,7 +139,7 @@ void Core::coreLoop() {
         glfwPollEvents();
 		
 		const auto currentTime = glfwGetTime();
-	    const auto timeDiff = currentTime - previousTime;
+	    float timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
 	
 		
@@ -206,7 +160,7 @@ void Core::coreLoop() {
         }else{
             
 //			printf("FrameTime: %f", timeDiff);
-			float timeDiff = 0.0f;
+			timeDiff = 0.0f;
 			// Simulate physics in a Fixed Timestep style
 			while (physicsTime < currentTime) {
 				//				printf(" *");

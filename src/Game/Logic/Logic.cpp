@@ -68,18 +68,36 @@ void Logic::bindCamera(Camera* aCamera) {
     camera = aCamera;
 }
 
-// rukiya's added stuff
-void Logic::findPath(AStar::Generator* generator, Entity* start, Entity* goal) {
-	std::vector<vec2> p = generator->findPath({vec2(start->getCoarsePosition().x, start->getCoarsePosition().z)}, 
-							  {vec2(goal->getCoarsePosition().x, goal->getCoarsePosition().z)});
+glm::vec3 getCoarsePosition(glm::vec3 position) {
+	float x = position.x;
+	float y = position.y;
+	float z = position.z;
+	float gridSize = 10; // larger size = larger grid
+	x = (x >= 0) ? (x - fmod(x, gridSize)) / gridSize : (x + fmod(x, gridSize)) / gridSize;
+	y = (y - fmod(y, gridSize)) / gridSize;
+	z = (z >= 0) ? (z - fmod(z, gridSize)) / gridSize : (z + fmod(z, gridSize)) / gridSize;
+
+	return glm::vec3(x, y, z);
+}
+
+void Logic::findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal) {
+	glm::vec3 coarseStart = getCoarsePosition(start);
+	glm::vec3 coarseGoal = getCoarsePosition(goal);
+	std::vector<vec2> p = generator->findPath({ vec2(coarseStart.x, coarseStart.z) }, { vec2(coarseGoal.x, coarseGoal.z) });
+
 	// convert back to vec3 ...
-	path.resize(p.size()+1);
-	for (int i = p.size() - 1; i > 0; i--) {	
+	path.resize(p.size() + 1);
+	for (int i = p.size() - 1; i > 0; i--) {
 		path[i] = vec3(p[i].x, 0, p[i].y);
 	}
 
 	// add exact position of goal to the end
-	path[0] = vec3(goal->getPosition().x, 0, goal->getPosition().z);
+	path[0] = vec3(goal.x, 0, goal.z);
+}
+
+// rukiya's added stuff
+void Logic::findPath(AStar::Generator* generator, Entity* start, Entity* goal) {
+	findPath(generator, start->getPosition(), goal->getPosition());
 }
 
 
