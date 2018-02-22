@@ -10,10 +10,14 @@ void ModelData::importMesh(std::string meshPath) {
 	// Usually - if speed is not the most important aspect for you - you'll 
 	// propably to request more postprocessing than we do in this example.
 	const aiScene* scene = importer.ReadFile(meshPath,
-											 aiProcess_Triangulate |
+											 aiProcess_Triangulate | // Ensure all verticies are triangulated (each 3 vertices are triangle)
 											 aiProcess_FlipUVs |
-											 aiProcess_CalcTangentSpace |
-											 aiProcess_JoinIdenticalVertices);
+											 aiProcess_CalcTangentSpace | // calculate tangents and bitangents if possible
+											 aiProcess_JoinIdenticalVertices | // join identical vertices/ optimize indexing
+											 aiProcess_ImproveCacheLocality | // improve the cache locality of the output vertices
+											 aiProcess_FindInstances | // search for instanced meshes and remove them by references to one master
+											 aiProcess_OptimizeMeshes | // join small meshes, if possible;
+											 0);
 	if (!scene) {
 		std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
 	}
