@@ -54,7 +54,7 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     rigid1->userData = entity;
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl3"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
 	//ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("ram5"), shapes[5], glm::vec3(1.f), glm::vec3(0, -0.9f, -0.7f));
 
