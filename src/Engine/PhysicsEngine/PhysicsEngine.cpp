@@ -303,16 +303,16 @@ physx::PxVehiclePadSmoothingData gPadSmoothingData =
     {
         6.0f,	//rise rate eANALOG_INPUT_ACCEL
         6.0f,	//rise rate eANALOG_INPUT_BRAKE		
-    6.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-    2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
-    2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
+        6.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
+        2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
+        2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
     },
     {
         10.0f,	//fall rate eANALOG_INPUT_ACCEL
         10.0f,	//fall rate eANALOG_INPUT_BRAKE		
-    10.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-    5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT
-    5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT
+        10.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
+        5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT
+        5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT
     }
 };
 physx::PxF32 gSteerVsForwardSpeedData[2 * 8] =
@@ -339,10 +339,10 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 	for (int i = 0; i < numberOfVehicles; i++)
 	{
         // Put the vehicle in the correct gear:
-        if (allVehicleData[i]->myInput.getDigitalBrake()) {
+        if (allVehicleData[i]->myInput.getAnalogBrake() > 0.0f) {
             // if we are breaking, set accelration to true and ensure we are in the reverse gear
-            allVehicleData[i]->myInput.setDigitalAccel(true);
-            allVehicleData[i]->myInput.setDigitalBrake(false);
+            allVehicleData[i]->myInput.setAnalogAccel(allVehicleData[i]->myInput.getAnalogBrake());
+            allVehicleData[i]->myInput.setAnalogBrake(0.0f);
             allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eREVERSE);
         } else {
             // otherwise ensure we are in first gear
@@ -350,8 +350,8 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
         }
 
 		// Set the vehicle moving
-		PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
-		//PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, gVehicleInputData, timeInSeconds, gIsVehicleInAir, *gVehicle4W);
+		//PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
 
 		vehicles[i] = allVehicleData[i]->myVehicle;
 	}
