@@ -36,7 +36,8 @@ void Logic::aiMovement(Entity* entity) {
 	
     // Now we need to determine where to steer based on where the point is. Currently does not support reverse.
     DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
-    bool steerLeft = false, steerRight = false, accel = true;
+    float steering = 0.0f;
+    float accel = 0.0f;
 
     float oangle = glm::orientedAngle(glm::normalize(ai->getCurrentWaypoint() - entity->getCoarsePosition()),entity->getForwardVector(), glm::vec3(0,1,0));
 	
@@ -51,17 +52,19 @@ void Logic::aiMovement(Entity* entity) {
 
 	// TODO this should be refined so that the AI doesn't spin out
     if (oangle > .1f) {
-        steerLeft = true;
+        steering = -1.0f;
 		
     } else if (oangle < -.1f){
-        steerRight = true;
+        steering = 1.0f;
     }
 	// slow down when turning
-	if (speed > 5 && (steerLeft || steerRight)) {
-		accel = false;
+	if (speed > 5 && (steering != 0.0f)) {
+		accel = 0.0f;
+	} else {
+        accel = 1.0f;
 	}
-					// accel, brake, handbrake
-    aiDrive->setInputs(accel, false, false, steerLeft, steerRight, false, false);
+	// accel, brake, handbrake, steering
+    aiDrive->setInputs(accel, 0.0f, 0.0f, steering);
 }
 
 void Logic::bindCamera(Camera* aCamera) {

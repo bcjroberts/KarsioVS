@@ -166,6 +166,7 @@
     <ClCompile Include="src\Game\Components\DriveComponent.cpp" />
     <ClCompile Include="src\Game\Logic\AStar.cpp" />
     <ClCompile Include="src\game\logic\Logic.cpp" />
+    <ClCompile Include="src\Game\Logic\WorldGenerator.cpp" />
     <ClCompile Include="src\main\initopengl\OpenGL.cpp" />
     <ClCompile Include="src\main\mainGame.cpp" />
     <ClCompile Include="src\Game\Components\VehiclePhysicsComponent.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="src\game\components\RendererComponent.h" />
     <ClInclude Include="src\Game\Logic\AStar.h" />
     <ClInclude Include="src\game\logic\Logic.h" />
+    <ClInclude Include="src\Game\Logic\WorldGenerator.h" />
     <ClInclude Include="src\main\initopengl\OpenGL.h" />
     <ClInclude Include="src\main\initopengl\OpenGL_Deps.h" />
     <ClInclude Include="src\Game\Components\VehiclePhysicsComponent.h" />

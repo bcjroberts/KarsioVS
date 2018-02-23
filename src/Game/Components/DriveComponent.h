@@ -7,40 +7,28 @@
 
 // Temp struct
 struct vehicleInput {
-    bool accel;
-    bool brake;
-    bool handbrake;
-    bool steerLeft;
-    bool steerRight;
-    bool gearUp;
-    bool gearDown;
-    bool inReverse;
+    float accel;
+    float brake;
+    float handbrake;
+    float steering;
 };
 
 class DriveComponent : public Component
 {
 private:
     physx::PxVehicleDrive4WRawInputData* myInput;
-    bool accel;
-    bool brake;
-    bool handbrake;
-    bool steerLeft;
-    bool steerRight;
-    bool gearUp;
-    bool gearDown;
-    bool inReverse;
+    float accel;
+    float brake;
+    float handbrake;
+    float steering;
 public:
-    void setInputs(const bool inAccel, const bool inBrake, const bool inHandbrake, const bool inSteerLeft, const bool inSteerRight, const bool inGearUp, const bool inGearDown);
+    void setInputs(const float accel, const float brake, const float handbrake, const float steering);
     void setInputs(vehicleInput);
 
-    bool getAccel(){return accel;};
-    bool getBrake(){return brake;};
-    bool getHandbrake(){return handbrake;};
-    bool getSteerLeft(){return steerLeft;};
-    bool getSteerRight() { return steerRight; };
-    bool getGearUp() { return gearUp; };
-    bool getGearDown() { return gearDown; };
-    bool getInReverse() { return inReverse; };
+    float getAccel(){return accel;};
+    float getBrake(){return brake;};
+    float getHandbrake(){return handbrake;};
+    float getSteering(){return steering;};
 
     DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput);
     ~DriveComponent();
