@@ -147,6 +147,9 @@
     <ClCompile Include="src\Game\Logic\WorldGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleConfigParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\Component.h">
@@ -288,6 +291,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Logic\WorldGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleConfigParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

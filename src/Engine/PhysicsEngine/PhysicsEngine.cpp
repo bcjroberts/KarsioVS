@@ -16,6 +16,7 @@
 #include "CollisionProcessor.h"
 #include "../../game/components/PhysicsComponent.h"
 #include "../EntityManager.h"
+#include "VehicleConfigParser.h"
 
 // Initialize the Physics Manager global pointer
 PhysicsEngine *PhysicsEngine::globalInstance = nullptr;
@@ -126,7 +127,7 @@ void PhysicsEngine::initPhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-    gMaterial = gPhysics->createMaterial(0.0f, 0.0f, 0.2f);
+    gMaterial = gPhysics->createMaterial(0.1f, 0.4f, 0.4f);
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
 
@@ -262,6 +263,10 @@ vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
         scaleUpVehicle = false;
         snippetvehicle::customizeVehicleToLengthScale(2.0f, gVehicle4W->getRigidDynamicActor(), &gVehicle4W->mWheelsSimData, &gVehicle4W->mDriveSimData);
     }
+
+    // Now lets read the car config file and update the values from there
+    VehicleConfigParser::getInstance()->parseConfigFile();
+    VehicleConfigParser::getInstance()->applyConfigToVehicle(gVehicle4W);
 
     // Create the vehicleData object to store the data, push to vector and return
     vehicleData* vd = new vehicleData();

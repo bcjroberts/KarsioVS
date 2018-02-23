@@ -28,7 +28,7 @@ public:
     ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, Model* mesh, physx::PxShape* newShape, glm::vec3 newScale);
     ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, Model* mesh,  physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos);
     PhysicsComponent* addPhysicsComponent(Entity* addTo, physx::PxRigidActor* nactor);
-    DriveComponent* addDriveComponent(Entity* addTo, physx::PxVehicleDrive4WRawInputData* inputData);
+    DriveComponent* addDriveComponent(Entity* addTo, physx::PxVehicleDrive4WRawInputData* inputData, physx::PxVehicleDrive4W* vehicle);
     HealthComponent* addHealthComponent(Entity* addTo, float health, bool healthIsThreshold = false);
     AIComponent* addAIComponent(Entity* addTo);
 	ControllableComponent* addControllableComponent(Entity* addTo, bool player);

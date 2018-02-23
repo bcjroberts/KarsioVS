@@ -65,7 +65,7 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.3f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
     ComponentManager::getInstance()->addPhysicsComponent(entity, rigid1);
-    ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput);
+    ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput, myVehicleData->myVehicle);
     ComponentManager::getInstance()->addHealthComponent(entity, 200.f);
 
     return entity;

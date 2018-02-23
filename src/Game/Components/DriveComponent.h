@@ -17,6 +17,7 @@ class DriveComponent : public Component
 {
 private:
     physx::PxVehicleDrive4WRawInputData* myInput;
+    physx::PxVehicleDrive4W* myVehicle;
     float accel;
     float brake;
     float handbrake;
@@ -29,7 +30,8 @@ public:
     float getBrake(){return brake;};
     float getHandbrake(){return handbrake;};
     float getSteering(){return steering;};
+    physx::PxVehicleDrive4W* getVehicle() { return myVehicle; }
 
-    DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput);
+    DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput, physx::PxVehicleDrive4W* myVehicle);
     ~DriveComponent();
 };

@@ -14,6 +14,7 @@
 //Used for my not-so-great struct -Brian
 #include "../Game/Components/DriveComponent.h"
 #include "../Game/Logic/WorldGenerator.h"
+#include "PhysicsEngine/VehicleConfigParser.h"
 
 GLFWwindow* Core::globalWindow = nullptr;
 
@@ -32,6 +33,7 @@ Core::~Core() = default;
 // there has to be a better way than to make it this way
 Movement movement;
 int cameraMode = 0;
+bool refreshMovement = false;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -59,6 +61,11 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 		movement.down = set ? 1 : 0;
 		break;
 	}
+
+    if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
+        VehicleConfigParser::getInstance()->parseConfigFile();
+        refreshMovement = true;
+    }
 
 	// Controls whether the camera is free or locked to the player vehicle
 	if (key == GLFW_KEY_1) {
@@ -142,7 +149,10 @@ void Core::coreLoop() {
 	    float timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
 	
-		
+        // R was pressed, we need to re set the player vehicle
+		if (refreshMovement) {
+            VehicleConfigParser::getInstance()->applyConfigToVehicle(static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getVehicle());
+		}
 
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
