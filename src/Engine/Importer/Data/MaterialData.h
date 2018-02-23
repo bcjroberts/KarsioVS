@@ -8,6 +8,7 @@
 
 class MaterialData {
 private:
+	void parseLine(const std::string& line, const std::string& textureKey, GLuint &textureStore);
 	void readFile(std::ifstream& file);
 	
 public:

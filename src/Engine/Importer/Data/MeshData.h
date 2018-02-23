@@ -23,8 +23,9 @@ public:
 		glm::vec3 position; // point location
 		glm::vec3 normal;   // vertex normal
 		glm::vec2 uvCoords; // vertex uv coordinate
-//		glm::vec3 tangent;	// tangent
-//		glm::vec3 bitangent;// bitangent
+		glm::vec3 tangent;	// tangent
+		glm::vec3 bitangent; // bitangent
+		glm::vec3 vertColors; // vertex colors 
 	};
 	MeshData(aiMesh *mesh);
 	~MeshData() = default;

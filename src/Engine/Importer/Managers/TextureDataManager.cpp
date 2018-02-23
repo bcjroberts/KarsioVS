@@ -7,7 +7,9 @@ TextureData* TextureDataManager::getTextureData(std::string textureName) {
 	TextureData* result = textureDataMap[textureName];
 	if (!result) {
 		result = new TextureData();
+//		std::cout << textureName << std::endl;
 		result->loadTexture("data/assets/textures/" + textureName);
+//		std::cout << result << std::endl;
 		textureDataMap.insert_or_assign(textureName, result);
 	}
 	//	std::cout << shaderName << std::endl;
