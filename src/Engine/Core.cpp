@@ -185,7 +185,7 @@ void Core::coreLoop() {
 		y = obstacles[i]->getCoarsePosition().z;
 		gen.addCollision(vec2(x, y));
 	}
-	logic.findPath(&gen, aiVehicle, crystalEntity7);
+	//logic.findPath(&gen, aiVehicle, crystalEntity7);
 	
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code

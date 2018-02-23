@@ -128,8 +128,10 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     
     startPos.y = resourceAmount * 2.0f;
     Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), glm::vec3(1));
-    ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(0, float(rand() % 314) / 100.0f,0)), modelScale);
-    ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
+   // ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(0, float(rand() % 314) / 100.0f,0)), modelScale);
+    ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(-1.57,0,0)), modelScale);
+
+	ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
     
     // Render the physics hitbox for the crystal
     // ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), physicsScale);
