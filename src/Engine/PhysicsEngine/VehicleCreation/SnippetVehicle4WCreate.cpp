@@ -178,12 +178,12 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barFront;
 	barFront.mWheel0 = PxVehicleDrive4WWheelOrder::eFRONT_LEFT;
 	barFront.mWheel1 = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT;
-	barFront.mStiffness = 10000.0f;
+	barFront.mStiffness = 100000.0f; //0
 	wheelsSimData->addAntiRollBarData(barFront);
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 10000.0f;
+	barRear.mStiffness = 100000.0f;
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 
@@ -269,7 +269,7 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 
 		//Engine
 		PxVehicleEngineData engine;
-		engine.mPeakTorque=500.0f;
+		engine.mPeakTorque=5000.0f;
 		engine.mMaxOmega=600.0f;//approx 6000 rpm
 		driveSimData.setEngineData(engine);
 

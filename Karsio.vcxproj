@@ -170,6 +170,7 @@
     <ClCompile Include="src\main\initopengl\OpenGL.cpp" />
     <ClCompile Include="src\main\mainGame.cpp" />
     <ClCompile Include="src\Game\Components\VehiclePhysicsComponent.cpp" />
+    <ClCompile Include="src\Engine\PhysicsEngine\VehicleConfigParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\AudioObserver.h" />
@@ -219,6 +220,7 @@
     <ClInclude Include="src\main\initopengl\OpenGL_Deps.h" />
     <ClInclude Include="src\Game\Components\VehiclePhysicsComponent.h" />
     <ClInclude Include="src\Main\mainGame.h" />
+    <ClInclude Include="src\Engine\PhysicsEngine\VehicleConfigParser.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\assets\models\bigCrystal1.txt" />

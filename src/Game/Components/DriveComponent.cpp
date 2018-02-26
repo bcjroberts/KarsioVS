@@ -1,7 +1,8 @@
 #include "DriveComponent.h"
 
-DriveComponent::DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput) : Component(DRIVE) {
+DriveComponent::DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput, physx::PxVehicleDrive4W* newVehicle) : Component(DRIVE) {
     myInput = newInput;
+    myVehicle = newVehicle;
 };
 
 void DriveComponent::setInputs(const float accel, const float brake, const float handbrake, const float steering) {
