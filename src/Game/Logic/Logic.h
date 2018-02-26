@@ -13,6 +13,7 @@
 
 #include "AStar.h"
 #include "../../Engine/PhysicsEngine/PhysicsEngine.h"
+#include "WorldGenerator.h"
 
 class Logic {
 Camera * camera;
@@ -21,6 +22,7 @@ Entity * player;
 vehicleInput * movePlayer;
 DriveComponent * playerDrive;
 std::vector<vec3> path;
+int state = 0;
 public:        
     Logic();
     void cameraMovement(Movement* newMovement);
@@ -30,6 +32,7 @@ public:
     void bindCamera(Camera* aCamera);
 	void findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal);
 	void findPath(AStar::Generator* generator, Entity* start, Entity* goal);
+	void stateThing(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
    ~Logic();
 };
 

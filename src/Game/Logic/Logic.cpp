@@ -4,6 +4,7 @@
 
 #include "Logic.h"
 #include <glm/gtx/vector_angle.hpp>
+#include <time.h>
 
 Logic::Logic(){
 };
@@ -44,6 +45,13 @@ void Logic::aiMovement(Entity* entity) {
 	// if at last waypoint, move directly towards goal
 	if (ai->currentWaypointIndex == path.size() - 1) {
 		oangle = glm::orientedAngle(glm::normalize(ai->getCurrentWaypoint() - entity->getPosition()), entity->getForwardVector(), glm::vec3(0, 1, 0));
+		
+		// if reached it, do something else (change this later)
+		if (glm::distance(ai->getCurrentWaypoint(), entity->getPosition()) < 0.5f) {
+			state = 2;
+			std::cout << "arrived at goal; find out what to do next; state = 2" << std::endl;
+			ai->clearWaypoints();
+		}
 	}
 
 	// get speed of vehicle to make it slow down while turning
@@ -76,9 +84,10 @@ glm::vec3 getCoarsePosition(glm::vec3 position) {
 	float y = position.y;
 	float z = position.z;
 	float gridSize = 10; // larger size = larger grid
-	x = (x >= 0) ? (x - fmod(x, gridSize)) / gridSize : (x + fmod(x, gridSize)) / gridSize;
-	y = (y - fmod(y, gridSize)) / gridSize;
-	z = (z >= 0) ? (z - fmod(z, gridSize)) / gridSize : (z + fmod(z, gridSize)) / gridSize;
+	
+	x = floor(x / gridSize);
+	y = floor(y / gridSize);
+	z = floor(z / gridSize);
 
 	return glm::vec3(x, y, z);
 }
@@ -87,21 +96,57 @@ void Logic::findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goa
 	glm::vec3 coarseStart = getCoarsePosition(start);
 	glm::vec3 coarseGoal = getCoarsePosition(goal);
 	std::vector<vec2> p = generator->findPath({ vec2(coarseStart.x, coarseStart.z) }, { vec2(coarseGoal.x, coarseGoal.z) });
-
-	// convert back to vec3 ...
-	path.resize(p.size() + 1);
-	for (int i = p.size() - 1; i > 0; i--) {
-		path[i] = vec3(p[i].x, 0, p[i].y);
+	//std::cout << "goal coarse " << coarseGoal.x << " " << coarseGoal.z << std::endl;
+	if (p.empty()) {
+		std::cout << "no path found; search for new goal; state = 0" << std::endl;
+		state = 0;
+		return;
 	}
 
+	// convert back to vec3 ...
+	path.resize(p.size() - 1);
+	for (int i = p.size() - 2; i > 0; i--) {	// less current position
+		path[i] = vec3(p[i].x, 0, p[i].y);
+	}
 	// add exact position of goal to the end
 	path[0] = vec3(goal.x, 0, goal.z);
+	state = 1;
+	std::cout << "found path to goal; state = 1" << std::endl;
+	std::cout << "current position " << coarseStart.x << " " << coarseStart.z << std::endl;
+	for (int i = path.size() - 1; i > -1; i--) {
+		std::cout << path[i].x << " " << path[i].z << std::endl;
+	}
 }
 
-// rukiya's added stuff
-void Logic::findPath(AStar::Generator* generator, Entity* start, Entity* goal) {
-	findPath(generator, start->getPosition(), goal->getPosition());
+// states
+// 0 = searching for goal location, getting path to goal
+// 1 = moving towards goal
+// 2 = arrived at goal (branch depending on what the goal is)
+// 3 = upgrading
+void Logic::stateThing(Entity* entity, AStar::Generator* generator, WorldGenerator* world) {
+	Entity* goal;
+	switch (state) {
+	case 0:
+		srand(time(NULL));
+		goal = world->getCrystals()->at(rand() % world->getCrystalSize());
+		findPath(generator, entity->getPosition(), goal->getPosition());
+		break;
+	case 1:
+		aiMovement(entity);
+		break;
+	case 2:
+		// figure out what to do next based on behaviour
+		// if upgrade possible, upgrade (and change to state 3)
+		// else, search for crystal (change to state 0)
+		// attack player
+		goal = 
+		break;
+	case 3:
+		// upgrade based on behaviour
+		break;
+	}
 }
+
 
 
 

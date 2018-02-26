@@ -1,7 +1,6 @@
 #include "WorldGenerator.h"
 #include "../../engine/EntityManager.h"
 
-
 WorldGenerator::WorldGenerator() {
 }
 
@@ -25,11 +24,11 @@ void WorldGenerator::generateWorld() {
 	Entity* crystalEntity9 = EntityManager::getInstance()->createCrystal(glm::vec3(50, 1.0f, -50), 1.0f);
 
 	// Create some temporary walls around the outside to prevent people from escaping.
-	Entity* wall1 = EntityManager::getInstance()->createBox(glm::vec3(-100, 2, 0), glm::vec3(2, 4, 100));
-	Entity* wall2 = EntityManager::getInstance()->createBox(glm::vec3(100, 2, 0), glm::vec3(2, 4, 100));
-	Entity* wall3 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, 100), glm::vec3(100, 4, 2));
-	Entity* wall4 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, -100), glm::vec3(100, 4, 2));
-
+	//Entity* wall1 = EntityManager::getInstance()->createBox(glm::vec3(-100, 2, 0), glm::vec3(2, 4, 100));
+	//Entity* wall2 = EntityManager::getInstance()->createBox(glm::vec3(100, 2, 0), glm::vec3(2, 4, 100));
+	//Entity* wall3 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, 100), glm::vec3(100, 4, 2));
+	//Entity* wall4 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, -100), glm::vec3(100, 4, 2));
+	/*
 	obstacles.push_back(crystalEntity1);
 	obstacles.push_back(crystalEntity2);
 	obstacles.push_back(crystalEntity3);
@@ -39,6 +38,8 @@ void WorldGenerator::generateWorld() {
 	//obstacles.push_back(crystalEntity7);
 	obstacles.push_back(crystalEntity8);
 	obstacles.push_back(crystalEntity9);
+	*/
+	
 
 	crystals.push_back(crystalEntity1);
 	crystals.push_back(crystalEntity2);
@@ -49,14 +50,31 @@ void WorldGenerator::generateWorld() {
 	crystals.push_back(crystalEntity7);
 	crystals.push_back(crystalEntity8);
 	crystals.push_back(crystalEntity9);
-
+	/*
 	for (int i = 1; i < 100; i++) {
 		if (i % 5 == 0) {
 			Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-70 + i, 1.f, 25.f), glm::vec3(.5f));
 			obstacles.push_back(obstacle);
 		}
 	}
+	*/
+	for (int i = 0; i < 200; i++) {
+		if (i % 10 == 0) {
+			//Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-100 + i, 1.f, 0), glm::vec3(.5f));
+			//obstacles.push_back(obstacle);
+		}
+	}
+	for (int i = 0; i < 200; i++) {
+		if (i % 10 == 0) {
+			//Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(0, 1.f, -100 + i), glm::vec3(.5f));
+			//obstacles.push_back(obstacle);
+		}
+	}
+	Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-100, 1.f, -100), glm::vec3(.5f));
+	obstacles.push_back(obstacle);
+
 }
+
 
 std::vector<Entity*>* WorldGenerator::getObstacles() {
 	return &obstacles;
@@ -64,4 +82,8 @@ std::vector<Entity*>* WorldGenerator::getObstacles() {
 
 std::vector<Entity*>* WorldGenerator::getCrystals() {
 	return &crystals;
+}
+
+int WorldGenerator::getCrystalSize() {
+	return crystals.size();
 }

@@ -11,7 +11,8 @@ public:
     AIComponent();
     glm::vec3 AIComponent::getCurrentWaypoint();
     void nextWaypoint();
-	void setWaypoints(std::vector<glm::vec3> path);	// rukiya's own garbage
+	void setWaypoints(std::vector<glm::vec3> path);
+	void clearWaypoints();
     ~AIComponent();
 };
 

@@ -11,5 +11,6 @@ public:
 	void generateWorld();
 	std::vector<Entity*>* getObstacles();
 	std::vector<Entity*>* getCrystals();
+	int getCrystalSize();
 };
 

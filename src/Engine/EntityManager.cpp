@@ -55,7 +55,7 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     rigid1->userData = entity;
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl3"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl3"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
 	//ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("ram5"), shapes[5], glm::vec3(1.f), glm::vec3(0, -0.9f, -0.7f));
 
     // Uncomment this if you want to see the physics hitbox for the chassis
@@ -128,8 +128,7 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     
     startPos.y = resourceAmount * 2.0f;
     Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), glm::vec3(1));
-   // ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(0, float(rand() % 314) / 100.0f,0)), modelScale);
-    ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(-1.57,0,0)), modelScale);
+    ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(0, float(rand() % 314) / 100.0f,0)), modelScale);
 
 	ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
     

@@ -74,12 +74,12 @@ void AStar::Generator::clearCollisions() {
 	walls.clear();
 }
 
-
 // the actual path finding algorithm
 AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 target) {
 	Node *current = nullptr;
 	NodeSet openSet, closedSet;
 	openSet.insert(new Node(source));
+	bool pathFound = false;
 
 	while (!openSet.empty()) {
 		current = *openSet.begin();
@@ -94,6 +94,8 @@ AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 tar
 		
 		// check first if arrived at destination
 		if (current->coordinates == target) {
+			printf("path found\n");
+			pathFound = true;
 			break;
 		}
 
@@ -105,8 +107,7 @@ AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 tar
 			// get coordinates of each possible direction
 			glm::vec2 newCoordinates(current->coordinates + direction[i]);
 			// don't consider coordinate if is collision or already on list
-			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates) ||
-				detectCrystal(newCoordinates)) {
+			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates) /*|| detectCrystal(newCoordinates) */) {
 				continue;
 			}
 
@@ -140,8 +141,14 @@ AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 tar
 	// clean up
 	releaseNodes(openSet);
 	releaseNodes(closedSet);
-
-	return path;
+	
+	if (pathFound) {
+		return path;
+	}
+	else {
+		path.clear();
+		return path;
+	}
 }
 
 AStar::Node* AStar::Generator::findNodeOnList(NodeSet& aNodes, glm::vec2 aCoordinates) {
@@ -188,8 +195,7 @@ AStar::uint AStar::Heuristic::euclidean(glm::vec2 source, glm::vec2 target) {
 	return static_cast<uint>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
 }
 
-AStar::uint AStar::Heuristic::manhattan(glm::vec2 source, glm::vec2 target)
-{
+AStar::uint AStar::Heuristic::manhattan(glm::vec2 source, glm::vec2 target){
 	auto delta = std::move(getDelta(source, target));
 	return static_cast<uint>(10 * (delta.x + delta.y));
 }
