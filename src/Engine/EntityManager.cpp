@@ -67,7 +67,7 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     ComponentManager::getInstance()->addPhysicsComponent(entity, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput, myVehicleData->myVehicle);
     ComponentManager::getInstance()->addHealthComponent(entity, 200.f);
-
+    entities.push_back(entity);
     return entity;
 }
 
@@ -75,7 +75,7 @@ Entity* EntityManager::createPlayerVehicleEntity(glm::vec3 startPos) {
 	Entity* playerCar = createBasicVehicleEntity(startPos);
 
 	ComponentManager::getInstance()->addControllableComponent(playerCar, true);
-	
+    // DONT ADD ENTITY TO LIST, done in previous call
 	return playerCar;
 }
 
@@ -85,6 +85,7 @@ Entity* EntityManager::createAIVehicleEntity(glm::vec3 startPos) {
     // We now have a regular car, lets AI-ify it.
     ComponentManager::getInstance()->addAIComponent(aiCar);
 	ComponentManager::getInstance()->addControllableComponent(aiCar, false);
+    // DONT ADD ENTITY TO LIST, done in previous call
     return aiCar;
 }
 
@@ -94,6 +95,7 @@ Entity* EntityManager::createGroundPlane() {
     physx::PxRigidActor* plane = PhysicsEngine::getInstance()->createPhysicsPlane();
     plane->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, plane);
+    entities.push_back(entity);
 	return entity;
 }
 
@@ -103,6 +105,7 @@ Entity* EntityManager::createBox(glm::vec3 startPos, glm::vec3 scale) {
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
+    entities.push_back(entity);
 	return entity;
 }
 
@@ -137,5 +140,6 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createCrystalBoxCollider(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(physicsScale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
+    entities.push_back(entity);
     return entity;
 }
