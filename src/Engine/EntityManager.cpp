@@ -54,16 +54,22 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     rigid1->userData = entity;
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
-	//ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModelData("ram5"), shapes[5], glm::vec3(1.f), glm::vec3(0, -0.9f, -0.7f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0,0,0.6f));
+	//ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("ram5"), shapes[5], glm::vec3(1.f), glm::vec3(0, -0.9f, -0.7f));
 
-    // Uncomment this if you want to see the physics hitbox for the chassis
-    //ComponentManager::getInstance()->addShapeRendererComponent(entity1, &cubeMesh, &shaderData, shapes[4], glm::vec3(1.5f, 1.0f, 2.5f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.6f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.3f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.3f));
+    // Uncomment this if you want to see the physics hitbox for the chassis and wheeels
+    /*ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("cube"), shapes[4], glm::vec3(1.5f, 1.0f, 2.5f));//chassis
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("cube"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f));//wheels
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("cube"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("cube"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("cube"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("cube"), shapes[5], glm::vec3(0.75f, 0.5f, 1.0f));//ram*/
+
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[2], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -0.7f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[3], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -0.7f));
     ComponentManager::getInstance()->addPhysicsComponent(entity, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput, myVehicleData->myVehicle);
     ComponentManager::getInstance()->addHealthComponent(entity, 200.f);
