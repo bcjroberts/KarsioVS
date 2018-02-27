@@ -18,7 +18,7 @@ public:
     int id;
     Component(ComponentType type);
 	ComponentType getComponentType();
-    ~Component();
+	virtual ~Component();
 };
 
 

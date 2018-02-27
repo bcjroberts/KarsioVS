@@ -133,7 +133,8 @@ void ComponentManager::cleanupComponents(Entity* entity) {
                 break;
             }
         }
-        entity->removeComponent(toRemove);
+        entity->removeComponent(toRemove->id);
+		delete toRemove;
         toRemove = entity->getComponent(RENDERER);
     }
 
@@ -145,5 +146,6 @@ void ComponentManager::cleanupComponents(Entity* entity) {
                 break;
             }
         }
+		delete toRemove;
     }
 }

@@ -11,6 +11,6 @@ public:
     vec3 localPos;
     ShapeRendererComponent(Model* newModel, physx::PxShape* newShape);
     mat4 getMatrix() override;
-    ~ShapeRendererComponent();
+    virtual ~ShapeRendererComponent();
 };
 
