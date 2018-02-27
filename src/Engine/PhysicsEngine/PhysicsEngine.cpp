@@ -110,7 +110,7 @@ void PhysicsEngine::initPhysics()
     gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale(), true, gPvd);
 
     physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-    sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+    sceneDesc.gravity = physx::PxVec3(0.0f, -20.f, 0.0f);
 
     physx::PxU32 numWorkers = 1;
     gDispatcher = physx::PxDefaultCpuDispatcherCreate(numWorkers);
@@ -127,7 +127,7 @@ void PhysicsEngine::initPhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-    gMaterial = gPhysics->createMaterial(0.1f, 0.4f, 0.4f);
+    gMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.4f);
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
 
@@ -322,10 +322,10 @@ physx::PxVehiclePadSmoothingData gPadSmoothingData =
 };
 physx::PxF32 gSteerVsForwardSpeedData[2 * 8] =
 {
-    0.0f,		0.75f,
+    0.0f,		1.f,
     5.0f,		0.75f,
-    30.0f,		0.125f,
-    120.0f,		0.1f,
+    30.0f,		0.5f,//0.125f
+    120.0f,		0.25f,//0.1f
     PX_MAX_F32, PX_MAX_F32,
     PX_MAX_F32, PX_MAX_F32,
     PX_MAX_F32, PX_MAX_F32,
