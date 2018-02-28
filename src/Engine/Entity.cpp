@@ -79,6 +79,18 @@ glm::vec3 Entity::getForwardVector() const {
 	return forwardVec;
 }
 
+glm::vec3 Entity::getUpVector() const {
+    glm::vec3 upVec(0, 1, 0);
+    upVec = glm::rotate(rotation, upVec);
+    return upVec;
+}
+
+glm::vec3 Entity::getRightVector() const {
+    glm::vec3 rightVec(1, 0, 0);
+    rightVec = glm::rotate(rotation, rightVec);
+    return rightVec;
+}
+
 glm::mat4 Entity::getMatrix() const {
     glm::mat4 myMatrix;
     myMatrix = glm::translate(myMatrix, position) * glm::toMat4(rotation) * glm::scale(myMatrix, scale);

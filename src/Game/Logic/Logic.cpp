@@ -67,6 +67,11 @@ void Logic::aiMovement(Entity* entity) {
     aiDrive->setInputs(accel, 0.0f, 0.0f, steering);
 }
 
+bool Logic::canVehicleFlip(Entity* vehicle) {
+    printf("Up Vector: (%f, %f, %f)\n", vehicle->getUpVector().x, vehicle->getUpVector().y, vehicle->getUpVector().z);
+    return false;
+}
+
 void Logic::bindCamera(Camera* aCamera) {
     camera = aCamera;
 }

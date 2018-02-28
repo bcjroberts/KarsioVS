@@ -34,6 +34,7 @@ Core::~Core() = default;
 Movement movement;
 int cameraMode = 0;
 bool refreshMovement = false;
+bool flipVehicle = false;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -65,6 +66,10 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
     if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
         VehicleConfigParser::getInstance()->parseConfigFile();
         refreshMovement = true;
+    }
+
+    if (action == GLFW_RELEASE && key == GLFW_KEY_F) {
+        flipVehicle = true;
     }
 
 	// Controls whether the camera is free or locked to the player vehicle
@@ -154,6 +159,19 @@ void Core::coreLoop() {
             VehicleConfigParser::getInstance()->applyConfigToVehicle(static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getVehicle());
 		}
 
+        if (flipVehicle) {
+            // Initialize torque force as a direction
+            physx::PxVec3 torqueForce = PhysicsEngine::toPxVec3(playerVehicle->getForwardVector());
+            physx::PxVec3 verticalForce(0, 1, 0);
+
+            // Convert direction to reale force values
+            torqueForce = torqueForce * 100000.f;
+            verticalForce = verticalForce * 10000.f;
+
+            static_cast<PhysicsComponent*>(playerVehicle->getComponent(PHYSICS))->getRigidBody()->addForce(verticalForce, physx::PxForceMode::eIMPULSE, true);
+            static_cast<PhysicsComponent*>(playerVehicle->getComponent(PHYSICS))->getRigidBody()->addTorque(torqueForce, physx::PxForceMode::eIMPULSE, true);
+            flipVehicle = false;
+        }
         //-----Temp rotation code:
         //Setup a time based rotation transform to demo that updateInstance works
         /*mat4 transform00;
@@ -183,6 +201,7 @@ void Core::coreLoop() {
 			//logic.playerMovement(&tempPlayerInput, playerVehicle);
 			logic.playerMovement(playerVehicle);
             logic.aiMovement(aiVehicle);
+            logic.canVehicleFlip(playerVehicle);
 			
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
