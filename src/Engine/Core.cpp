@@ -17,6 +17,7 @@
 #include "PhysicsEngine/VehicleConfigParser.h"
 
 GLFWwindow* Core::globalWindow = nullptr;
+float Core::timeSinceStartup = 0.f;
 
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -150,8 +151,9 @@ void Core::coreLoop() {
 
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
-		
-		const auto currentTime = glfwGetTime();
+        timeSinceStartup = glfwGetTime();
+
+		const auto currentTime = timeSinceStartup;
 	    float timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
 	
@@ -159,14 +161,6 @@ void Core::coreLoop() {
 		if (refreshMovement) {
             VehicleConfigParser::getInstance()->applyConfigToVehicle(static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getVehicle());
 		}
-
-        //-----Temp rotation code:
-        //Setup a time based rotation transform to demo that updateInstance works
-        /*mat4 transform00;
-        transform00 = glm::rotate(transform00,GLfloat(timeDiff) * 5.0f,vec3(0,0,1));
-        renderEngine.updateInstance(tempMesh,0,transform00);*/
-
-        //------End of temp rotation code
 
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other
@@ -192,6 +186,7 @@ void Core::coreLoop() {
 
 			//logic.playerMovement(&tempPlayerInput, playerVehicle);
 			logic.playerMovement(playerVehicle);
+			logic.canVehicleFlip(playerVehicle);
             //logic.aiMovement(aiVehicle);
 			logic.finiteStateMachine(aiVehicle, &gen, &worldGen);
             // Render all of the renderer components here

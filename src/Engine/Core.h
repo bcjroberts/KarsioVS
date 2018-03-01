@@ -29,6 +29,7 @@ public:
     void coreLoop();
     ~Core();
     static GLFWwindow* globalWindow;
+    static float timeSinceStartup;
 };
 
 

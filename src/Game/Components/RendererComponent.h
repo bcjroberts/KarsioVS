@@ -13,6 +13,6 @@ public:
     Model* myModel;
     virtual mat4 getMatrix();
 	RendererComponent(Model* newModel);
-	~RendererComponent();
+	virtual ~RendererComponent();
 };
 

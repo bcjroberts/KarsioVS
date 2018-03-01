@@ -5,11 +5,12 @@ DriveComponent::DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput, ph
     myVehicle = newVehicle;
 };
 
-void DriveComponent::setInputs(const float accel, const float brake, const float handbrake, const float steering) {
+void DriveComponent::setInputs(const float accel, const float brake, const float handbrake, const float steering, const bool flip) {
     this->accel = accel;
     this->brake = brake;
     this->steering = steering;
     this->handbrake = handbrake;
+    this->flip = flip;
 
     myInput->setAnalogAccel(accel);
     myInput->setAnalogBrake(brake);
@@ -18,6 +19,6 @@ void DriveComponent::setInputs(const float accel, const float brake, const float
 }
 
 void DriveComponent::setInputs(vehicleInput in) {
-    setInputs(in.accel, in.brake, in.handbrake, in.steering);
+    setInputs(in.accel, in.brake, in.handbrake, in.steering, in.flip);
 }
 DriveComponent::~DriveComponent() = default;

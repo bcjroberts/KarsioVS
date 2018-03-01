@@ -62,7 +62,6 @@ glm::vec3 Entity::getCoarsePosition() const {
 	float y = position.y;
 	float z = position.z;
 	float gridSize = 10; // larger size = larger grid
-	
 	x = floor(x / gridSize);
 	y = floor(y / gridSize);
 	z = floor(z / gridSize);
@@ -82,6 +81,18 @@ glm::vec3 Entity::getForwardVector() const {
 	glm::vec3 forwardVec(0, 0, 1);
 	forwardVec = glm::rotate(rotation, forwardVec);
 	return forwardVec;
+}
+
+glm::vec3 Entity::getUpVector() const {
+    glm::vec3 upVec(0, 1, 0);
+    upVec = glm::rotate(rotation, upVec);
+    return upVec;
+}
+
+glm::vec3 Entity::getRightVector() const {
+    glm::vec3 rightVec(1, 0, 0);
+    rightVec = glm::rotate(rotation, rightVec);
+    return rightVec;
 }
 
 glm::mat4 Entity::getMatrix() const {

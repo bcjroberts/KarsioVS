@@ -33,6 +33,8 @@ public:
     glm::quat getRotation() const;
 	glm::vec3 getScale() const;
 	glm::vec3 getForwardVector() const;
+    glm::vec3 getUpVector() const;
+    glm::vec3 getRightVector() const;
     glm::mat4 getMatrix() const;
     ~Entity();
 };
