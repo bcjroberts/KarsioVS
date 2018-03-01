@@ -28,14 +28,12 @@ int state = 0;
 public:        
     Logic();
     void cameraMovement(Movement* newMovement);
-    void playerMovement(vehicleInput* newMovement, Entity* targetEnt);
 	void playerMovement(Entity* targetEnt);
     void aiMovement(Entity* entity);
     bool canVehicleFlip(Entity* vehicle) const;
     void flipVehicle(Entity* vehicle) const;
     void bindCamera(Camera* aCamera);
 	void findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal);
-	void findPath(AStar::Generator* generator, Entity* start, Entity* goal);
 	void finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
 	void mine(Entity* entity);
 	void attack(Entity* goal, Entity* entity);

@@ -55,7 +55,7 @@ void Logic::aiMovement(Entity* entity) {
 	if (ai->currentWaypointIndex == path.size() - 1) {
 		oangle = glm::orientedAngle(glm::normalize(ai->getCurrentWaypoint() - entity->getPosition()), entity->getForwardVector(), glm::vec3(0, 1, 0));
 		
-		std::cout << "arrived at goal" << std::endl;
+		//std::cout << "arrived at goal" << std::endl;
 		if (state == 1 || state == 4) {
 			// if was looking for crystal
 			state = 4;
@@ -104,11 +104,11 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     if (oangle < 0.9f) {
         // Now we check condition 2. If we havent flipped in 2.5 seconds, allow flipping.
         if (Core::timeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 2.5f) {
-            printf("YES\n");
+            //printf("YES\n");
             return true;
         }
     }
-    printf("NO\n");
+    //printf("NO\n");
     return false;
 }
 
@@ -149,13 +149,14 @@ glm::vec3 getCoarsePosition(glm::vec3 position) {
 	return glm::vec3(x, y, z);
 }
 
+
 void Logic::findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal) {
 	glm::vec3 coarseStart = getCoarsePosition(start);
 	glm::vec3 coarseGoal = getCoarsePosition(goal);
 	std::vector<vec2> p = generator->findPath({ vec2(coarseStart.x, coarseStart.z) }, { vec2(coarseGoal.x, coarseGoal.z) });
-	//std::cout << "goal coarse " << coarseGoal.x << " " << coarseGoal.z << std::endl;
+	
 	if (p.empty()) {
-		std::cout << "no path found; search for new goal; state = 2" << std::endl;
+		std::cout << "no path found; searching for new goal" << std::endl;
 		state = 2;
 		return;
 	}
@@ -166,20 +167,19 @@ void Logic::findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goa
 		path[i] = vec3(p[i].x, 0, p[i].y);
 	}
 	// add exact position of goal to the end
-	if (path.size() > 0) {
-		path[0] = vec3(goal.x, 0, goal.z);
+	if (path.size() < 1) {
+		path.resize(1);
 	}
+	path[0] = vec3(goal.x, 0, goal.z);
 	
 	if (state == 0) {
 		state = 1;
-		std::cout << "found path to goal, time to mine; state = " << state << std::endl;
+		// found path to goal, now mine
 	}
 	else if (state == 3) {
 		state = 6;
-		std::cout << "found path to goal, time to attack; state = " << state << std::endl;
+		// found path to goal, now attack
 	}
-	//state = 1;
-	std::cout << "current position " << coarseStart.x << " " << coarseStart.z << std::endl;
 	for (int i = path.size() - 1; i > -1; i--) {
 		std::cout << path[i].x << " " << path[i].z << std::endl;
 	}
@@ -189,8 +189,8 @@ void Logic::backUp(Entity* entity) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
 
+	
 	if (glm::distance(ai->getCurrentWaypoint(), entity->getPosition()) < 20.0f) {
-		std::cout << "backing up\n";
 		// accel, brake, handbrake, steering
 		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 	}
@@ -199,29 +199,25 @@ void Logic::backUp(Entity* entity) {
 		ai->clearWaypoints();
 		state = 2;
 	}
+	
 }
-
 
 void Logic::mine(Entity* entity) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
 
-	// TODO: later, handle if someone else gets the crystal it was targetting
-
 	// start ramming
 	if (ai->getMinedID() == ai->getGoalID()) {
 		// whether or not it breaks doesn't matter, crystal is hit so it did its job, find something else to do now
-		std::cout << "i hit it" << std::endl;
 		ai->setMinedID(-2); // reset value
 		
 		if (ai->getKilledCrystal()) {	// nothing in front of it now
-			std::cout << "successfully collected crystal" << std::endl;
-			ai->setKilledCrystal(false);	// reset value
+			ai->setKilledCrystal(false);
 			state = 2;
 			ai->clearWaypoints();
 		}
-		else {	// crystal is in front of it, back up then look for new goal
-			std::cout << "still there, must back up" << std::endl;
+		else {
+			// crystal is in front of it, back up then look for new goal
 			state = 7;
 		}
 	} 
@@ -229,42 +225,25 @@ void Logic::mine(Entity* entity) {
 		ai->setKilledCrystal(false);	// got the wrong crystal, keep going
 	}
 	else {
-		// else keep moving towards goal
+		// keep moving towards goal
 		aiMovement(entity);
 	}
 }
 
-// TODO: fix this later
+
 void Logic::attack(Entity* goal, Entity* entity) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
-	HealthComponent* goalHealth = static_cast<HealthComponent*>(goal->getComponent(HEALTH));
-	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
-	
-	std::cout << "attacking\n";
 
-	//float oangle = glm::orientedAngle(glm::normalize(goal->getPosition() - entity->getPosition()), entity->getForwardVector(), glm::vec3(0, 1, 0));
-
-	// follow and shoot
-	//ai->clearWaypoints();
-	//ai->setWaypoints(std::vector<vec3> {goal->getPosition()});
-	//aiMovement(entity);
-
-	// don't get this thru health
-	if (goalHealth->isDead()) {
-		std::cout << "killed them" << std::endl;
-		ai->clearWaypoints();
-		state = 2;
-	}
-	else if (glm::distance(goal->getPosition(), entity->getPosition()) > 30.0f) {
+	//std::cout << "attacking" << std::endl;
+	if (glm::distance(goal->getPosition(), entity->getPosition()) > 30.0f) {
 		// do something else if they get too far away
-		std::cout << "give up attacking" << std::endl;
+		//std::cout << "gave up attacking" << std::endl;
 		ai->clearWaypoints();
 		state = 2;
 	}
 	else {
 		// continue tailing
-		std::cout << "tailing" << std::endl;
-		state = 6;
+		aiMovement(entity);
 	}
 }
 
@@ -280,6 +259,7 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 	switch (state) {
 	case 0:
 		// find crystal
+		// oops right now it always starts with looking for a crystal
 		srand(time(NULL));
 		do {
 			goal = world->getCrystals()->at(rand() % world->getCrystalSize());
@@ -294,7 +274,6 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 		break;
 	case 2:
 		// decide what to do next
-		std::cout << "deciding\n";
 		srand(time(NULL));
 		decision = rand() % 2;	// 0 = mine some more, 1 = attack
 		if (decision == 0) {
@@ -303,12 +282,9 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 		else if (decision == 1) {
 			state = 3;
 		}
-		state = 0;	// just look for crystals right now
 		break;
 	case 3:
 		// attack
-		// atm this is never reached
-		std::cout << "ai going to attack" << std::endl;
 		goal = entityMan->getInstance()->getEntities().at(0);
 		findPath(generator, entity->getPosition(), goal->getPosition());
 		break;
@@ -322,7 +298,6 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 		break;
 	case 6:
 		// move to destination (attacking)
-		// atm never reached
 		aiMovement(entity);
 		break;
 	case 7:

@@ -387,6 +387,7 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
         physx::PxRigidActor* temp = static_cast<PhysicsComponent*>(colproc.destroyedEntities[i]->getComponent(PHYSICS))->myActor;
         gScene->removeActor(*temp);
         EntityManager::getInstance()->destroyEntity(colproc.destroyedEntities[i]->id);
+
     }
     // Clear the array so items are not removed twice
     colproc.destroyedEntities.clear();

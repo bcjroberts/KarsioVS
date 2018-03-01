@@ -29,9 +29,20 @@ void WorldGenerator::generateWorld() {
 	Entity* wall3 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, 100), glm::vec3(100, 4, 2));
 	Entity* wall4 = EntityManager::getInstance()->createBox(glm::vec3(0, 2, -100), glm::vec3(100, 4, 2));
 	
-	Entity* wall5 = EntityManager::getInstance()->createBox(glm::vec3(85, 2, 25), glm::vec3(100, 4, 2));
-	//Entity* wall6 = EntityManager::getInstance()->createBox(glm::vec3(85, 2, 25), glm::vec3(100, 4, 5));
+	Entity* wall5 = EntityManager::getInstance()->createBox(glm::vec3(65, 2, 25), glm::vec3(40, 4, 2));
+	Entity* wall6 = EntityManager::getInstance()->createBox(glm::vec3(65, 2, 25), glm::vec3(2, 4, 50));
+
+	Entity* wall7 = EntityManager::getInstance()->createBox(glm::vec3(55, 2, 25), glm::vec3(50, 4, 2));
+	Entity* wall8 = EntityManager::getInstance()->createBox(glm::vec3(-35, 2, 55), glm::vec3(2, 4, 50));
+	
+	obstacles.push_back(wall1);
+	obstacles.push_back(wall2);
+	obstacles.push_back(wall3);
+	obstacles.push_back(wall4);
 	obstacles.push_back(wall5);
+	obstacles.push_back(wall6);
+	obstacles.push_back(wall7);
+	obstacles.push_back(wall8);
 
 	crystals.push_back(crystalEntity1);
 	crystals.push_back(crystalEntity2);
@@ -42,29 +53,29 @@ void WorldGenerator::generateWorld() {
 	crystals.push_back(crystalEntity7);
 	crystals.push_back(crystalEntity8);
 	crystals.push_back(crystalEntity9);
-	/*
-	for (int i = 1; i < 100; i++) {
-		if (i % 5 == 0) {
-			Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-70 + i, 1.f, 25.f), glm::vec3(.5f));
-			obstacles.push_back(obstacle);
-		}
-	}
-	*/
+	
+	//for (int i = 1; i < 100; i++) {
+	//	if (i % 5 == 0) {
+	//		Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-70 + i, 1.f, 25.f), glm::vec3(.5f));
+	//		obstacles.push_back(obstacle);
+	//	}
+	//}
+	
 
-	// these mark edges of grid for clarity sake so I can keep my sanity
-	for (int i = 0; i < 200; i++) {
-		if (i % 10 == 0 && i != 100) {
+	/// these mark edges of grid for clarity's sake so I can keep my sanity
+	//for (int i = 0; i < 200; i++) {
+		//if (i % 10 == 0 && i != 100) {
 			//Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-100 + i, 1.f, 0), glm::vec3(.5f));
 			//obstacles.push_back(obstacle);
-		}
-	}
-	for (int i = 0; i < 200; i++) {
-		if (i % 10 == 0 && i != 100) {
+		//}
+	//}
+	//for (int i = 0; i < 200; i++) {
+	//	if (i % 10 == 0 && i != 100) {
 			//Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(0, 1.f, -100 + i), glm::vec3(.5f));
 			//obstacles.push_back(obstacle);
-		}
-	}
-	// end sanity markers
+	//	}
+	//}
+	/// end sanity markers
 
 	Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-100, 1.f, -100), glm::vec3(.5f));
 	obstacles.push_back(obstacle);

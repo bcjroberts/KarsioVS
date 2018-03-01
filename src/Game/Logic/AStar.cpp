@@ -57,19 +57,14 @@ void AStar::Generator::addCollision(glm::vec2 coordinates) {
 
 // collisions based on scale
 // right now this works based off of the size of the wall
-// works for 10x10 grid with coarse grid size of 10
 // TODO: make it based off of collision mesh???
 void AStar::Generator::addCollision(glm::vec2 coordinates, glm::vec3 scale) {
-	//printf("scale = %f\n", scale.x);
-	//printf("coordinates -> %f, %f\n", coordinates.x, coordinates.y);
-
-	for (float i = 0; i <= scale.x/10; i++) {
-		//printf("i = %f", i);
+	for (float i = -coordinates.x; i <= scale.x/10; i++) {
 		//printf("i-> %f, %f\n", coordinates.x - i, coordinates.y);
 		walls.push_back(glm::vec2(coordinates.x - i, coordinates.y));
 	}
-	for (float i = 0; i <= scale.z/10; i++) {
-		//printf("j-> %f, %f\n", coordinates.x, coordinates.y - j);
+	for (float i = -coordinates.y; i <= scale.z/10; i++) {
+		//printf("i-> %f, %f\n", coordinates.x, coordinates.y - i);
 		walls.push_back(glm::vec2(coordinates.x, coordinates.y - i));
 	}
 }
@@ -116,7 +111,7 @@ AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 tar
 		
 		// check first if arrived at destination
 		if (current->coordinates == target) {
-			printf("path found\n");
+			//printf("path found\n");
 			pathFound = true;
 			break;
 		}

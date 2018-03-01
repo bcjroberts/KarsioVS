@@ -121,7 +121,7 @@ void Core::coreLoop() {
 	worldGen.generateWorld();
 	
 	AStar::Generator gen;
-	gen.setWorldSize({ 10, 10 });	// originally set as 20,20
+	gen.setWorldSize({ 10, 10 });
 
 	std::vector<Entity*>* obstacles = worldGen.getObstacles();
 	std::vector<Entity*>* crystals = worldGen.getCrystals();
@@ -136,7 +136,6 @@ void Core::coreLoop() {
 		y = (*crystals)[i]->getCoarsePosition().z;
 		gen.addCrystal(vec2(x, y));
 	}
-	//logic.findPath(&gen, aiVehicle->getPosition(), glm::vec3(-50, 1.0f, -50));
 	
     ComponentManager::getInstance()->initializeRendering(&renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -179,16 +178,11 @@ void Core::coreLoop() {
 				timeDiff += 1.0f / 60.0f;
 			}
 //			printf("\n");
-			//std::cout << "current position " << playerVehicle->getCoarsePosition().x << " " << playerVehicle->getCoarsePosition().z << std::endl;
-			//std::cout << "current position " << playerVehicle->getPosition().x << " " << playerVehicle->getPosition().z << std::endl;
-
-			//std::cout << "current position " << aiVehicle->getCoarsePosition().x << " " << aiVehicle->getCoarsePosition().z << std::endl;
-
-			//logic.playerMovement(&tempPlayerInput, playerVehicle);
+						
 			logic.playerMovement(playerVehicle);
 			logic.canVehicleFlip(playerVehicle);
-            //logic.aiMovement(aiVehicle);
 			logic.finiteStateMachine(aiVehicle, &gen, &worldGen);
+
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
             ComponentManager::getInstance()->performRendering();
