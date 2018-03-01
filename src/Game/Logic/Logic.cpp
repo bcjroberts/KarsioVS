@@ -4,6 +4,7 @@
 
 #include "Logic.h"
 #include <glm/gtx/vector_angle.hpp>
+#include "../../Engine/Core.h"
 
 Logic::Logic(){
 };
@@ -18,12 +19,21 @@ void Logic::playerMovement(Entity* targetEnt) {
 	//if (temp) temp->setInputs(*newMovement);
 	con->getInput();
 	temp->setInputs(con->input);
+
+    if (temp->getFlip() && canVehicleFlip(targetEnt)) {
+        flipVehicle(targetEnt);
+    }
 }
 
 void Logic::aiMovement(Entity* entity) {
     // First thing we need to do is see if we are close enough to the waypoint to head toward the next one
     AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	
+    // First thing we check is if the Vehicle can flip
+    if(canVehicleFlip(entity)) {
+        flipVehicle(entity);
+    }
+
 	// populate waypoints
 	if (ai->waypoints.empty()) {
 		ai->setWaypoints(path);
@@ -67,9 +77,45 @@ void Logic::aiMovement(Entity* entity) {
     aiDrive->setInputs(accel, 0.0f, 0.0f, steering);
 }
 
-bool Logic::canVehicleFlip(Entity* vehicle) {
-    printf("Up Vector: (%f, %f, %f)\n", vehicle->getUpVector().x, vehicle->getUpVector().y, vehicle->getUpVector().z);
+bool Logic::canVehicleFlip(Entity* vehicle) const {
+
+    // In order to determine if a vehicle is allowed to flip, perform 2 checks:
+    // First, that the up vector for the vehicle is not within a reasonable range of the normal up vector
+    // Second, that the time since the last flip is larger than some threshold.
+
+    float oangle = glm::dot(vehicle->getUpVector(), glm::vec3(0, 1, 0));
+
+    // If less than some threshold, then condition 1 is met.
+    if (oangle < 0.9f) {
+        // Now we check condition 2. If we havent flipped in 2.5 seconds, allow flipping.
+        if (Core::timeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 2.5f) {
+            printf("YES\n");
+            return true;
+        }
+    }
+    printf("NO\n");
     return false;
+}
+
+void Logic::flipVehicle(Entity* vehicle) const{
+    glm::vec3 torqueDirection = vehicle->getForwardVector();
+    float oangle = glm::dot(vehicle->getRightVector(), glm::vec3(0, 1, 0)) * -1.f;
+    // Is the vehicle upside down?
+    if (abs(oangle) < 0.1f) {
+        torqueDirection = torqueDirection * 1.5f;
+    }
+    else { // Otherwise flip in the best direction
+        torqueDirection = torqueDirection * oangle;
+    }
+
+    const physx::PxVec3 verticalForce = physx::PxVec3(0, 1, 0) * 10000.f;
+    const physx::PxVec3 torqueForce = PhysicsEngine::toPxVec3(torqueDirection) * 5000.f;
+
+    static_cast<PhysicsComponent*>(vehicle->getComponent(PHYSICS))->getRigidBody()->addForce(verticalForce, physx::PxForceMode::eIMPULSE, true);
+    static_cast<PhysicsComponent*>(vehicle->getComponent(PHYSICS))->getRigidBody()->addTorque(torqueForce, physx::PxForceMode::eIMPULSE, true);
+
+    // Set the time since the last flip attempt was made.
+    static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime = Core::timeSinceStartup;
 }
 
 void Logic::bindCamera(Camera* aCamera) {
