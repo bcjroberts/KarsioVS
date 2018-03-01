@@ -24,6 +24,10 @@ EntityManager * EntityManager::getInstance()
 	return globalInstance;
 }
 
+std::vector<Entity*> EntityManager::getEntities() {
+	return entities;
+}
+
 EntityManager::~EntityManager() = default;
 
 void EntityManager::destroyEntity(int id) {

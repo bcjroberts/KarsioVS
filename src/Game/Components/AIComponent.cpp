@@ -30,6 +30,31 @@ void AIComponent::clearWaypoints() {
 	waypoints.clear();
 }
 
+void AIComponent::setMinedID(int id) {
+	// set id of the crystal it hit (maybe better name needed)
+	minedID = id;
+}
+
+int AIComponent::getMinedID() {
+	return minedID;
+}
+
+void AIComponent::setKilledCrystal(bool ncollected) {
+	collected = ncollected;
+}
+
+bool AIComponent::getKilledCrystal() {
+	return collected;
+}
+
+void AIComponent::setGoalID(int id) {
+	goalID = id;
+}
+
+int AIComponent::getGoalID() {
+	return goalID;
+}
+
 AIComponent::~AIComponent()
 {
 }

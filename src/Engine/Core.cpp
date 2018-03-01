@@ -120,9 +120,7 @@ void Core::coreLoop() {
 	worldGen.generateWorld();
 	
 	AStar::Generator gen;
-	gen.setWorldSize({ 20, 20 });
-
-	// TODO: world size doesn't match actual size
+	gen.setWorldSize({ 10, 10 });	// originally set as 20,20
 
 	std::vector<Entity*>* obstacles = worldGen.getObstacles();
 	std::vector<Entity*>* crystals = worldGen.getCrystals();
@@ -130,7 +128,7 @@ void Core::coreLoop() {
 	for (int i = 0; i < obstacles->size() - 1; i++) {
 		x = (*obstacles)[i]->getCoarsePosition().x;
 		y = (*obstacles)[i]->getCoarsePosition().z;
-		gen.addCollision(vec2(x, y));
+		gen.addCollision(vec2(x, y), (*obstacles)[i]->getScale());
 	}
 	for (int i = 0; i < crystals->size() - 1; i++) {
 		x = (*crystals)[i]->getCoarsePosition().x;
@@ -188,12 +186,14 @@ void Core::coreLoop() {
 			}
 //			printf("\n");
 			//std::cout << "current position " << playerVehicle->getCoarsePosition().x << " " << playerVehicle->getCoarsePosition().z << std::endl;
-			//std::cout << "current position " << aiVehicle->getPosition().x << " " << aiVehicle->getPosition().z << std::endl;
+			//std::cout << "current position " << playerVehicle->getPosition().x << " " << playerVehicle->getPosition().z << std::endl;
+
+			//std::cout << "current position " << aiVehicle->getCoarsePosition().x << " " << aiVehicle->getCoarsePosition().z << std::endl;
 
 			//logic.playerMovement(&tempPlayerInput, playerVehicle);
 			logic.playerMovement(playerVehicle);
             //logic.aiMovement(aiVehicle);
-			logic.stateThing(aiVehicle, &gen, &worldGen);
+			logic.finiteStateMachine(aiVehicle, &gen, &worldGen);
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
             ComponentManager::getInstance()->performRendering();

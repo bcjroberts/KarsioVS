@@ -31,6 +31,7 @@ public:
 	glm::vec3 getPosition() const;
 	glm::vec3 getCoarsePosition() const;
     glm::quat getRotation() const;
+	glm::vec3 getScale() const;
 	glm::vec3 getForwardVector() const;
     glm::mat4 getMatrix() const;
     ~Entity();

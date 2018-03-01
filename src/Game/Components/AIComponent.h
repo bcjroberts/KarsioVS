@@ -5,6 +5,10 @@
 
 class AIComponent : public Component
 {
+private:
+	bool collected = false;
+	int goalID = -1;
+	int minedID = -2;
 public:
     std::vector<glm::vec3> waypoints;
     int currentWaypointIndex;
@@ -13,6 +17,12 @@ public:
     void nextWaypoint();
 	void setWaypoints(std::vector<glm::vec3> path);
 	void clearWaypoints();
+	void setMinedID(int id);
+	int getMinedID();
+	void setKilledCrystal(bool ncollected);
+	bool getKilledCrystal();
+	void setGoalID(int id);
+	int getGoalID();
     ~AIComponent();
 };
 

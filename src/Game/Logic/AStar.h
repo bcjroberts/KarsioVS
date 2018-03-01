@@ -7,6 +7,7 @@
 #define __ASTAR_H
 
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <vector>
 #include <functional>
 #include <set>
@@ -40,6 +41,7 @@ namespace AStar {
 		void setHeuristic(HeuristicFunction aHeuristic);
 		CoordinateList findPath(glm::vec2 source, glm::vec2 target);
 		void addCollision(glm::vec2 coordinates);
+		void addCollision(glm::vec2 coordinates, glm::vec3 scale);
 		void addCrystal(glm::vec2 coordinates);
 		void removeCrystal(glm::vec2 coordinates);
 		void removeCollision(glm::vec2 coodrinates);

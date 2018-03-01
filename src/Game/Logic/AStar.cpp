@@ -20,6 +20,11 @@ AStar::uint AStar::Node::getScore() {
 }
 
 
+// TODO: based on car size and obstacle size, make collisions occupy more space if needed
+//		 make 3 levels of grids (worldSizes) for cars: big, medium, and small
+//		 start with coarse grid for all
+//       so there should be 4 types of grids
+
 // heuristic is euclidean, manhattan, or octagonal
 // square grid + moving diagonally
 AStar::Generator::Generator() {
@@ -46,10 +51,27 @@ void AStar::Generator::setHeuristic(HeuristicFunction aHeuristic) {
 	heuristic = std::bind(aHeuristic, _1, _2); 
 }
 
-// unbreakable objects, add another for breakable later?
-// based on generated map
 void AStar::Generator::addCollision(glm::vec2 coordinates) {
 	walls.push_back(coordinates);
+}
+
+// collisions based on scale
+// right now this works based off of the size of the wall
+// works for 10x10 grid with coarse grid size of 10
+// TODO: make it based off of collision mesh???
+void AStar::Generator::addCollision(glm::vec2 coordinates, glm::vec3 scale) {
+	//printf("scale = %f\n", scale.x);
+	//printf("coordinates -> %f, %f\n", coordinates.x, coordinates.y);
+
+	for (float i = 0; i <= scale.x/10; i++) {
+		//printf("i = %f", i);
+		//printf("i-> %f, %f\n", coordinates.x - i, coordinates.y);
+		walls.push_back(glm::vec2(coordinates.x - i, coordinates.y));
+	}
+	for (float i = 0; i <= scale.z/10; i++) {
+		//printf("j-> %f, %f\n", coordinates.x, coordinates.y - j);
+		walls.push_back(glm::vec2(coordinates.x, coordinates.y - i));
+	}
 }
 
 void AStar::Generator::addCrystal(glm::vec2 coordinates) {
@@ -107,7 +129,7 @@ AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 tar
 			// get coordinates of each possible direction
 			glm::vec2 newCoordinates(current->coordinates + direction[i]);
 			// don't consider coordinate if is collision or already on list
-			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates) /*|| detectCrystal(newCoordinates) */) {
+			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates) || (detectCrystal(newCoordinates) && newCoordinates != target)) {
 				continue;
 			}
 

@@ -381,7 +381,7 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 
     gScene->simulate(timeInSeconds);
     gScene->fetchResults(true);
-
+	
     // Remove all of the destroyed physics stuff from the scene
     for (int i = 0; i < colproc.destroyedEntities.size(); ++i) {
         physx::PxRigidActor* temp = static_cast<PhysicsComponent*>(colproc.destroyedEntities[i]->getComponent(PHYSICS))->myActor;
@@ -390,6 +390,7 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
     }
     // Clear the array so items are not removed twice
     colproc.destroyedEntities.clear();
+	
 }
 
 PhysicsEngine::~PhysicsEngine() = default;

@@ -4,6 +4,7 @@
 #include <PxRigidActor.h>
 #include <PxRigidBody.h>
 #include "../../Game/Components/HealthComponent.h"
+#include "../../Game/Components/AIComponent.h"
 
 
 CollisionProcessor::CollisionProcessor() {
@@ -96,26 +97,40 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 	// Need 3 things from the vehicles: Its mass, velocity magnitude, and level of drill (multiplier)
 	const physx::PxRigidActor* carActor = nullptr;
     Entity* crystalEntity = nullptr;
+	Entity* carEntity = nullptr;
 
 	// is the first pair item a car
 	if (pairs[0].actor[0]->getNbShapes() > 5) {
 		carActor = pairs[0].actor[0];
         crystalEntity = static_cast<Entity*>(pairs[0].actor[1]->userData);
+		carEntity = static_cast<Entity*>(carActor->userData);
 	} else { // the actor is the car
 		carActor = pairs[0].actor[1];
         crystalEntity = static_cast<Entity*>(pairs[0].actor[0]->userData);
+		carEntity = static_cast<Entity*>(carActor->userData);
 	}
 	const physx::PxRigidBody* carBody = static_cast<const physx::PxRigidBody*>(carActor);
 
     // Use this value to determine if a crystal can be broken with the current ramming force
     const float damage = carBody->getMass() * carBody->getLinearVelocity().magnitude() / 250.0f;
-
+	
     // Apply the ramming damage to the crystal. If the crystal is destroyed, ignore all contacts with it.
     HealthComponent* crystalHealth = static_cast<HealthComponent*>(crystalEntity->getComponent(HEALTH));
     crystalHealth->applyDamage(damage);
 
+	// tell car it hit a crystal
+	AIComponent* carAI = static_cast<AIComponent*>(carEntity->getComponent(AI));
+	if (carEntity->getComponent(AI) != nullptr) {
+		carAI->setMinedID(crystalEntity->id);
+	}
+
     if (crystalHealth->isDead())
     {
+		// tell car that it destroyed the crystal
+		if (carEntity->getComponent(AI) != nullptr) {
+			carAI->setKilledCrystal(true);
+		}
+
         // Mark the crystal for destruction
         destroyedEntities.push_back(crystalEntity);
 
