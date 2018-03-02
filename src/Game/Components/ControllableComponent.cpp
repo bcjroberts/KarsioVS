@@ -40,8 +40,8 @@ void ControllableComponent::getInput() {
 		
 		input.brake = boundInput(axes[GAMEPAD_LEFT_TRIGGER], 0.f, 1.f);
 		input.accel = boundInput(axes[GAMEPAD_RIGHT_TRIGGER], 0.f, 1.f);
-        input.steering = boundInput(axes[GAMEPAD_LEFT_JOYSTICK_X], -1.f, 1.f);
-        input.flip = false; // TODO: Assign to a controller button
+        input.steering = -boundInput(axes[GAMEPAD_LEFT_JOYSTICK_X], -1.f, 1.f);
+		input.flip = buttons[GAMEPAD_Y];
 	} else { //Use keyboard inputs instead if no controller is present.
         input.brake = glfwGetKey(Core::globalWindow, GLFW_KEY_DOWN) ? 1.0f : 0.0f;
         input.accel = glfwGetKey(Core::globalWindow, GLFW_KEY_UP) ? 1.0f : 0.0f;
