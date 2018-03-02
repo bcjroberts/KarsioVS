@@ -1,0 +1,2 @@
+# We do not want to ignore obj files in this folder
+!*.obj
