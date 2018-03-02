@@ -25,6 +25,16 @@ DriveComponent * playerDrive;
 std::vector<vec3> path;
 Entity * goal;
 int state = 0;
+private:
+	enum States {
+		DECIDING,
+		FINDING_CRYSTAL,
+		FINDING_PLAYER,
+		SEEKING_CRYSTAL,
+		SEEKING_PLAYER,
+		MINING,
+		ATTACKING
+	};
 public:        
     Logic();
     void cameraMovement(Movement* newMovement);
@@ -37,7 +47,6 @@ public:
 	void finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
 	void mine(Entity* entity);
 	void attack(Entity* goal, Entity* entity);
-	void backUp(Entity* entity);
    ~Logic();
 };
 
