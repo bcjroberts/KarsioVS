@@ -3,7 +3,7 @@
 
 
 HealthComponent::HealthComponent(float nhealth, bool nhealthIsThreshold) : Component(HEALTH){
-    health = nhealth;
+    health = maxHealth = nhealth;
     healthIsThreshold = nhealthIsThreshold;
 }
 
@@ -28,6 +28,5 @@ int HealthComponent::hitBy() {
 	return hitID;
 }
 
-HealthComponent::~HealthComponent()
-{
-}
+HealthComponent::~HealthComponent() = default;
+

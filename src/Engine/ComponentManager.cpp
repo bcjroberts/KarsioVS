@@ -1,6 +1,5 @@
 #include "ComponentManager.h"
 #include "Entity.h"
-#include "../Game/Components/HealthComponent.h"
 
 // Initialize the Component Manager global pointer.
 ComponentManager *ComponentManager::globalInstance = nullptr;
@@ -84,6 +83,13 @@ ControllableComponent* ComponentManager::addControllableComponent(Entity* addTo,
 	return cc;
 }
 
+UpgradeComponent* ComponentManager::addUpgradeComponent(Entity* addTo) {
+    UpgradeComponent* uc = new UpgradeComponent();
+    addTo->addComponent(uc);
+    uc->owner = addTo;
+    return uc;
+}
+
 ComponentManager* ComponentManager::getInstance() {
     if (!globalInstance) {
         globalInstance = new ComponentManager;
@@ -146,6 +152,21 @@ void ComponentManager::cleanupComponents(Entity* entity) {
                 break;
             }
         }
-		delete toRemove;
+        entity->removeComponent(toRemove->id);
+        delete toRemove;
     }
+
+    toRemove = entity->getComponent(DRIVE);
+    if (toRemove != nullptr) {
+        for (int i = 0; i < driveComponents.size(); ++i) {
+            if (driveComponents[i]->id == toRemove->id) {
+                driveComponents.erase(driveComponents.begin() + i);
+                break;
+            }
+        }
+        entity->removeComponent(toRemove->id);
+        delete toRemove;
+    }
+
+    // Now we can just delete the other components without any special treatment
 }
