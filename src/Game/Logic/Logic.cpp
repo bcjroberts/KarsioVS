@@ -89,11 +89,11 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     if (oangle < 0.9f) {
         // Now we check condition 2. If we havent flipped in 2.5 seconds, allow flipping.
         if (Core::timeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 2.5f) {
-            //printf("YES\n");
+            
             return true;
         }
     }
-    //printf("NO\n");
+    
     return false;
 }
 
