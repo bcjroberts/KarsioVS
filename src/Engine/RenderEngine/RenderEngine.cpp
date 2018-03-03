@@ -161,3 +161,15 @@ void RenderEngine::updateInstance(Model &model, int id, mat4 transform) {
         }
     }
 }
+
+void RenderEngine::removeInstance(Model &model, int id) {
+    for (int i = 0; i < sceneModels.size(); ++i) {
+        if (sceneModels[i].meshes[0].VAO == model.modelData.meshes[0].VAO) {
+            for (int j = 0; j < sceneModels[i].instances.size(); ++j) {
+                if (sceneModels[i].instances[j].ID == id) {
+                    sceneModels[i].instances.erase(sceneModels[i].instances.begin() + j);
+                }
+            }
+        }
+    }
+}

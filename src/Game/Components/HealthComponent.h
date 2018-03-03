@@ -8,8 +8,9 @@ private:
     float health;
 	int hitID = -1;
     float maxHealth;
+    float armor = 0;
 public:
-    HealthComponent(float nhealth, bool nhealthIsThreshold = false);
+    HealthComponent(float nhealth, bool nhealthIsThreshold = false, float narmor = 0);
     bool isDead() const;
     void applyDamage(float damage);
     float getMaxHealth() const { return maxHealth; }

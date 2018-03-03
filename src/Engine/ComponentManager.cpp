@@ -127,9 +127,8 @@ void ComponentManager::cleanupComponents(Entity* entity) {
     while (toRemove != nullptr) {
         RendererComponent* rc = static_cast<RendererComponent*>(toRemove);
 
-        // ********************** TEMPORARY ************************
-        // Hide the destroyed object below the map
-        renderEngine->updateInstance(*rc->myModel, rc->id, hiddenMat4);
+        // destroy the object
+        renderEngine->removeInstance(*rc->myModel, rc->id);
 
         // This is the spot where I would remove the component from the renderer rc->myModel;
         for (int i = 0; i < rendererComponents.size(); ++i)

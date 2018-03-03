@@ -84,6 +84,7 @@ public:
     //Need the model that is being used and the instance that will be added to that model
     void addInstance(Model &model, int id, mat4 transform);
     void updateInstance(Model &model, int id, mat4 transform);
+    void removeInstance(Model& model, int id);
 };
 
 

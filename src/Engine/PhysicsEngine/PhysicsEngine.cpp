@@ -32,7 +32,8 @@ physx::PxScene* gScene = NULL;
 
 physx::PxCooking* gCooking = NULL;
 
-physx::PxMaterial* gMaterial = NULL;
+physx::PxMaterial* baseMaterial = NULL;
+physx::PxMaterial* boxMaterial = NULL;
 
 physx::PxPvd* gPvd = NULL;
 
@@ -127,7 +128,8 @@ void PhysicsEngine::initPhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-    gMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.4f);
+    baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.4f);
+    boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.4f);
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
 
@@ -142,7 +144,7 @@ void PhysicsEngine::initPhysics()
     gBatchQuery = snippetvehicle::VehicleSceneQueryData::setUpBatchedSceneQuery(0, *gVehicleSceneQueryData, gScene);
 
     //Create the friction table for each combination of tire and surface type.
-    gFrictionPairs = snippetvehicle::createFrictionPairs(gMaterial);
+    gFrictionPairs = snippetvehicle::createFrictionPairs(baseMaterial);
 }
 
 snippetvehicle::VehicleDesc initVehicleDesc()
@@ -171,7 +173,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.chassisDims = chassisDims;
     vehicleDesc.chassisMOI = chassisMOI;
     vehicleDesc.chassisCMOffset = chassisCMOffset;
-    vehicleDesc.chassisMaterial = gMaterial;
+    vehicleDesc.chassisMaterial = baseMaterial;
     vehicleDesc.chassisSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_CHASSIS, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CAR);
 
     vehicleDesc.wheelMass = wheelMass;
@@ -179,7 +181,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.wheelWidth = wheelWidth;
     vehicleDesc.wheelMOI = wheelMOI;
     vehicleDesc.numWheels = 4;
-    vehicleDesc.wheelMaterial = gMaterial;
+    vehicleDesc.wheelMaterial = baseMaterial;
     vehicleDesc.wheelSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_WHEEL, snippetvehicle::COLLISION_FLAG_WHEEL_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CAR);
 
     return vehicleDesc;
@@ -200,7 +202,7 @@ glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from) {
 physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 
 	const physx::PxFilterData groundPlaneSimFilterData(snippetvehicle::COLLISION_FLAG_GROUND, snippetvehicle::COLLISION_FLAG_GROUND_AGAINST, 0, 0);
-    physx::PxRigidStatic* plane = PxCreatePlane(*gPhysics, physx::PxPlane(0, 1, 0, 0), *gMaterial);
+    physx::PxRigidStatic* plane = PxCreatePlane(*gPhysics, physx::PxPlane(0, 1, 0, 0), *baseMaterial);
 
     //Get the plane shape so we can set query and simulation filter data.
     physx::PxShape* shapes[1];
@@ -221,7 +223,7 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) const {
 	
 	const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
-	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*gMaterial);
+	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*boxMaterial);
     boxShape->setSimulationFilterData(boxSimFilterData);
 
 	physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics,physx::PxTransform(pos),*boxShape);
@@ -232,7 +234,7 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::P
 physx::PxRigidActor* PhysicsEngine::createCrystalBoxCollider(physx::PxVec3 pos, physx::PxVec3 scale) const {
 
     const physx::PxFilterData crystalSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CRYSTAL);
-    physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale), *gMaterial);
+    physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale), *boxMaterial);
     boxShape->setSimulationFilterData(crystalSimFilterData);
 
     physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics, physx::PxTransform(pos), *boxShape);
