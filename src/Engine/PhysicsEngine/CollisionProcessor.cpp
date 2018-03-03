@@ -5,6 +5,7 @@
 #include <PxRigidBody.h>
 #include "../../Game/Components/HealthComponent.h"
 #include "../../Game/Components/AIComponent.h"
+#include "../../Game/Components/UpgradeComponent.h"
 
 
 CollisionProcessor::CollisionProcessor() {
@@ -130,6 +131,10 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 		if (carEntity->getComponent(AI) != nullptr) {
 			carAI->setKilledCrystal(true);
 		}
+
+        // Add the resources of the crystal to the car whichd estroyed it
+        const float crystalValue = crystalHealth->getMaxHealth() * 10.f;
+        static_cast<UpgradeComponent*>(static_cast<Entity*>(carActor->userData)->getComponent(UPGRADE))->addResources(crystalValue);
 
         // Mark the crystal for destruction
         destroyedEntities.push_back(crystalEntity);

@@ -10,6 +10,7 @@
 #include "../Game/Components/HealthComponent.h"
 #include "../Game/Components/AIComponent.h"
 #include "../Game/Components/ControllableComponent.h"
+#include "../Game/Components/UpgradeComponent.h"
 
 class ComponentManager
 {
@@ -32,6 +33,7 @@ public:
     HealthComponent* addHealthComponent(Entity* addTo, float health, bool healthIsThreshold = false);
     AIComponent* addAIComponent(Entity* addTo);
 	ControllableComponent* addControllableComponent(Entity* addTo, bool player);
+    UpgradeComponent* addUpgradeComponent(Entity* addTo);
     void performRendering();
     void initializeRendering(RenderEngine* re);
     void performPhysicsLogic();

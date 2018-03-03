@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-enum ComponentType {RENDERER, PHYSICS, DRIVE, HEALTH, AI, CONTROLLABLE};
+enum ComponentType {RENDERER, PHYSICS, DRIVE, HEALTH, AI, CONTROLLABLE, UPGRADE };
 class Entity;
 
 class Component {
