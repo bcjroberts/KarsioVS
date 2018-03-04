@@ -110,7 +110,7 @@ void PhysicsEngine::initPhysics()
     gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale(), true, gPvd);
 
     physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-    sceneDesc.gravity = physx::PxVec3(0.0f, -20.f, 0.0f);
+    sceneDesc.gravity = physx::PxVec3(0.0f, -25.f, 0.0f);
 
     physx::PxU32 numWorkers = 1;
     gDispatcher = physx::PxDefaultCpuDispatcherCreate(numWorkers);
@@ -222,11 +222,12 @@ physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {
 	return plane;
 }
 
-physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale) const {
+physx::PxRigidActor* PhysicsEngine::createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale, physx::PxQuat rotation) const {
 	
 	const physx::PxFilterData boxSimFilterData(snippetvehicle::COLLISION_FLAG_OBSTACLE, snippetvehicle::COLLISION_FLAG_OBSTACLE_AGAINST, 0, 0);
 	physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(scale),*boxMaterial);
     boxShape->setSimulationFilterData(boxSimFilterData);
+    boxShape->setLocalPose(physx::PxTransform(rotation));
 
 	physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics,physx::PxTransform(pos),*boxShape);
 	gScene->addActor(*box);

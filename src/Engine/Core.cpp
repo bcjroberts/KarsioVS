@@ -252,9 +252,9 @@ void Core::coreLoop() {
 
                 float dotProd = glm::dot(velocity, playerVehicle->getForwardVector());
 
-                if (dotProd < -5.0f && static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getBrake()) {
+                if (dotProd < -30.0f && static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getBrake()) {
                     movingForward = false;
-                } else if (dotProd > 2.5f) {
+                } else if (dotProd > 5.f) {
                     movingForward = true;
                 }
 

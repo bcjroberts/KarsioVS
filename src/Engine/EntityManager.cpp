@@ -134,7 +134,7 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	// Render the physics hitbox for the boulder
 	//ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), vec3(1.5f, 2.f, 1.5f));
 
-	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), physx::PxVec3(scale.x, scale.y*2.f, scale.z));
+	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), physx::PxVec3(scale.x, scale.y*2.f, scale.z), physx::PxQuat(y, physx::PxVec3(0, 1, 0)));
 	box->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, box);
 	entities.push_back(entity);
