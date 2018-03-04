@@ -302,10 +302,70 @@
     <ClInclude Include="src\Game\Components\UpgradeComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_codec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_dsp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_dsp_effects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_errors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_output.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_studio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_studio.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\include\fmod\fmod_studio_common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\assets\models\smallCrystal1.txt" />
     <Text Include="data\assets\models\bigCrystal1.txt" />
     <Text Include="data\assets\models\ram5.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="deps\libs\fmod_vc.lib" />
+    <Library Include="deps\libs\fmod64_vc.lib" />
+    <Library Include="deps\libs\fmodL_vc.lib" />
+    <Library Include="deps\libs\fmodL64_vc.lib" />
+    <Library Include="deps\libs\fmodstudio_vc.lib" />
+    <Library Include="deps\libs\fmodstudio64_vc.lib" />
+    <Library Include="deps\libs\fmodstudioL_vc.lib" />
+    <Library Include="deps\libs\fmodstudioL64_vc.lib" />
+    <Library Include="deps\libs\libfmod.a" />
+    <Library Include="deps\libs\libfmodL.a" />
+    <Library Include="deps\libs\libfmodstudio.a" />
+    <Library Include="deps\libs\libfmodstudioL.a" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="deps\include\fmod\fmod.cs" />
+    <None Include="deps\include\fmod\fmod_dsp.cs" />
+    <None Include="deps\include\fmod\fmod_errors.cs" />
+    <None Include="deps\include\fmod\fmod_studio.cs" />
+    <None Include="Debug\fmodL.dll" />
+    <None Include="Debug\fmodL64.dll" />
+    <None Include="Debug\fmodstudioL.dll" />
+    <None Include="Debug\fmodstudioL64.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="data\sound\bgm1.mp3" />
   </ItemGroup>
 </Project>

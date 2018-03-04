@@ -87,6 +87,13 @@ void Core::coreLoop() {
 	glfwSetKeyCallback(properties.window, windowKeyInput);
 	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
+    // initialize audio engine
+    audioEngine.init();
+    
+    audioEngine.loadSound("data/sound/bgm1.mp3", false, true, true); // load music
+    int musicChannel = audioEngine.playSounds("data/sound/bgm1.mp3", glm::vec3(0, 0, 0), 1); // play music
+    audioEngine.setChannelVolume(musicChannel, 0.0001f);
+    // end audio init
 
     PhysicsEngine::getInstance()->initPhysics();
 
@@ -216,7 +223,9 @@ void Core::coreLoop() {
             }
 
             renderEngine.render(camera);
-            audioEngine.simulate();
+            
+            audioEngine.update();
+            
         }
     }
 }
