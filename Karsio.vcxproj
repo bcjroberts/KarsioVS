@@ -63,7 +63,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(PROJECTDIR)\deps\include;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(PROJECTDIR)\deps\include;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include;$(PROJECTDIR)\deps\Include\fmod</IncludePath>
     <LibraryPath>$(PROJECTDIR)\deps\libs;$(PROJECTDIR)\deps\physx\PxShared\lib\vc14win32;$(PROJECTDIR)\deps\physx\Lib\vc14win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
