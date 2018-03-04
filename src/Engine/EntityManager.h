@@ -24,7 +24,11 @@ public:
 	Entity* createBoulder(glm::vec3 startPos, glm::vec3 scale);
 	Entity* createWallBoulder(glm::vec3 startPos, glm::vec3 scale);
     Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount = 0);
-	static EntityManager* getInstance();
+    void updateChassis(Entity* toUpdate, float newScale, int level);
+    void updateGun(Entity* toUpdate, int gunLevel);
+    void updateRam(Entity* toUpdate, int ramLevel);
+    void updateArmor(Entity* toUpdate, int chassisLevel, int armorLevel);
+    static EntityManager* getInstance();
 	std::vector<Entity*> getEntities();
     ~EntityManager();
 };

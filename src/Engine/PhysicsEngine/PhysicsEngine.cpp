@@ -197,6 +197,9 @@ glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from) {
     return glm::vec3(from.x, from.y, from.z);
 }
 
+void PhysicsEngine::modifyVehicleScale(float scale, physx::PxRigidDynamic* rigid, physx::PxVehicleDrive4W* vehicle) {
+    snippetvehicle::customizeVehicleToLengthScale(scale, rigid, &vehicle->mWheelsSimData, &vehicle->mDriveSimData);
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// START: Section where physics objects are created
 
 physx::PxRigidActor* PhysicsEngine::createPhysicsPlane() {

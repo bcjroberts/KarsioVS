@@ -6,8 +6,8 @@
 #include "PxPhysicsAPI.h"
 #include "ComponentManager.h"
 #include "../Engine/PhysicsEngine/PhysicsEngine.h"
-//#include "Importer/Managers/MeshManager.h"
 #include "Importer/Managers/ModelManager.h"
+#include "Core.h"
 
 #include <random>   // for default_random_engine & uniform_int_distribution<int>
 #include <chrono> 
@@ -62,10 +62,8 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     rigid1->userData = entity;
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassisWires-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
-
-	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gun1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[4], glm::vec3(1.f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("ram1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.25f, -3.5f));
 
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.5f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.5f));
@@ -195,4 +193,111 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
     entities.push_back(entity);
     return entity;
+}
+
+// ***************************************************** SECTION FOR UPGRADING/MODIFYING VEHICLE PARTS *******************************************************************
+void EntityManager::updateChassis (Entity* toUpdate, float newScale, int level) {
+    // First thing we need to do is grab the renderer for the chassis and update it.
+    // Then we need to tell physics to scale the vehicle.
+    // Then we need to scale all of the renderer components scale and local positions accordingly.
+
+    // Get the chassis, remove it from the render engine, update the model, add it back to the render engine
+    ShapeRendererComponent* chassis = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, CHASSIS));
+    Core::renderEngine->removeInstance(*chassis->myModel, chassis->id);
+    switch(level) {
+        case 1:
+            chassis->myModel = ModelManager::getModel("chassis-lvl1");
+        break;
+        case 2:
+            chassis->myModel = ModelManager::getModel("chassis-lvl2");
+        break;
+        case 3:
+            chassis->myModel = ModelManager::getModel("chassis-lvl3");
+        break;
+    }
+    Core::renderEngine->addInstance(*chassis->myModel, chassis->id, chassis->getMatrix());
+
+    // Now iterate through every ShapeRendererComponent and modify the relevant scalable values. This includes the chassis.
+    for (auto & myComponent : toUpdate->myComponents) {
+        if (myComponent->getComponentType() == RENDERER) {
+            ShapeRendererComponent* src = static_cast<ShapeRendererComponent*>(myComponent);
+            src->scale *= newScale;
+            src->localPos *= newScale;
+        }
+    }
+
+    // Now change physics. Move up 2 spaces to account for enlarging. This should be more precisely tuned later.
+    physx::PxRigidBody* rigidBody = (static_cast<PhysicsComponent*>(toUpdate->getComponent(PHYSICS)))->getRigidBody();
+    const physx::PxTransform toMovePos(rigidBody->getGlobalPose().p + physx::PxVec3(0, 2, 0),rigidBody->getGlobalPose().q);
+    rigidBody->setGlobalPose(toMovePos);
+    physx::PxRigidDynamic* rigidDyn = static_cast<physx::PxRigidDynamic*>(rigidBody);
+    physx::PxVehicleDrive4W* vehicle = (static_cast<DriveComponent*>(toUpdate->getComponent(DRIVE)))->getVehicle();
+    PhysicsEngine::getInstance()->modifyVehicleScale(newScale, rigidDyn, vehicle);
+}
+
+void EntityManager::updateGun (Entity* toUpdate, int gunLevel) {
+    ShapeRendererComponent* gun = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, GUN));
+    Core::renderEngine->removeInstance(*gun->myModel, gun->id);
+    switch(gunLevel) {
+    case 1:
+        gun->myModel = ModelManager::getModel("gun1");
+        break;
+    case 2:
+        gun->myModel = ModelManager::getModel("gun2");
+        break;
+    case 3:
+        gun->myModel = ModelManager::getModel("gun3");
+        break;
+    case 4:
+        gun->myModel = ModelManager::getModel("gun4");
+        break;
+    case 5:
+        gun->myModel = ModelManager::getModel("gun5");
+        break;
+    }
+    Core::renderEngine->addInstance(*gun->myModel, gun->id, gun->getMatrix());
+}
+
+void EntityManager::updateRam (Entity* toUpdate, int ramLevel) {
+    ShapeRendererComponent* ram = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, RAM));
+    Core::renderEngine->removeInstance(*ram->myModel, ram->id);
+    switch(ramLevel) {
+    case 1:
+        ram->myModel = ModelManager::getModel("ram1");
+        break;
+    case 2:
+        ram->myModel = ModelManager::getModel("ram2");
+        break;
+    case 3:
+        ram->myModel = ModelManager::getModel("ram3");
+        break;
+    case 4:
+        ram->myModel = ModelManager::getModel("ram4");
+        break;
+    case 5:
+        ram->myModel = ModelManager::getModel("ram5");
+        break;
+    }
+    Core::renderEngine->addInstance(*ram->myModel, ram->id, ram->getMatrix());
+}
+
+void EntityManager::updateArmor (Entity* toUpdate, int chassisLevel, int armorLevel) {
+
+    int visualLevel = armorLevel - chassisLevel;
+    visualLevel = visualLevel < 0 ? 0 : visualLevel; // Ensure we don't have a negative value
+
+    ShapeRendererComponent* armor = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, ARMOR));
+    Core::renderEngine->removeInstance(*armor->myModel, armor->id);
+    switch(visualLevel) {
+    case 0:
+        armor->myModel = ModelManager::getModel("projectile"); // This means it won't be visible
+        break;
+    case 1:
+        armor->myModel = ModelManager::getModel("armour-lvl1");
+        break;
+    case 2:
+        armor->myModel = ModelManager::getModel("armour-lvl2");
+        break;
+    }
+    Core::renderEngine->addInstance(*armor->myModel, armor->id, armor->getMatrix());
 }

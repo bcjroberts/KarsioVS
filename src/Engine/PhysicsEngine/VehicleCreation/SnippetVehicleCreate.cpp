@@ -33,6 +33,7 @@
 #include "SnippetVehicleFilterShader.h"
 #include "SnippetVehicleTireFriction.h"
 #include "PxPhysicsAPI.h"
+#include <cstring>
 
 namespace snippetvehicle
 {
@@ -154,6 +155,7 @@ PxRigidDynamic* createVehicleActor
 	const PxFilterData drillFilterData(chassisSimFilterData.word0, chassisSimFilterData.word1, snippetvehicle::COLLISION_FLAG_DRILL, chassisSimFilterData.word3);
     drillShape->setSimulationFilterData(drillFilterData);
     drillShape->setLocalPose(PxTransform(PxVec3(0,-1.0f,3.0f)));
+    drillShape->setName("drill");
 
 	vehActor->setMass(chassisData.mMass);
 	vehActor->setMassSpaceInertiaTensor(chassisData.mMOI);
@@ -183,6 +185,8 @@ void configureUserData(PxVehicleWheels* vehicle, ActorUserData* actorUserData, S
 		}
 	}
 }
+
+const char* drillstring = "drill";
 
 void customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDynamic* rigidDynamic, PxVehicleWheelsSimData* wheelsSimData, PxVehicleDriveSimData* driveSimData)
 {
@@ -297,6 +301,10 @@ void customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDynamic* rig
 					shapes[i]->getConvexMeshGeometry(convexMesh);
 					convexMesh.scale.scale *= lengthScale;
 					shapes[i]->setGeometry(convexMesh);
+                    const char* temp = shapes[i]->getName();
+                    if (temp != nullptr && std::strcmp(temp, drillstring) == 0) {
+                        shapes[i]->setLocalPose(physx::PxTransform(shapes[i]->getLocalPose().p * lengthScale));
+                    }
 				}
 				break;
 			case PxGeometryType::eTRIANGLEMESH:

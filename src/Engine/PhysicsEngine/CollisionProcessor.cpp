@@ -112,8 +112,10 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 	}
 	const physx::PxRigidBody* carBody = static_cast<const physx::PxRigidBody*>(carActor);
 
+    const float ramMulti = static_cast<UpgradeComponent*>(carEntity->getComponent(UPGRADE))->getCurrentRamMultiplier();
+
     // Use this value to determine if a crystal can be broken with the current ramming force
-    const float damage = carBody->getMass() * carBody->getLinearVelocity().magnitude() / 250.0f;
+    const float damage = carBody->getMass() * carBody->getLinearVelocity().magnitude() / 250.0f * ramMulti;
 	
     // Apply the ramming damage to the crystal. If the crystal is destroyed, ignore all contacts with it.
     HealthComponent* crystalHealth = static_cast<HealthComponent*>(crystalEntity->getComponent(HEALTH));

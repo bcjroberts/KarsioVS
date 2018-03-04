@@ -18,6 +18,7 @@
 
 GLFWwindow* Core::globalWindow = nullptr;
 float Core::timeSinceStartup = 0.f;
+RenderEngine* Core::renderEngine = nullptr;
 
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -35,6 +36,11 @@ Core::~Core() = default;
 Movement movement;
 int cameraMode = 0;
 bool refreshMovement = false;
+
+bool upgradeChassis = false;
+bool upgradeArmor = false;
+bool upgradeGun = false;
+bool upgradeRam = false;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -68,6 +74,12 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
         refreshMovement = true;
     }
 
+    // Temporary upgrade controls
+    if (action == GLFW_RELEASE && key == GLFW_KEY_4) upgradeChassis = true;
+    if (action == GLFW_RELEASE && key == GLFW_KEY_5) upgradeArmor = true;
+    if (action == GLFW_RELEASE && key == GLFW_KEY_6) upgradeGun = true;
+    if (action == GLFW_RELEASE && key == GLFW_KEY_7) upgradeRam = true;
+
 	// Controls whether the camera is free or locked to the player vehicle
 	if (key == GLFW_KEY_1) {
 		cameraMode = 1;
@@ -80,7 +92,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 
 //Main game loop
 void Core::coreLoop() {
-    RenderEngine renderEngine(properties.window);
+    renderEngine = new RenderEngine(properties.window);
     AudioEngine audioEngine;
     Logic logic;
 
@@ -144,7 +156,7 @@ void Core::coreLoop() {
 		gen.addCrystal(vec2(x, y));
 	}
 	
-    ComponentManager::getInstance()->initializeRendering(&renderEngine);
+    ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
 	double previousTime = 0;
@@ -168,11 +180,41 @@ void Core::coreLoop() {
             VehicleConfigParser::getInstance()->applyConfigToVehicle(static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getVehicle());
 		}
 
+        if (upgradeChassis) {
+            upgradeChassis = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(CHASSIS_UPGRADE)) {
+                printf("Successfully to upgrade Chassis\n");
+            } else {
+                printf("Failed to upgrade Chassis\n");
+            }
+        } else if (upgradeArmor) {
+            upgradeArmor = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(ARMOR_UPGRADE)) {
+                printf("Successfully to upgrade Armor\n");
+            } else {
+                printf("Failed to upgrade Armor\n");
+            }
+        } else if (upgradeGun) {
+            upgradeGun = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(GUN_UPGRADE)) {
+                printf("Successfully to upgrade Gun\n");
+            } else {
+                printf("Failed to upgrade Gun\n");
+            }
+        } else if (upgradeRam) {
+            upgradeRam = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(RAM_UPGRADE)) {
+                printf("Successfully to upgrade Ram\n");
+            } else {
+                printf("Failed to upgrade Ram\n");
+            }
+        }
+
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other
         // approach is better
         if(properties.isPaused){
-            renderEngine.render(camera);
+            renderEngine->render(camera);
         }else{
             
 //			printf("FrameTime: %f", timeDiff);
@@ -222,10 +264,8 @@ void Core::coreLoop() {
                 camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f + glm::vec3(0, 8, 0), 5.0f * timeDiff);
             }
 
-            renderEngine.render(camera);
-            
             audioEngine.update();
-            
+            renderEngine->render(camera);
         }
     }
 }
