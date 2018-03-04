@@ -38,6 +38,6 @@ public:
 
     bool isUpgradeAvailable() const;
     bool canUpgradeType(UpgradeType type);
-    void upgradeVehicle(UpgradeType type);
+    bool upgradeVehicle(UpgradeType type);
 };
 

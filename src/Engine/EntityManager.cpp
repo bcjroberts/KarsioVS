@@ -238,19 +238,19 @@ void EntityManager::updateRam (Entity* toUpdate, int ramLevel) {
 
 void EntityManager::updateArmor (Entity* toUpdate, int chassisLevel, int armorLevel) {
 
-    float visualLevel = armorLevel - chassisLevel;
+    int visualLevel = armorLevel - chassisLevel;
     visualLevel = visualLevel < 0 ? 0 : visualLevel; // Ensure we don't have a negative value
 
     ShapeRendererComponent* armor = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, ARMOR));
     Core::renderEngine->removeInstance(*armor->myModel, armor->id);
-    switch(armorLevel) {
-    case 1:
+    switch(visualLevel) {
+    case 0:
         armor->myModel = ModelManager::getModel("projectile"); // This means it won't be visible
         break;
-    case 2:
+    case 1:
         armor->myModel = ModelManager::getModel("armour-lvl1");
         break;
-    case 3:
+    case 2:
         armor->myModel = ModelManager::getModel("armour-lvl2");
         break;
     }

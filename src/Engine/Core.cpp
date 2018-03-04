@@ -37,6 +37,11 @@ Movement movement;
 int cameraMode = 0;
 bool refreshMovement = false;
 
+bool upgradeChassis = false;
+bool upgradeArmor = false;
+bool upgradeGun = false;
+bool upgradeRam = false;
+
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool set = action != GLFW_RELEASE && GLFW_REPEAT;
@@ -68,6 +73,12 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
         VehicleConfigParser::getInstance()->parseConfigFile();
         refreshMovement = true;
     }
+
+    // Temporary upgrade controls
+    if (action == GLFW_RELEASE && key == GLFW_KEY_4) upgradeChassis = true;
+    if (action == GLFW_RELEASE && key == GLFW_KEY_5) upgradeArmor = true;
+    if (action == GLFW_RELEASE && key == GLFW_KEY_6) upgradeGun = true;
+    if (action == GLFW_RELEASE && key == GLFW_KEY_7) upgradeRam = true;
 
 	// Controls whether the camera is free or locked to the player vehicle
 	if (key == GLFW_KEY_1) {
@@ -168,6 +179,36 @@ void Core::coreLoop() {
 		if (refreshMovement) {
             VehicleConfigParser::getInstance()->applyConfigToVehicle(static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getVehicle());
 		}
+
+        if (upgradeChassis) {
+            upgradeChassis = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(CHASSIS_UPGRADE)) {
+                printf("Successfully to upgrade Chassis\n");
+            } else {
+                printf("Failed to upgrade Chassis\n");
+            }
+        } else if (upgradeArmor) {
+            upgradeArmor = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(ARMOR_UPGRADE)) {
+                printf("Successfully to upgrade Armor\n");
+            } else {
+                printf("Failed to upgrade Armor\n");
+            }
+        } else if (upgradeGun) {
+            upgradeGun = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(GUN_UPGRADE)) {
+                printf("Successfully to upgrade Gun\n");
+            } else {
+                printf("Failed to upgrade Gun\n");
+            }
+        } else if (upgradeRam) {
+            upgradeRam = false;
+            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(RAM_UPGRADE)) {
+                printf("Successfully to upgrade Ram\n");
+            } else {
+                printf("Failed to upgrade Ram\n");
+            }
+        }
 
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other

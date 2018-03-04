@@ -39,26 +39,37 @@ bool UpgradeComponent::canUpgradeType(UpgradeType type) {
     }
 }
 
-void UpgradeComponent::upgradeVehicle(UpgradeType type) {
+bool UpgradeComponent::upgradeVehicle(UpgradeType type) {
     // Seubtract from our current resources, and update the next value
+    //if (!isUpgradeAvailable()) return false;
+
     resources -= resourcesForNextLevel;
     resourcesForNextLevel *= increasedResourceAmountModifier;
+    numberOfUpgrades++;
 
-    if(!canUpgradeType(type)) return; // Ensure we can upgrade this thing first
+    if(!canUpgradeType(type)) return false; // Ensure we can upgrade this thing first
     if (type == CHASSIS_UPGRADE) {
         chassisLevel++;
         static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setMaxHealth(chassisHealth[chassisLevel-1], true);
         EntityManager::getInstance()->updateChassis(owner, 1.5f, chassisLevel);
+        EntityManager::getInstance()->updateArmor(owner, chassisLevel, armorLevel);
+        return true;
     } else if (type == GUN_UPGRADE) {
         // Upgrade the stats of the gun component.
         gunLevel++;
         EntityManager::getInstance()->updateGun(owner, gunLevel);
+        return true;
     } else if (type == ARMOR_UPGRADE) {
+        armorLevel++;
         static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setArmor(armorChange[armorLevel]);
         EntityManager::getInstance()->updateArmor(owner, chassisLevel, armorLevel);
+        return true;
     } else if (type == RAM_UPGRADE) {
         // Tell the entity manager to update the ram look.
+        ramLevel++;
         EntityManager::getInstance()->updateRam(owner, ramLevel);
+        return true;
     }
+    return false;
 }
 
