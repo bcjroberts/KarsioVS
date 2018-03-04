@@ -28,6 +28,15 @@ void HealthComponent::hit(int id) {
 	hitID = id;
 }
 
+void HealthComponent::setArmor(float narmor) {
+    armor = narmor;
+}
+
+void HealthComponent::setMaxHealth(float nmaxHealth, bool setHealth) {
+    maxHealth = nmaxHealth;
+    if (setHealth) health = maxHealth;
+}
+
 int HealthComponent::hitBy() {
 	return hitID;
 }

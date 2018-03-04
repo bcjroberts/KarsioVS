@@ -17,5 +17,7 @@ public:
     ~HealthComponent();
 	int hitBy();
 	void hit(int id = -1);	// if is hit, and by whom
+    void setArmor(float narmor);
+    void setMaxHealth(float nmaxHealth, bool setHealth = false);
 };
 

@@ -18,6 +18,7 @@
 
 GLFWwindow* Core::globalWindow = nullptr;
 float Core::timeSinceStartup = 0.f;
+RenderEngine* Core::renderEngine = nullptr;
 
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -80,7 +81,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 
 //Main game loop
 void Core::coreLoop() {
-    RenderEngine renderEngine(properties.window);
+    renderEngine = new RenderEngine(properties.window);
     AudioEngine audioEngine;
     Logic logic;
 
@@ -144,7 +145,7 @@ void Core::coreLoop() {
 		gen.addCrystal(vec2(x, y));
 	}
 	
-    ComponentManager::getInstance()->initializeRendering(&renderEngine);
+    ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
 	double previousTime = 0;
@@ -172,7 +173,7 @@ void Core::coreLoop() {
         // the other stuff... although feel free to change this if you think some other
         // approach is better
         if(properties.isPaused){
-            renderEngine.render(camera);
+            renderEngine->render(camera);
         }else{
             
 //			printf("FrameTime: %f", timeDiff);
@@ -222,10 +223,8 @@ void Core::coreLoop() {
                 camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f + glm::vec3(0, 8, 0), 5.0f * timeDiff);
             }
 
-            renderEngine.render(camera);
-            
             audioEngine.update();
-            
+            renderEngine->render(camera);
         }
     }
 }

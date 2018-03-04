@@ -3,15 +3,13 @@
 #include <extensions/PxShapeExt.h>
 #include "../../Engine/Entity.h"
 
-ShapeRendererComponent::ShapeRendererComponent(Model* newModel,  physx::PxShape* newShape) : RendererComponent(newModel) {
+ShapeRendererComponent::ShapeRendererComponent(Model* newModel,  physx::PxShape* newShape, RendererTag newTag) : RendererComponent(newModel, newTag) {
     myShape = newShape;
 }
 
 mat4 ShapeRendererComponent::getMatrix()
 {
     physx::PxTransform loc = myShape->getLocalPose();
-                                                     
-    //loc = physx::PxShapeExt::getGlobalPose(*myShape, *myShape->getActor());
 
     // copy the position of the shape
     position.x = loc.p.x;

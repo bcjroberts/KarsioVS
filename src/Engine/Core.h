@@ -30,6 +30,7 @@ public:
     ~Core();
     static GLFWwindow* globalWindow;
     static float timeSinceStartup;
+    static RenderEngine* renderEngine;
 };
 
 

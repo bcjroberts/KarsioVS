@@ -11,8 +11,6 @@
 #include "Event.h"
 #include "Component.h"
 
-class Component;
-
 class Entity {
 private:
     glm::vec3 position;

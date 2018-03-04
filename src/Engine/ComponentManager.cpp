@@ -26,23 +26,17 @@ RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, Model* 
 
 RenderEngine* renderEngine = nullptr;
 
-ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, Model* mesh, physx::PxShape* newShape, glm::vec3 newScale)
+ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, Model* model, physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos, RendererTag tag)
 {
-    ShapeRendererComponent* src = new ShapeRendererComponent(mesh, newShape);
+    ShapeRendererComponent* src = new ShapeRendererComponent(model, newShape, tag);
     rendererComponents.push_back(src);
     addTo->addComponent(src);
 
-    // SPECIAL: set the scale
+    // SPECIAL: set the scale and local position if given
     src->scale = newScale;
+    src->localPos = newLocalPos;
 
     src->owner = addTo;
-    return src;
-}
-
-ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, Model* model, physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos)
-{
-    ShapeRendererComponent* src = addShapeRendererComponent(addTo, model, newShape, newScale);
-    src->localPos = newLocalPos;
     return src;
 }
 
@@ -88,6 +82,20 @@ UpgradeComponent* ComponentManager::addUpgradeComponent(Entity* addTo) {
     addTo->addComponent(uc);
     uc->owner = addTo;
     return uc;
+}
+
+RendererComponent* ComponentManager::getRenderComponentWithTagFromEntity(Entity* from, RendererTag tag) {
+    for (auto & myComponent : from->myComponents)
+    {
+        if (myComponent->getComponentType() == RENDERER)
+        {
+            RendererComponent* renderComponent = static_cast<RendererComponent*>(myComponent);
+            if (renderComponent->tag == tag) {
+                return renderComponent;
+            }
+        }
+    }
+    return nullptr;
 }
 
 ComponentManager* ComponentManager::getInstance() {
