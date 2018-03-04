@@ -77,7 +77,7 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions) {
 
 	// create crystals of variable sizes
 	for (int i = 0; i < 45; i++) {
-		std::uniform_real_distribution<float> urd{ 0, 2.5 };
+		std::uniform_real_distribution<float> urd{ 0.5, 2.5 };
 		float resourceAmount = urd(dre);
 
 		std::uniform_int_distribution<int> uid{ -9, 9 };

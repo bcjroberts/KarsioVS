@@ -134,7 +134,7 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	// Render the physics hitbox for the boulder
 	//ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), vec3(1.5f, 2.f, 1.5f));
 
-	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(vec3(1.5f, 2.f, 1.5f)));
+	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), physx::PxVec3(scale.x, scale.y*2.f, scale.z));
 	box->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, box);
 	entities.push_back(entity);
@@ -163,7 +163,7 @@ Entity* EntityManager::createWallBoulder(glm::vec3 startPos, glm::vec3 scale) {
 }
 
 Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
-    if (resourceAmount <= 0.0f || resourceAmount > 2.5f) { // if the value is not within 0.5 and 2.5, generate it.
+    if (resourceAmount <= 0.5f || resourceAmount > 2.5f) { // if the value is not within 0.5 and 2.5, generate it.
         resourceAmount = float(rand() % 2000 + 500) / 1000.0f;
     }
 

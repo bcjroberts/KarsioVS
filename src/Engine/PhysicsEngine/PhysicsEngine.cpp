@@ -72,7 +72,6 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	// If neither are equal to 0, then we need to process some things
     if ((filterData0.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData1.word3 == snippetvehicle::COLLISION_FLAG_CRYSTAL) || 
 		(filterData1.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData0.word3 == snippetvehicle::COLLISION_FLAG_CRYSTAL)) {
-		printf("Crystal collision detected!\n");
 		// Yay this works!
 		pairFlags = pairFlags
 			//| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
