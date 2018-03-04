@@ -63,7 +63,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(PROJECTDIR)\deps\include;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(PROJECTDIR)\deps\include;$(PROJECTDIR)\deps\physx\Include;$(PROJECTDIR)\deps\physx\PxShared\include;$(PROJECTDIR)\deps\Include\fmod</IncludePath>
     <LibraryPath>$(PROJECTDIR)\deps\libs;$(PROJECTDIR)\deps\physx\PxShared\lib\vc14win32;$(PROJECTDIR)\deps\physx\Lib\vc14win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -86,12 +86,13 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\Brian\Source\Repos\KarsioVS\deps\include\fmod;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;assimp.lib;fmodL_vc.lib;fmodstudioL_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -106,7 +107,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;opengl32.lib;glfw3.lib;LowLevelAABBDEBUG.lib;LowLevelAABB.lib;LowLevelClothDEBUG.lib;LowLevelCloth.lib;LowLevelDEBUG.lib;LowLevelDynamicsDEBUG.lib;LowLevelDynamics.lib;LowLevel.lib;LowLevelParticlesDEBUG.lib;LowLevelParticles.lib;PhysX3CharacterKinematicDEBUG_x86.lib;PhysX3CommonDEBUG_x86.lib;PhysX3Common_x86.lib;PhysX3CookingDEBUG_x86.lib;PhysX3DEBUG_x86.lib;PhysX3ExtensionsDEBUG.lib;PhysX3VehicleDEBUG.lib;PhysX3_x86.lib;SceneQueryDEBUG.lib;SceneQuery.lib;SimulationControllerDEBUG.lib;SimulationController.lib;PxFoundationDEBUG_x86.lib;PxPvdSDKDEBUG_x86.lib;PxTaskDEBUG_x86.lib;assimp.lib;fmod_vc.lib;fmodstudio_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -174,6 +175,17 @@
     <ClCompile Include="src\Game\Components\UpgradeComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="deps\include\fmod\fmod.h" />
+    <ClInclude Include="deps\include\fmod\fmod.hpp" />
+    <ClInclude Include="deps\include\fmod\fmod_codec.h" />
+    <ClInclude Include="deps\include\fmod\fmod_common.h" />
+    <ClInclude Include="deps\include\fmod\fmod_dsp.h" />
+    <ClInclude Include="deps\include\fmod\fmod_dsp_effects.h" />
+    <ClInclude Include="deps\include\fmod\fmod_errors.h" />
+    <ClInclude Include="deps\include\fmod\fmod_output.h" />
+    <ClInclude Include="deps\include\fmod\fmod_studio.h" />
+    <ClInclude Include="deps\include\fmod\fmod_studio.hpp" />
+    <ClInclude Include="deps\include\fmod\fmod_studio_common.h" />
     <ClInclude Include="src\Engine\AudioObserver.h" />
     <ClInclude Include="src\Engine\Observer.h" />
     <ClInclude Include="src\Engine\Observable.h" />
@@ -228,6 +240,33 @@
     <Text Include="data\assets\models\bigCrystal1.txt" />
     <Text Include="data\assets\models\ram5.txt" />
     <Text Include="data\assets\models\smallCrystal1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="deps\libs\fmod64_vc.lib" />
+    <Library Include="deps\libs\fmodL64_vc.lib" />
+    <Library Include="deps\libs\fmodL_vc.lib" />
+    <Library Include="deps\libs\fmodstudio64_vc.lib" />
+    <Library Include="deps\libs\fmodstudioL64_vc.lib" />
+    <Library Include="deps\libs\fmodstudioL_vc.lib" />
+    <Library Include="deps\libs\fmodstudio_vc.lib" />
+    <Library Include="deps\libs\fmod_vc.lib" />
+    <Library Include="deps\libs\libfmod.a" />
+    <Library Include="deps\libs\libfmodL.a" />
+    <Library Include="deps\libs\libfmodstudio.a" />
+    <Library Include="deps\libs\libfmodstudioL.a" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Debug\fmodL.dll" />
+    <None Include="Debug\fmodL64.dll" />
+    <None Include="Debug\fmodstudioL.dll" />
+    <None Include="Debug\fmodstudioL64.dll" />
+    <None Include="deps\include\fmod\fmod.cs" />
+    <None Include="deps\include\fmod\fmod_dsp.cs" />
+    <None Include="deps\include\fmod\fmod_errors.cs" />
+    <None Include="deps\include\fmod\fmod_studio.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="data\sound\bgm1.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
