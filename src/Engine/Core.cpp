@@ -104,7 +104,7 @@ void Core::coreLoop() {
     
     audioEngine.loadSound("data/sound/bgm1.mp3", false, true, true); // load music
     int musicChannel = audioEngine.playSounds("data/sound/bgm1.mp3", glm::vec3(0, 0, 0), 1); // play music
-    audioEngine.setChannelVolume(musicChannel, 0.0001f);
+    audioEngine.setChannelVolume(musicChannel, -25.f);
     // end audio init
 
     PhysicsEngine::getInstance()->initPhysics();
