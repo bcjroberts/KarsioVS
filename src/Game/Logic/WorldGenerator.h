@@ -11,6 +11,9 @@ public:
 	WorldGenerator();
 	~WorldGenerator();
 	void generateWorld();
+	void createWalls();
+	void createObstacles(std::vector<glm::vec3> *positions);
+	void createCrystals(std::vector<glm::vec3> *positions);
 	std::vector<Entity*>* getObstacles();
 	std::vector<Entity*>* getCrystals();
 	int getCrystalSize();

@@ -68,7 +68,7 @@ void Logic::aiMovement(Entity* entity) {
         steering = 1.0f;
     }
 	// slow down when turning
-	if (speed > 5 && (steering != 0.0f)) {
+	if (speed > 10 && (steering != 0.0f)) {
 		accel = 0.0f;
 	} else {
         accel = 1.0f;
@@ -141,7 +141,8 @@ void Logic::findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goa
 	std::vector<vec2> p = generator->findPath({ vec2(coarseStart.x, coarseStart.z) }, { vec2(coarseGoal.x, coarseGoal.z) });
 	
 	if (p.empty()) {
-		std::cout << "no path found" << std::endl;
+		//std::cout << "no path found" << std::endl;
+		path.resize(0);
 		return;
 	}
 
@@ -155,16 +156,23 @@ void Logic::findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goa
 		path.resize(1);
 	}
 	path[0] = vec3(goal.x, 0, goal.z);
-	
-	for (int i = path.size() - 1; i > -1; i--) {
-		std::cout << path[i].x << " " << path[i].z << std::endl;
-	}
+
+	//for (int i = path.size() - 1; i > -1; i--) {
+	//	std::cout << path[i].x << " " << path[i].z << std::endl;
+	//}	
 }
 
 void Logic::mine(Entity* entity) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
-
+	
+	// prevent orbiting around the crystal
+	orbiting++;
+	if (orbiting > 100) {
+		// give up and do something else you stupid AI
+		state = DECIDING;
+		orbiting = 0;
+	}
 	// start ramming
 	if (ai->getMinedID() == ai->getGoalID()) {
 		// whether or not it breaks doesn't matter, crystal is hit so it did its job, find something else to do now
@@ -208,16 +216,13 @@ bool Logic::checkStuck(Entity* entity) {
 		notMoving = 0;
 	}
 	// speed has to be 0 for a while
-	if (notMoving > 150 && state != STUCK) {
+	if (notMoving > 100 && state != STUCK) {
 		if (prevstate == -1) {
 			prevstate = state;
 		}
 		state = STUCK;
 		prevPos = entity->getPosition();
 		return true;
-	}
-	else if (notMoving > 150 && state == STUCK) {
-		return false;
 	}
 	else {
 		return false;
@@ -229,16 +234,11 @@ void Logic::unstuck(Entity* entity) {
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
 
 	if (glm::distance(prevPos, entity->getPosition()) < 10.0f) {
-		// crystal is in front of it, back up
-		// accel, brake, handbrake, steering
-		//std::cout << "backing up" << std::endl;
 		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
 		// continue with whatever it was doing
 		state = prevstate;
-		//std::cout << "I'm OK" << std::endl;
-		prevstate = -1;
 		notMoving = 0;
 	}
 }
@@ -269,6 +269,7 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 			ai->setGoalID(goal->id);
 			// atm, only look for small crystals
 		} while (goal->getScale().x > 1.5);	// assuming scale is same in x, y, z?
+		//std::cout << "searching for crystal path" << std::endl;
 		findPath(generator, entity->getPosition(), goal->getPosition());
 		if (path.size() > 0) {
 			state = SEEKING_CRYSTAL;
@@ -285,6 +286,7 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 		break;
 	case FINDING_PLAYER:
 		goal = entityMan->getInstance()->getEntities().at(0);
+		//std::cout << "searching for player path" << std::endl;
 		findPath(generator, entity->getPosition(), goal->getPosition());
 		if (path.size() > 0) {
 			state = SEEKING_PLAYER;

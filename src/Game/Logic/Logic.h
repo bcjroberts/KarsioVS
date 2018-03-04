@@ -28,6 +28,7 @@ int state = 0;
 int prevstate = -1;
 vec3 prevPos;
 int notMoving = 0;
+int orbiting = 0;
 private:
 	enum States {
 		DECIDING,

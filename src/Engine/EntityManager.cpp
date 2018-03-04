@@ -62,6 +62,9 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     rigid1->userData = entity;
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassisWires-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
+
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gun1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
 
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.5f));
@@ -126,9 +129,34 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	float y = urd(dre);
 
 	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("obstacle"+s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
-	physx::PxRigidActor* boulder = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale));
-	boulder->userData = entity;
-	ComponentManager::getInstance()->addPhysicsComponent(entity, boulder);
+	
+	// Render the physics hitbox for the boulder
+	//ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), vec3(1.5f, 2.f, 1.5f));
+
+	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(vec3(1.5f, 2.f, 1.5f)));
+	box->userData = entity;
+	ComponentManager::getInstance()->addPhysicsComponent(entity, box);
+	entities.push_back(entity);
+	return entity;
+}
+
+Entity* EntityManager::createWallBoulder(glm::vec3 startPos, glm::vec3 scale) {
+	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
+
+	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
+	std::uniform_int_distribution<int> uid{ 1, 7 };
+	std::string s = std::to_string(uid(dre));
+	std::uniform_real_distribution<float> urd{ 0.f, 3.14f };
+	float y = urd(dre);
+
+	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("wall" + s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
+	
+	// Render the physics hitbox for the wall
+	//ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), vec3(4.5f, 12.f, 4.5f));
+
+	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale*4.5f));
+	box->userData = entity;
+	ComponentManager::getInstance()->addPhysicsComponent(entity, box);
 	entities.push_back(entity);
 	return entity;
 }
@@ -160,7 +188,7 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
 	ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
     
     // Render the physics hitbox for the crystal
-    // ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), physicsScale);
+    //ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), physicsScale);
 
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createCrystalBoxCollider(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(physicsScale));
     box->userData = entity;
