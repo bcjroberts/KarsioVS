@@ -197,10 +197,58 @@ void Logic::attack(Entity* goal, Entity* entity) {
 	aiMovement(entity);
 }
 
+bool Logic::checkStuck(Entity* entity) {
+	glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
+	float speed = glm::dot(velocity, entity->getForwardVector());
+	//std::cout << "speed = " << speed << std::endl;
+	if (speed < 1 && speed > -1) {
+		notMoving++;
+	}
+	else {
+		notMoving = 0;
+	}
+	// speed has to be 0 for a while
+	if (notMoving > 150 && state != STUCK) {
+		if (prevstate == -1) {
+			prevstate = state;
+		}
+		state = STUCK;
+		prevPos = entity->getPosition();
+		return true;
+	}
+	else if (notMoving > 150 && state == STUCK) {
+		return false;
+	}
+	else {
+		return false;
+	}
+}
+
+void Logic::unstuck(Entity* entity) {
+	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
+	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
+
+	if (glm::distance(prevPos, entity->getPosition()) < 10.0f) {
+		// crystal is in front of it, back up
+		// accel, brake, handbrake, steering
+		//std::cout << "backing up" << std::endl;
+		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
+	}
+	else {
+		// continue with whatever it was doing
+		state = prevstate;
+		//std::cout << "I'm OK" << std::endl;
+		prevstate = -1;
+		notMoving = 0;
+	}
+}
+
 void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world) {
 	EntityManager* entityMan;
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
-	
+	// at any point, if speed is 0 for set amount of time, back up (unstuckify?)
+	checkStuck(entity);
+
 	int decision;
 	switch (state) {
 	case DECIDING:
@@ -254,6 +302,9 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 			// do something else if they get too far away
 			state = DECIDING;
 		}
+		break;
+	case STUCK:
+		unstuck(entity);
 		break;
 	}
 }

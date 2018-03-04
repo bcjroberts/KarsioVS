@@ -9,6 +9,9 @@
 //#include "Importer/Managers/MeshManager.h"
 #include "Importer/Managers/ModelManager.h"
 
+#include <random>   // for default_random_engine & uniform_int_distribution<int>
+#include <chrono> 
+
 // Initialize the Entity Manager global pointer.
 EntityManager *EntityManager::globalInstance = nullptr;
 
@@ -60,6 +63,9 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("armour-lvl2"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gun4"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("ram4"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
 
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.5f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.5f));
@@ -108,6 +114,25 @@ Entity* EntityManager::createBox(glm::vec3 startPos, glm::vec3 scale) {
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
     entities.push_back(entity);
+	return entity;
+}
+
+Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
+	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
+
+	// randomly choose obstacle type and rotation
+	// rand() no good for loops :'I
+	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());     // provide seed
+	std::uniform_int_distribution<int> uid{ 1, 3};
+	std::string s = std::to_string(uid(dre));
+	std::uniform_real_distribution<float> urd{0.f, 3.14f};
+	float y = urd(dre);
+
+	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("obstacle"+s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
+	physx::PxRigidActor* boulder = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale));
+	boulder->userData = entity;
+	ComponentManager::getInstance()->addPhysicsComponent(entity, boulder);
+	entities.push_back(entity);
 	return entity;
 }
 

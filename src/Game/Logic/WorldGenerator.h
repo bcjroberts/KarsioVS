@@ -1,5 +1,7 @@
 #pragma once
 #include "../../Engine/Entity.h"
+#include <random>
+#include <chrono> 
 
 class WorldGenerator {
 private:

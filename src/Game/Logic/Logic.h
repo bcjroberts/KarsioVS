@@ -25,6 +25,9 @@ DriveComponent * playerDrive;
 std::vector<vec3> path;
 Entity * goal;
 int state = 0;
+int prevstate = -1;
+vec3 prevPos;
+int notMoving = 0;
 private:
 	enum States {
 		DECIDING,
@@ -33,7 +36,8 @@ private:
 		SEEKING_CRYSTAL,
 		SEEKING_PLAYER,
 		MINING,
-		ATTACKING
+		ATTACKING,
+		STUCK
 	};
 public:        
     Logic();
@@ -47,6 +51,8 @@ public:
 	void finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
 	void mine(Entity* entity);
 	void attack(Entity* goal, Entity* entity);
+	bool checkStuck(Entity* entity);
+	void unstuck(Entity* entity);
    ~Logic();
 };
 
