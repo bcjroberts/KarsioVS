@@ -17,10 +17,10 @@
 #define GAMEPAD_LEFT_TRIGGER		4
 #define GAMEPAD_RIGHT_TRIGGER		5
 
-#define 	GAMEPAD_DPAD_UP   11
-#define 	GAMEPAD_DPAD_RIGHT   12
-#define 	GAMEPAD_DPAD_DOWN   13
-#define 	GAMEPAD_DPAD_LEFT   14
+#define 	GAMEPAD_DPAD_UP   10
+#define 	GAMEPAD_DPAD_RIGHT   11
+#define 	GAMEPAD_DPAD_DOWN   12
+#define 	GAMEPAD_DPAD_LEFT   13
 
 ControllableComponent::ControllableComponent(bool nplayer) : Component(CONTROLLABLE) {
 	player = nplayer;
