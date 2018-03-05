@@ -37,6 +37,14 @@ void HealthComponent::setMaxHealth(float nmaxHealth, bool setHealth) {
     if (setHealth) health = maxHealth;
 }
 
+bool HealthComponent::isDeathProcessed() {
+    if (!deathProcessed) {
+        deathProcessed = true;
+        return false;
+    }
+    return true;
+}
+
 int HealthComponent::hitBy() {
 	return hitID;
 }

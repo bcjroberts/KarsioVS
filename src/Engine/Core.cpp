@@ -121,8 +121,9 @@ void Core::coreLoop() {
     // END Brian's shenanigans
 
     // Create the starting Entities
-    Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 1, 0));
-	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 1, 0));
+    Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 10, 0));
+	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 10, 0));
+    Entity* aiVehicle2 = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(20, 10, 0));
 	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 
 	WorldGenerator worldGen;
@@ -207,6 +208,7 @@ void Core::coreLoop() {
 						
 			logic.playerMovement(playerVehicle);
 			logic.finiteStateMachine(aiVehicle, &gen, &worldGen);
+            logic.finiteStateMachine(aiVehicle2, &gen, &worldGen);
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();

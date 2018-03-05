@@ -5,6 +5,7 @@ class HealthComponent : public Component
 {
 private:
     bool healthIsThreshold;
+    bool deathProcessed = false;
     float health;
 	int hitID = -1;
     float maxHealth;
@@ -20,5 +21,6 @@ public:
     void setArmor(float narmor);
     void setMaxHealth(float nmaxHealth, bool setHealth = false);
     float getCurrentHealth() {return health; }
+    bool isDeathProcessed();
 };
 

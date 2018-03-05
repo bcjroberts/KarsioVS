@@ -320,7 +320,13 @@ void Logic::unstuck(Entity* entity) {
 }
 
 void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world) {
-	EntityManager* entityMan;
+
+    HealthComponent* aiHealth = static_cast<HealthComponent*>(entity->getComponent(HEALTH));
+    if (aiHealth->isDead() && !aiHealth->isDeathProcessed()) {
+        static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-150, 10, -150)), false);
+        return;
+    }
+
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	// at any point, if speed is 0 for set amount of time, back up (unstuckify?)
 	checkStuck(entity);
@@ -361,7 +367,7 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 		mine(entity);
 		break;
 	case FINDING_PLAYER:
-		goal = entityMan->getInstance()->getEntities().at(0);
+		goal = EntityManager::getInstance()->getEntities().at(0);
 		//std::cout << "searching for player path" << std::endl;
 		findPath(generator, entity->getPosition(), goal->getPosition());
 		if (path.size() > 0) {
