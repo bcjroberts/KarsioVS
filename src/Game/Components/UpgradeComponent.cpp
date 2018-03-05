@@ -3,15 +3,15 @@
 #include "HealthComponent.h"
 #include "../../engine/EntityManager.h"
 #include "WeaponComponent.h"
+#include "../../Engine/Core.h"
 
 
 UpgradeComponent::UpgradeComponent() : Component(UPGRADE) {
+    timeSinceLastUpgrade = Core::timeSinceStartup;
 }
 
 
-UpgradeComponent::~UpgradeComponent()
-{
-}
+UpgradeComponent::~UpgradeComponent() = default;
 
 void UpgradeComponent::addResources(float value) {
     resources += value;
@@ -22,10 +22,11 @@ float UpgradeComponent::getCurrentRamMultiplier() {
 }
 
 bool UpgradeComponent::isUpgradeAvailable() const {
-    return resources >= resourcesForNextLevel;
+    return (resources >= resourcesForNextLevel && Core::timeSinceStartup - timeSinceLastUpgrade > 1.0f);
 }
 
 bool UpgradeComponent::canUpgradeType(UpgradeType type) {
+    if (!isUpgradeAvailable()) return false;
     switch (type) {
         case CHASSIS_UPGRADE:
             return (chassisLevel < 3 && numberOfUpgrades >= minUpgradesForChassisUpgrade[chassisLevel - 1]);
@@ -41,14 +42,14 @@ bool UpgradeComponent::canUpgradeType(UpgradeType type) {
 }
 
 bool UpgradeComponent::upgradeVehicle(UpgradeType type) {
-    // Seubtract from our current resources, and update the next value
-    //if (!isUpgradeAvailable()) return false;
+
+    if(!canUpgradeType(type)) return false; // Ensure we can upgrade this thing first
 
     resources -= resourcesForNextLevel;
     resourcesForNextLevel *= increasedResourceAmountModifier;
     numberOfUpgrades++;
+    timeSinceLastUpgrade = Core::timeSinceStartup;
 
-    if(!canUpgradeType(type)) return false; // Ensure we can upgrade this thing first
     if (type == CHASSIS_UPGRADE) {
         chassisLevel++;
         static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setMaxHealth(chassisHealth[chassisLevel-1], true);

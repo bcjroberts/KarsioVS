@@ -176,7 +176,6 @@
     <ClCompile Include="src\Game\Logic\WorldGenerator.cpp" />
     <ClCompile Include="src\main\initopengl\OpenGL.cpp" />
     <ClCompile Include="src\main\mainGame.cpp" />
-    <ClCompile Include="src\Game\Components\VehiclePhysicsComponent.cpp" />
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleConfigParser.cpp" />
     <ClCompile Include="src\Game\Components\UpgradeComponent.cpp" />
     <ClCompile Include="src\Game\Components\WeaponComponent.cpp" />
@@ -241,7 +240,6 @@
     <ClInclude Include="src\Game\Logic\WorldGenerator.h" />
     <ClInclude Include="src\main\initopengl\OpenGL.h" />
     <ClInclude Include="src\main\initopengl\OpenGL_Deps.h" />
-    <ClInclude Include="src\Game\Components\VehiclePhysicsComponent.h" />
     <ClInclude Include="src\Main\mainGame.h" />
     <ClInclude Include="src\Engine\PhysicsEngine\VehicleConfigParser.h" />
     <ClInclude Include="src\Game\Components\UpgradeComponent.h" />

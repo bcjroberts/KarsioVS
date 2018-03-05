@@ -24,16 +24,82 @@ void Logic::playerMovement(Entity* targetEnt) {
     if (temp->getFlip() && canVehicleFlip(targetEnt)) {
         flipVehicle(targetEnt);
     }
+
+    if (temp->getShooting()) {
+        static_cast<WeaponComponent*>(targetEnt->getComponent(WEAPON))->fireWeapon();
+    }
+
+    UpgradeComponent* uc = static_cast<UpgradeComponent*>(targetEnt->getComponent(UPGRADE));
+    std::ostringstream oss;
+    oss << "Chassis lvl: " << uc->getChassisLevel();
+    std::string chassisLevel = oss.str();
+    Core::renderEngine->ui->modifyText(2, &chassisLevel, nullptr, nullptr, nullptr, nullptr);
+    oss.str("");
+    oss.clear();
+
+    oss << "Armor lvl: " << uc->getArmorLevel();
+    std::string armorLevel = oss.str();
+    Core::renderEngine->ui->modifyText(3, &armorLevel, nullptr, nullptr, nullptr, nullptr);
+    oss.str("");
+    oss.clear();
+
+    oss << "Gun lvl: " << uc->getGunLevel();
+    std::string gunLevel = oss.str();
+    Core::renderEngine->ui->modifyText(4, &gunLevel, nullptr, nullptr, nullptr, nullptr);
+    oss.str("");
+    oss.clear();
+
+    oss << "Ram lvl: " << uc->getRamLevel();
+    std::string ramLevel = oss.str();
+    Core::renderEngine->ui->modifyText(5, &ramLevel, nullptr, nullptr, nullptr, nullptr);
+    oss.str("");
+    oss.clear();
+
+    // Now check for upgrades
+    glm::vec3 upgradeColor(0,1,0);
+    glm::vec3 defaultColor(1,1,0);
+    std::string empty = "";
+    if (uc->canUpgradeType(CHASSIS_UPGRADE)) {
+        std::string chassisUpgrade = "UP: Press 3 or DPAD Up";
+        Core::renderEngine->ui->modifyText(6, &chassisUpgrade, nullptr, nullptr, nullptr, nullptr);
+        if(con->upInput.upgradeChassis) {
+            uc->upgradeVehicle(CHASSIS_UPGRADE);
+        }
+    } else {
+        Core::renderEngine->ui->modifyText(6, &empty, nullptr, nullptr, nullptr, nullptr);
+    }
+    if (uc->canUpgradeType(ARMOR_UPGRADE)) {
+        std::string armorUpgrade = "UP: Press 4 or DPAD Right";
+        Core::renderEngine->ui->modifyText(7, &armorUpgrade, nullptr, nullptr, nullptr, nullptr);
+        if(con->upInput.upgradeArmor) {
+            uc->upgradeVehicle(ARMOR_UPGRADE);
+        }
+    } else {
+        Core::renderEngine->ui->modifyText(7, &empty, nullptr, nullptr, nullptr, nullptr);
+    }
+    if (uc->canUpgradeType(GUN_UPGRADE)) {
+        std::string gunUpgrade = "UP: Press 5 or DPAD Down";
+        Core::renderEngine->ui->modifyText(8, &gunUpgrade, nullptr, nullptr, nullptr, nullptr);
+        if(con->upInput.upgradeGun) {
+            uc->upgradeVehicle(GUN_UPGRADE);
+        }
+    } else {
+        Core::renderEngine->ui->modifyText(8, &empty, nullptr, nullptr, nullptr, nullptr);
+    }
+    if (uc->canUpgradeType(RAM_UPGRADE)) {
+        std::string ramUpgrade = "UP: Press 6 or DPAD Left";
+        Core::renderEngine->ui->modifyText(9, &ramUpgrade, nullptr, nullptr, nullptr, nullptr);
+        if(con->upInput.upgradeRam) {
+            uc->upgradeVehicle(RAM_UPGRADE);
+        }
+    } else {
+        Core::renderEngine->ui->modifyText(9, &empty, nullptr, nullptr, nullptr, nullptr);
+    }
 }
 
 void Logic::aiMovement(Entity* entity) {
     // First thing we need to do is see if we are close enough to the waypoint to head toward the next one
     AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
-	
-    // First thing we check is if the Vehicle can flip
-    if(canVehicleFlip(entity)) {
-        flipVehicle(entity);
-    }
 
 	// populate waypoints
 	if (ai->waypoints.empty()) {
@@ -89,7 +155,6 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     if (oangle < 0.9f) {
         // Now we check condition 2. If we havent flipped in 2.5 seconds, allow flipping.
         if (Core::timeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 2.5f) {
-            
             return true;
         }
     }
@@ -201,13 +266,24 @@ void Logic::mine(Entity* entity) {
 }
 
 void Logic::attack(Entity* goal, Entity* entity) {
-	// shooting?
+    // Determine if we should shoot by seeing if we are almost facing the direction of the player.
+    float oangle = glm::orientedAngle(glm::normalize(goal->getPosition() - entity->getPosition()),entity->getForwardVector(), glm::vec3(0,1,0));
+    if (abs(oangle) < 0.5f) {
+        static_cast<WeaponComponent*>(entity->getComponent(WEAPON))->fireWeapon();
+    }
+
 	aiMovement(entity);
 }
 
 bool Logic::checkStuck(Entity* entity) {
 	glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
 	float speed = glm::dot(velocity, entity->getForwardVector());
+
+    // First thing we check is if the Vehicle can flip
+    if(canVehicleFlip(entity)) {
+        flipVehicle(entity);
+    }
+
 	//std::cout << "speed = " << speed << std::endl;
 	if (speed < 1 && speed > -1) {
 		notMoving++;

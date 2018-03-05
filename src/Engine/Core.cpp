@@ -37,13 +37,6 @@ Movement movement;
 int cameraMode = 0;
 bool refreshMovement = false;
 
-bool upgradeChassis = false;
-bool upgradeArmor = false;
-bool upgradeGun = false;
-bool upgradeRam = false;
-
-bool fireWeapon = false;
-
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool set = action != GLFW_RELEASE && GLFW_REPEAT;
@@ -51,16 +44,16 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	case GLFW_KEY_ESCAPE:
 		glfwSetWindowShouldClose(window, GL_TRUE);
 		break;
-	case GLFW_KEY_W:
+	case GLFW_KEY_UP:
 		movement.forward = set ? 1 : 0;
 		break;
-	case GLFW_KEY_A:
+	case GLFW_KEY_LEFT:
 		movement.left = set ? 1 : 0;
 		break;
-	case GLFW_KEY_S:
+	case GLFW_KEY_DOWN:
 		movement.backward = set ? 1 : 0;
 		break;
-	case GLFW_KEY_D:
+	case GLFW_KEY_RIGHT:
 		movement.right = set ? 1 : 0;
 		break;
 	case GLFW_KEY_SPACE:
@@ -75,14 +68,6 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
         VehicleConfigParser::getInstance()->parseConfigFile();
         refreshMovement = true;
     }
-
-    // Temporary upgrade controls
-    if (action == GLFW_RELEASE && key == GLFW_KEY_4) upgradeChassis = true;
-    if (action == GLFW_RELEASE && key == GLFW_KEY_5) upgradeArmor = true;
-    if (action == GLFW_RELEASE && key == GLFW_KEY_6) upgradeGun = true;
-    if (action == GLFW_RELEASE && key == GLFW_KEY_7) upgradeRam = true;
-    if (action == GLFW_PRESS && key == GLFW_KEY_P) fireWeapon = true;
-    if (action == GLFW_RELEASE && key == GLFW_KEY_P) fireWeapon = false;
 
 	// Controls whether the camera is free or locked to the player vehicle
 	if (key == GLFW_KEY_1) {
@@ -106,9 +91,9 @@ void Core::coreLoop() {
     // initialize audio engine
     audioEngine.init();
     
-    audioEngine.loadSound("data/sound/bgm1.mp3", false, true, true); // load music
+    /*audioEngine.loadSound("data/sound/bgm1.mp3", false, true, true); // load music
     int musicChannel = audioEngine.playSounds("data/sound/bgm1.mp3", glm::vec3(0, 0, 0), 1); // play music
-    audioEngine.setChannelVolume(musicChannel, -25.f);
+    audioEngine.setChannelVolume(musicChannel, -25.f);*/
     // end audio init
 
     PhysicsEngine::getInstance()->initPhysics();
@@ -184,43 +169,23 @@ void Core::coreLoop() {
             VehicleConfigParser::getInstance()->applyConfigToVehicle(static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getVehicle());
 		}
 
-        if (upgradeChassis) {
-            upgradeChassis = false;
-            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(CHASSIS_UPGRADE)) {
-                printf("Successfully to upgrade Chassis\n");
-            } else {
-                printf("Failed to upgrade Chassis\n");
-            }
-        } else if (upgradeArmor) {
-            upgradeArmor = false;
-            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(ARMOR_UPGRADE)) {
-                printf("Successfully to upgrade Armor\n");
-            } else {
-                printf("Failed to upgrade Armor\n");
-            }
-        } else if (upgradeGun) {
-            upgradeGun = false;
-            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(GUN_UPGRADE)) {
-                printf("Successfully to upgrade Gun\n");
-            } else {
-                printf("Failed to upgrade Gun\n");
-            }
-        } else if (upgradeRam) {
-            upgradeRam = false;
-            if(static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->upgradeVehicle(RAM_UPGRADE)) {
-                printf("Successfully to upgrade Ram\n");
-            } else {
-                printf("Failed to upgrade Ram\n");
-            }
-        }
-
-        if (fireWeapon) {
-            static_cast<WeaponComponent*>(playerVehicle->getComponent(WEAPON))->fireWeapon();
-        }
-
         const float playerHealth = static_cast<HealthComponent*>(playerVehicle->getComponent(HEALTH))->getCurrentHealth();
-        const float AIHealth = static_cast<HealthComponent*>(aiVehicle->getComponent(HEALTH))->getCurrentHealth();
-        printf("PlayerHealth: %f AIHealth: %f\n",playerHealth, AIHealth);
+        //const float AIHealth = static_cast<HealthComponent*>(aiVehicle->getComponent(HEALTH))->getCurrentHealth();
+        //printf("PlayerHealth: %f AIHealth: %f\n",playerHealth, AIHealth);
+
+        std::ostringstream oss;
+        oss << "Health: " << round(playerHealth);
+        std::string playerHealthStr = oss.str();
+
+        renderEngine->ui->modifyText(0, &playerHealthStr, nullptr, nullptr, nullptr, nullptr);
+
+        // Now we need to update the resources collected
+        oss.str("");
+        oss.clear();
+        UpgradeComponent* playerUC = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE));
+        oss << "Resources: " << roundf(playerUC->getCurrentResources()) << "/" << roundf(playerUC->getMaxResources());
+        std::string playerResources = oss.str();
+        renderEngine->ui->modifyText(1, &playerResources, nullptr, nullptr, nullptr, nullptr);
 
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other

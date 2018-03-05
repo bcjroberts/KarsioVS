@@ -6,6 +6,7 @@
 #include "../../Game/Components/HealthComponent.h"
 #include "../../Game/Components/AIComponent.h"
 #include "../../Game/Components/UpgradeComponent.h"
+#include "../../Game/Components/PhysicsComponent.h"
 
 
 CollisionProcessor::CollisionProcessor() {
@@ -47,10 +48,16 @@ void CollisionProcessor::onContact(const physx::PxContactPairHeader& pairHeader,
     presolverVelocity.z = f3;
 
     physx::PxRigidBody* temp = static_cast<physx::PxRigidBody*>(pairHeader.actors[0]);
-    
+    Entity* ent0 = static_cast<Entity*>(pairHeader.actors[0]->userData);
+    Entity* ent1 = static_cast<Entity*>(pairHeader.actors[1]->userData);
+
+    // Calculate the mass involved
+    float mass0 = static_cast<PhysicsComponent*>(ent0->getComponent(PHYSICS))->getRigidBody()->getMass() / 1000.f;
+    float mass1 = static_cast<PhysicsComponent*>(ent1->getComponent(PHYSICS))->getRigidBody()->getMass() / 1000.f;
+    float massMulti = mass0 + mass1;
+
     // Calculate the damage based on the velocity change
-    float damage = (temp->getLinearVelocity() - presolverVelocity).magnitude();
-    printf("Damage calculated as %f\n", damage);
+    float damage = (temp->getLinearVelocity() - presolverVelocity).magnitude() * massMulti;
 
     //printf("Pre-solver velocity: %f\n", presolverVelocity.magnitude());
     const char* name0 = pairs[0].shapes[0]->getName();
@@ -59,12 +66,12 @@ void CollisionProcessor::onContact(const physx::PxContactPairHeader& pairHeader,
     const char* drillstring = "drill";
     if (name0 != nullptr && std::strcmp(name0, drillstring) == 0) // actor 0 hit with a drill so damage actor 1
     {
-        static_cast<HealthComponent*>(static_cast<Entity*>(pairHeader.actors[1]->userData)->getComponent(HEALTH))->applyDamage(damage);
+        static_cast<HealthComponent*>(ent1->getComponent(HEALTH))->applyDamage(damage / mass1);
     }
 
     if (name1 != nullptr && std::strcmp(name1, drillstring) == 0) // actor 1 hit with a drill so damage actor 0
     {
-        static_cast<HealthComponent*>(static_cast<Entity*>(pairHeader.actors[0]->userData)->getComponent(HEALTH))->applyDamage(damage);
+        static_cast<HealthComponent*>(ent0->getComponent(HEALTH))->applyDamage(damage / mass0);
     }
 }
 
@@ -138,7 +145,7 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 		}
 
         // Add the resources of the crystal to the car whichd estroyed it
-        const float crystalValue = crystalHealth->getMaxHealth() * 10.f;
+        const float crystalValue = crystalHealth->getMaxHealth();
         static_cast<UpgradeComponent*>(static_cast<Entity*>(carActor->userData)->getComponent(UPGRADE))->addResources(crystalValue);
 
         // Mark the crystal for destruction

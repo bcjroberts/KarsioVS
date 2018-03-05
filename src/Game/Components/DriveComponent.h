@@ -12,6 +12,7 @@ struct vehicleInput {
     float handbrake;
     float steering;
     bool flip;
+    bool shoot;
 };
 
 class DriveComponent : public Component
@@ -24,11 +25,12 @@ private:
     float handbrake;
     float steering;
     bool flip;
+    bool shoot;
 public:
     // Used to determine if the vehicle is allowed to perform a flip.
     float previousFlipTime = 0.f;
 
-    void setInputs(const float accel, const float brake, const float handbrake, const float steering, const bool flip = false);
+    void setInputs(const float accel, const float brake, const float handbrake, const float steering, const bool flip = false, const bool shoot = false);
     void setInputs(vehicleInput);
 
     float getAccel(){return accel;};
@@ -36,6 +38,8 @@ public:
     float getHandbrake(){return handbrake;};
     float getSteering(){return steering;};
     bool getFlip() { return flip; };
+    bool getShooting() {return shoot;}
+
     physx::PxVehicleDrive4W* getVehicle() { return myVehicle; }
 
     DriveComponent(physx::PxVehicleDrive4WRawInputData* newInput, physx::PxVehicleDrive4W* myVehicle);
