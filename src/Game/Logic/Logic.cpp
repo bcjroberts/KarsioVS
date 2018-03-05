@@ -322,8 +322,10 @@ void Logic::unstuck(Entity* entity) {
 void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world) {
 
     HealthComponent* aiHealth = static_cast<HealthComponent*>(entity->getComponent(HEALTH));
-    if (aiHealth->isDead() && !aiHealth->isDeathProcessed()) {
-        static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-150, 10, -150)), false);
+    if (aiHealth->isDead()) {
+        if (aiHealth->isDeathProcessed()) {
+            static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-150, 10, -150)), false);
+        }
         return;
     }
 
