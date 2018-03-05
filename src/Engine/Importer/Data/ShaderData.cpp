@@ -4,13 +4,14 @@
 #include <fstream>
 #include <sstream>
 #include "ShaderData.h"
+#include "../../Core.h"
 
 ShaderData::~ShaderData(){
     shaderID = 0;
 }
 
 void ShaderData::attachShader(std::string shaderPath, GLenum type){
-	shaderPath = "data/assets/shaderData/" + shaderPath;
+	shaderPath = Core::dataPath + "assets/shaderData/" + shaderPath;
 //	std::cout << shaderPath << std::endl;
     if (shaderID == 0) {
         shaderID = glCreateProgram();

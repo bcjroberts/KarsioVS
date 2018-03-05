@@ -19,6 +19,7 @@
 GLFWwindow* Core::globalWindow = nullptr;
 float Core::timeSinceStartup = 0.f;
 RenderEngine* Core::renderEngine = nullptr;
+std::string Core::dataPath = "data/";
 
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -28,13 +29,23 @@ Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaus
     this->properties.isRunning = true;
     this->properties.isPaused = gamePaused;
     globalWindow = properties.window;
+
+    struct stat info;
+    const char* pathname = "data";
+
+    if( stat( pathname, &info ) != 0 ) {
+        printf( "No data found, looking up one folder...\n");
+        dataPath = "../data/";
+    } else {
+        printf("Data found!");
+    }
 }
 
 Core::~Core() = default;
 
 // there has to be a better way than to make it this way
 Movement movement;
-int cameraMode = 0;
+int cameraMode = 1;
 bool refreshMovement = false;
 
 // camera, using keyboard events for WASD
@@ -91,9 +102,9 @@ void Core::coreLoop() {
     // initialize audio engine
     audioEngine.init();
     
-    /*audioEngine.loadSound("data/sound/bgm1.mp3", false, true, true); // load music
-    int musicChannel = audioEngine.playSounds("data/sound/bgm1.mp3", glm::vec3(0, 0, 0), 1); // play music
-    audioEngine.setChannelVolume(musicChannel, -25.f);*/
+    audioEngine.loadSound(Core::dataPath + "sound/bgm1.mp3", false, true, true); // load music
+    int musicChannel = audioEngine.playSounds(Core::dataPath + "sound/bgm1.mp3", glm::vec3(0, 0, 0), 1); // play music
+    audioEngine.setChannelVolume(musicChannel, -10.f);
     // end audio init
 
     PhysicsEngine::getInstance()->initPhysics();
@@ -106,12 +117,12 @@ void Core::coreLoop() {
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
 //    Model cubeMesh("cubeMesh");
-//    cubeMesh.loadMeshData("data/assets/meshes/cube.obj");
+//    cubeMesh.loadMeshData(Core::dataPath + "assets/meshes/cube.obj");
 
     //Following set of functions adds the shaders to the shader class and then links them
 //    ShaderData shaderData;
-//    shaderData.attachShader("data/shaderData/vertex.glsl",GL_VERTEX_SHADER);
-//    shaderData.attachShader("data/shaderData/fragment.glsl",GL_FRAGMENT_SHADER);
+//    shaderData.attachShader(Core::dataPath + "shaderData/vertex.glsl",GL_VERTEX_SHADER);
+//    shaderData.attachShader(Core::dataPath + "shaderData/fragment.glsl",GL_FRAGMENT_SHADER);
 //    shaderData.link();
 
 

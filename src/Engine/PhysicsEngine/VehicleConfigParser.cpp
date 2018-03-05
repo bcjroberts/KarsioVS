@@ -1,5 +1,6 @@
 #include "VehicleConfigParser.h"
 #include <fstream>
+#include "../Core.h"
 
 VehicleConfigParser *VehicleConfigParser::globalInstance = nullptr;
 
@@ -27,7 +28,7 @@ void VehicleConfigParser::parseConfigFile()
 {
     // This parses the config file for vehicles, and updates the local struct with the values
     std::ifstream file;
-    file.open("data/configs/car/default.ini", std::fstream::in);
+    file.open(Core::dataPath + "configs/car/default.ini", std::fstream::in);
     if (file.fail())
     {
         printf("ERROR: Failed to load the default car config file...");

@@ -5,6 +5,7 @@
 #include <iostream>
 #include "RenderEngine.h"
 #include "ShaderUniforms.h"
+#include "../Core.h"
 //#include "UserInterface.h"
 
 using namespace glm;
@@ -21,7 +22,7 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screen_width, int *screen_he
 	this->screenHeight = screen_height;
 	ui = new UserInterface(screenWidth,screenHeight);
 	//Maybe load the font from somewhere else?
-	ui -> loadFont("data/assets/fonts/duralith/DURALITH.ttf", 48);
+	ui -> loadFont(Core::dataPath + "assets/fonts/duralith/DURALITH.ttf", 48);
 	//==========================================================
 	//replace all of this with stuff that isn't in the render engine and then remove it from the project before submission
 	//==========================================================

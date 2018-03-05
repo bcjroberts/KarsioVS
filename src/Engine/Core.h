@@ -31,6 +31,7 @@ public:
     static GLFWwindow* globalWindow;
     static float timeSinceStartup;
     static RenderEngine* renderEngine;
+    static std::string dataPath;
 };
 
 

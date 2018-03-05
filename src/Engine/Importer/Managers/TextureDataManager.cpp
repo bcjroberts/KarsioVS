@@ -1,5 +1,6 @@
 ﻿#include "TextureDataManager.h"
 #include <iostream>
+#include "../../Core.h"
 
 std::map<std::string, TextureData*> TextureDataManager::textureDataMap;
 
@@ -8,7 +9,7 @@ TextureData* TextureDataManager::getTextureData(std::string textureName) {
 	if (!result) {
 		result = new TextureData();
 //		std::cout << textureName << std::endl;
-		result->loadTexture("data/assets/textures/" + textureName);
+		result->loadTexture(Core::dataPath + "assets/textures/" + textureName);
 //		std::cout << result << std::endl;
 		textureDataMap.insert_or_assign(textureName, result);
 	}
