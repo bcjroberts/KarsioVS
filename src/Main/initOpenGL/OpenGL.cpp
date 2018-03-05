@@ -20,6 +20,8 @@ OpenGL::OpenGL(int &screenWidth, int &screenHeight, const char *windowName) {
     glEnable(GL_CULL_FACE);
     //zbuffer enabled thanks to: https://stackoverflow.com/questions/1046029/depth-buffer-in-opengl
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 OpenGL::~OpenGL() {

@@ -18,6 +18,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "UserInterface.h"
 
 using namespace glm;
 
@@ -63,17 +64,23 @@ private:
 	std::vector<Light> lights;
 
     GLFWwindow *window;
-
+	int *screenWidth;
+	int *screenHeight;
 	void passLights(GLuint shaderID);
 	void passTextures(RendererModel sModel);
 	void renderElements(Camera camera);
 
-	const void setShaderVec3(GLuint shaderID, const std::string &name, const glm::vec3 &value);
-	const void setShaderInt(GLuint shaderID, const std::string& name, int value);
-
+//	const void setShaderVec3(GLuint shaderID, const std::string &name, const glm::vec3 &value);
+//	const void setShaderInt(GLuint shaderID, const std::string& name, int value);
 
 public:
-    RenderEngine(GLFWwindow *window);
+	//UI is public so it can be used from outside the render engine
+	UserInterface * ui = nullptr;
+//	void loadFont(std::string path, float size);
+//	int addText(std::string contents, int xpos, int ypos, float scale = 1, glm::vec3 color = glm::vec3(1.0f));
+//	void modifyText(int index, std::string* contents, int* xpos, int* ypos, float* scale, glm::vec3* color);
+//	void removeText(int index);
+    RenderEngine(GLFWwindow *window, int *screenWidth, int *screenHeight);
     ~RenderEngine();
 
     void render(Camera camera);

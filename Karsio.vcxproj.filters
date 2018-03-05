@@ -153,10 +153,17 @@
     <ClCompile Include="src\Game\Components\UpgradeComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< Updated upstream
     <ClCompile Include="src\Game\Components\WeaponComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\Components\ProjectileComponent.cpp">
+=======
+    <ClCompile Include="src\Engine\renderengine\ShaderUniforms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine\renderengine\UserInterface.cpp">
+>>>>>>> Stashed changes
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -341,10 +348,17 @@
     <ClInclude Include="deps\include\fmod\fmod_studio_common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< Updated upstream
     <ClInclude Include="src\Game\Components\WeaponComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Components\ProjectileComponent.h">
+=======
+    <ClInclude Include="src\Engine\renderengine\ShaderUniforms.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine\renderengine\UserInterface.h">
+>>>>>>> Stashed changes
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

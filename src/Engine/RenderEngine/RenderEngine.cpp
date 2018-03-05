@@ -4,10 +4,12 @@
 
 #include <iostream>
 #include "RenderEngine.h"
+#include "ShaderUniforms.h"
+//#include "UserInterface.h"
 
 using namespace glm;
 
-RenderEngine::RenderEngine(GLFWwindow *window) {
+RenderEngine::RenderEngine(GLFWwindow *window, int *screen_width, int *screen_height) {
     this->window = window;
 	for (int i = 0; i < NUM_LIGHTS; ++i) {
 		Light newLight;
@@ -15,12 +17,31 @@ RenderEngine::RenderEngine(GLFWwindow *window) {
 		newLight.color = vec3(0);
 		lights.push_back(newLight);
 	}
-
+	this->screenWidth = screen_width;
+	this->screenHeight = screen_height;
+	ui = new UserInterface(screenWidth,screenHeight);
+	//Maybe load the font from somewhere else?
+	ui -> loadFont("data/assets/fonts/duralith/DURALITH.ttf", 48);
+	//==========================================================
+	//replace all of this with stuff that isn't in the render engine and then remove it from the project before submission
+	//==========================================================
+	ui->addText("top left", 40, 40, 1, vec3(0.5, 1, 0));
+	ui->addText("top right", 1750, 20, 0.5, vec3(1, 1, 0));
+	ui->addText("bottom right", 1750, 1000, 0.5, vec3(1, 0, 0.5));
+	ui->addText("bottom left", 20, 1000, 0.5, vec3(1, 1, 1));
+	ui->addText("Try to use relative values that can be dynamically changed for easy resizing", (*screenWidth)/4, (*screenHeight)/2, 0.5, vec3(0.75, 1, 0.5));
+	ui->addText("This sample code exists in the render engine's constructor, look at it to figure out how this works", (*screenWidth)/4, 3*(*screenHeight)/4, 0.5, vec3(0.75, 1, 0.5));
+	std::string *newText = new std::string("new text");
+	ui->modifyText(0, newText, nullptr, nullptr, nullptr, nullptr);
+//	ui->removeText(2);
 	// Sample code for setting up lights. Currenly only 10 lights are supported.
 	setLight(0, vec3(10.0, 10.0, 10.0), vec3(100.0, 100.0, 100.0));
 	setLight(1, vec3(20.0, 10.0, 10.0), vec3(100.0, 70.0, 100.0));
 	setLight(2, vec3(20.0, 10.0, 20.0), vec3(100.0, 70.0, 20.0));
 	setLight(3, vec3(20.0, 20.0, 10.0), vec3(40.0, 70.0, 100.0));
+	//==========================================================
+	//\End of temp section
+	//==========================================================
 }
 
 RenderEngine::~RenderEngine() {
@@ -35,6 +56,8 @@ void RenderEngine::render(Camera camera) {
 
     renderElements(camera);
 
+	ui->renderTextArray();
+//	ui->renderText("Hello world", 5, 5, 1, vec3(0.5,1,0));
 
     glUseProgram(0); //cleanup
 
@@ -49,19 +72,19 @@ void RenderEngine::setLight(int index, vec3 position, vec3 color) {
 	lights[index] = newLight;
 }
 
-const void RenderEngine::setShaderVec3(GLuint shaderID, const std::string& name, const glm::vec3& value) {
-	glUniform3fv(glGetUniformLocation(shaderID, name.c_str()), 1, &value[0]);
-}
-const void RenderEngine::setShaderInt(GLuint shaderID, const std::string &name, int value) {
-	glUniform1i(glGetUniformLocation(shaderID, name.c_str()), value);
-}
+//const void RenderEngine::setShaderVec3(GLuint shaderID, const std::string& name, const glm::vec3& value) {
+//	glUniform3fv(glGetUniformLocation(shaderID, name.c_str()), 1, &value[0]);
+//}
+//const void RenderEngine::setShaderInt(GLuint shaderID, const std::string &name, int value) {
+//	glUniform1i(glGetUniformLocation(shaderID, name.c_str()), value);
+//}
 
 void RenderEngine::passLights(GLuint shaderID) {
 	for (int i = 0; i < lights.size(); i++) {
 		std::string lightsPos = "lights[" + std::to_string(i) + "].position";
 		std::string lightsColor = "lights[" + std::to_string(i) + "].color";
-		setShaderVec3(shaderID, lightsPos, lights[i].position);
-		setShaderVec3(shaderID, lightsColor, lights[i].color);
+		ShaderUniforms::setVec3(shaderID, lightsPos, lights[i].position);
+		ShaderUniforms::setVec3(shaderID, lightsColor, lights[i].color);
 	}
 }
 
@@ -98,11 +121,11 @@ void RenderEngine::renderElements(Camera camera) {
 			camera.setupCameraTransformationMatrices(viewLoc, projLoc, viewPosLoc);
 
 			// setup texture shaders
-			setShaderInt(currentShaderID, "textureData.albedo", 0);
-			setShaderInt(currentShaderID, "textureData.roughness", 1);
-			setShaderInt(currentShaderID, "textureData.metalness", 2);
-			setShaderInt(currentShaderID, "textureData.normal", 3);
-			setShaderInt(currentShaderID, "textureData.emission", 4);
+			ShaderUniforms::setInt(currentShaderID, "textureData.albedo", 0);
+			ShaderUniforms::setInt(currentShaderID, "textureData.roughness", 1);
+			ShaderUniforms::setInt(currentShaderID, "textureData.metalness", 2);
+			ShaderUniforms::setInt(currentShaderID, "textureData.normal", 3);
+			ShaderUniforms::setInt(currentShaderID, "textureData.emission", 4);
         }
 
 		passTextures(sModel);
@@ -118,6 +141,18 @@ void RenderEngine::renderElements(Camera camera) {
     }
     //std::cout<<"rendering"<<std::endl;
 }
+//
+//void RenderEngine::loadFont(std::string path, int size) {
+//	ui->loadFont(path, size);
+//}
+//
+//int RenderEngine::addText(std::string contents, int xpos, int ypos, int scale, glm::vec3 color) {
+//	return ui->addText(contents, xpos, ypos, scale, color);
+//}
+//
+//void RenderEngine::modifyText(int index, std::string* contents, int* xpos, int* ypos, int* scale, glm::vec3* color) {
+//	ui->modifyText(0, contents, xpos, ypos, scale, color);
+//}
 
 void RenderEngine::addInstance(Model &model, int id, mat4 transform) {
     bool createNewModelGroup = true;

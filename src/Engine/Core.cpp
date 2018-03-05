@@ -96,7 +96,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 
 //Main game loop
 void Core::coreLoop() {
-    renderEngine = new RenderEngine(properties.window);
+    renderEngine = new RenderEngine(properties.window, properties.screenWidth, properties.screenHeight);
     AudioEngine audioEngine;
     Logic logic;
 
