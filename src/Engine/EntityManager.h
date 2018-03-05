@@ -23,7 +23,8 @@ public:
 	Entity* createBox(glm::vec3 startPos, glm::vec3 scale);
 	Entity* createBoulder(glm::vec3 startPos, glm::vec3 scale);
 	Entity* createWallBoulder(glm::vec3 startPos, glm::vec3 scale);
-    Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount = 0);
+    Entity* createCrystal(glm::vec3 startPos, float resourceAmount = 0);
+    Entity* createProjectile(int ownerid, glm::vec3 origin, glm::quat orientation, float speed, float damage);
     void updateChassis(Entity* toUpdate, float newScale, int level);
     void updateGun(Entity* toUpdate, int gunLevel);
     void updateRam(Entity* toUpdate, int ramLevel);

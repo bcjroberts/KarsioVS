@@ -11,6 +11,8 @@
 #include "../Game/Components/AIComponent.h"
 #include "../Game/Components/ControllableComponent.h"
 #include "../Game/Components/UpgradeComponent.h"
+#include "../Game/Components/WeaponComponent.h"
+#include "../Game/Components/ProjectileComponent.h"
 
 class ComponentManager
 {
@@ -20,6 +22,7 @@ public:
     std::vector<RendererComponent*> rendererComponents;
     std::vector<PhysicsComponent*> physicsComponents;
     std::vector<DriveComponent*> driveComponents;
+    std::vector<ProjectileComponent*> projectiles;
 
     // Components moved here temporarily
 
@@ -33,12 +36,15 @@ public:
     AIComponent* addAIComponent(Entity* addTo);
 	ControllableComponent* addControllableComponent(Entity* addTo, bool player);
     UpgradeComponent* addUpgradeComponent(Entity* addTo);
+    WeaponComponent* addWeaponComponent(Entity* addTo);
+    ProjectileComponent* addProjectileComponent(Entity* entity, int ownerid, float speed, float damage);
 
     RendererComponent* getRenderComponentWithTagFromEntity(Entity* from, RendererTag tag);
     void performRendering();
     void initializeRendering(RenderEngine* re);
     void performPhysicsLogic();
     void cleanupComponents(Entity* entity);
+    void performProjectileLogic();
     static ComponentManager* getInstance();
     ~ComponentManager();
 };

@@ -10,11 +10,16 @@
 #include <vector>
 #include <vehicle/PxVehicleUtilControl.h>
 #include <glm/detail/type_vec3.hpp>
+#include <geometry/PxGeometryQuery.h>
 
 struct vehicleData {
     bool isInAir = false;
     physx::PxVehicleDrive4W* myVehicle;
     physx::PxVehicleDrive4WRawInputData myInput;
+};
+
+struct RaycastData {
+    bool hit;
 };
 
 class PhysicsEngine {
@@ -29,6 +34,7 @@ public:
 	physx::PxRigidActor* createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale, physx::PxQuat rotation = physx::PxIdentity) const;
     physx::PxRigidActor* createCrystalBoxCollider(physx::PxVec3 pos, physx::PxVec3 scale) const;
     vehicleData* createVehicle(physx::PxVec3 startpos);
+    bool fireRaycast(physx::PxRaycastBuffer* dataToFill, physx::PxVec3 origin, physx::PxVec3 dir, float distance);
     static PhysicsEngine* getInstance();
 	static physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from);
     static glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from);

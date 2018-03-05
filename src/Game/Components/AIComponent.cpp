@@ -12,6 +12,7 @@ AIComponent::AIComponent() : Component(AI)
 }
 
 glm::vec3 AIComponent::getCurrentWaypoint() {
+    if (currentWaypointIndex >= waypoints.size()) return glm::vec3(0);
     return waypoints[currentWaypointIndex];
 }
 

@@ -84,7 +84,6 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	
 	if ((filterData0.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData1.word3 == snippetvehicle::COLLISION_FLAG_CAR) ||
 		(filterData1.word2 == snippetvehicle::COLLISION_FLAG_DRILL && filterData0.word3 == snippetvehicle::COLLISION_FLAG_CAR)) {
-		printf("Car collision detected!\n");
 		// Yay this works!
 		pairFlags = pairFlags
 			| physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
@@ -93,7 +92,6 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 			//| physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS // Not sure if we want this one.
 			//| physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
 	}
-
 	return physx::PxFilterFlag::eDEFAULT;
 }
 
@@ -278,6 +276,10 @@ vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
     vd->myVehicle = gVehicle4W;
 	allVehicleData.push_back(vd);
     return vd;
+}
+
+bool PhysicsEngine::fireRaycast(physx::PxRaycastBuffer* dataToFill, physx::PxVec3 origin, physx::PxVec3 dir, float distance) {
+    return gScene->raycast(origin, dir, distance, *dataToFill);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// END: Section where physics objects are created

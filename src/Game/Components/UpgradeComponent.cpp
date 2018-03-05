@@ -2,6 +2,7 @@
 #include "../../Engine/Entity.h"
 #include "HealthComponent.h"
 #include "../../engine/EntityManager.h"
+#include "WeaponComponent.h"
 
 
 UpgradeComponent::UpgradeComponent() : Component(UPGRADE) {
@@ -57,11 +58,12 @@ bool UpgradeComponent::upgradeVehicle(UpgradeType type) {
     } else if (type == GUN_UPGRADE) {
         // Upgrade the stats of the gun component.
         gunLevel++;
+        static_cast<WeaponComponent*>(owner->getComponent(WEAPON))->updateGunValues(gunROFChange[gunLevel-1], gunDamageChange[gunLevel-1], projectileSpeedChange[gunLevel-1]);
         EntityManager::getInstance()->updateGun(owner, gunLevel);
         return true;
     } else if (type == ARMOR_UPGRADE) {
         armorLevel++;
-        static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setArmor(armorChange[armorLevel]);
+        static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setArmor(armorChange[armorLevel-1]);
         EntityManager::getInstance()->updateArmor(owner, chassisLevel, armorLevel);
         return true;
     } else if (type == RAM_UPGRADE) {

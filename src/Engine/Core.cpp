@@ -42,6 +42,8 @@ bool upgradeArmor = false;
 bool upgradeGun = false;
 bool upgradeRam = false;
 
+bool fireWeapon = false;
+
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool set = action != GLFW_RELEASE && GLFW_REPEAT;
@@ -79,6 +81,8 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
     if (action == GLFW_RELEASE && key == GLFW_KEY_5) upgradeArmor = true;
     if (action == GLFW_RELEASE && key == GLFW_KEY_6) upgradeGun = true;
     if (action == GLFW_RELEASE && key == GLFW_KEY_7) upgradeRam = true;
+    if (action == GLFW_PRESS && key == GLFW_KEY_P) fireWeapon = true;
+    if (action == GLFW_RELEASE && key == GLFW_KEY_P) fireWeapon = false;
 
 	// Controls whether the camera is free or locked to the player vehicle
 	if (key == GLFW_KEY_1) {
@@ -210,6 +214,14 @@ void Core::coreLoop() {
             }
         }
 
+        if (fireWeapon) {
+            static_cast<WeaponComponent*>(playerVehicle->getComponent(WEAPON))->fireWeapon();
+        }
+
+        const float playerHealth = static_cast<HealthComponent*>(playerVehicle->getComponent(HEALTH))->getCurrentHealth();
+        const float AIHealth = static_cast<HealthComponent*>(aiVehicle->getComponent(HEALTH))->getCurrentHealth();
+        printf("PlayerHealth: %f AIHealth: %f\n",playerHealth, AIHealth);
+
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other
         // approach is better
@@ -229,11 +241,11 @@ void Core::coreLoop() {
 //			printf("\n");
 						
 			logic.playerMovement(playerVehicle);
-			logic.canVehicleFlip(playerVehicle);
 			logic.finiteStateMachine(aiVehicle, &gen, &worldGen);
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
+            ComponentManager::getInstance()->performProjectileLogic();
             ComponentManager::getInstance()->performRendering();
 
             if (cameraMode == 0)
@@ -260,8 +272,10 @@ void Core::coreLoop() {
 
                 if (!movingForward) offset = -offset;
 
+                const float chassisLevel = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->getChassisLevel();
+
                 camera.rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 10.0f * timeDiff);
-                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f + glm::vec3(0, 8, 0), 5.0f * timeDiff);
+                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 1.f), 0), 5.0f * timeDiff);
             }
 
             audioEngine.update();

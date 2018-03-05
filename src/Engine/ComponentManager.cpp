@@ -1,5 +1,6 @@
 #include "ComponentManager.h"
 #include "Entity.h"
+#include "EntityManager.h"
 
 // Initialize the Component Manager global pointer.
 ComponentManager *ComponentManager::globalInstance = nullptr;
@@ -10,7 +11,7 @@ ComponentManager::ComponentManager() = default;
 ComponentManager::~ComponentManager() = default;
 
 RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, Model* model) {
-    return addRendererComponent(addTo, model, glm::vec3(), glm::quat(), glm::vec3());
+    return addRendererComponent(addTo, model, glm::vec3(), glm::quat(), glm::vec3(1));
 }
 
 RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, Model* model,  glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
@@ -82,6 +83,21 @@ UpgradeComponent* ComponentManager::addUpgradeComponent(Entity* addTo) {
     addTo->addComponent(uc);
     uc->owner = addTo;
     return uc;
+}
+
+WeaponComponent* ComponentManager::addWeaponComponent(Entity* addTo) {
+    WeaponComponent* wc = new WeaponComponent();
+    addTo->addComponent(wc);
+    wc->owner = addTo;
+    return wc;
+}
+
+ProjectileComponent* ComponentManager::addProjectileComponent(Entity* addTo, int ownerid, float speed, float damage) {
+    ProjectileComponent* pc = new ProjectileComponent(ownerid, speed, damage);
+    projectiles.push_back(pc);
+    addTo->addComponent(pc);
+    pc->owner = addTo;
+    return pc;
 }
 
 RendererComponent* ComponentManager::getRenderComponentWithTagFromEntity(Entity* from, RendererTag tag) {
@@ -177,3 +193,20 @@ void ComponentManager::cleanupComponents(Entity* entity) {
 
     // Now we can just delete the other components without any special treatment
 }
+
+void ComponentManager::performProjectileLogic() {
+    std::vector<ProjectileComponent*>::iterator it = projectiles.begin();
+    
+    // Iterates through all of the projectiles and removes them on the fly.
+    while (it != projectiles.end()) {
+        ProjectileComponent* temp = (*it);
+        if (temp->checkForHit()) {
+            it = projectiles.erase(it);
+            EntityManager::getInstance()->destroyEntity(temp->owner->id);
+        } else {
+            temp->move();
+            ++it;
+        }
+    }
+}
+

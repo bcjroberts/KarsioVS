@@ -61,12 +61,13 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.f));
     rigid1->userData = entity;
     //ComponentManager::getInstance()->addRendererComponent(entity1, &cubeMesh, &shaderData, glm::vec3(0,0,0),glm::quat(glm::vec3(0, -1.57, 0)),glm::vec3(2.5f, 1.0f, 1.25f));
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.0f, 1.0f, 1.0f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassis-lvl1"), shapes[4], glm::vec3(1.f), glm::vec3(0), CHASSIS);
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[4], glm::vec3(1.f));
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassisWires-lvl1"), shapes[4], glm::vec3(1.f));
 
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("ram1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.25f, -3.5f));
-	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gun1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f));
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("projectile"), shapes[4], glm::vec3(1.f), glm::vec3(0), ARMOR);
+    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("ram1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.25f, -3.5f), RAM);
+	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gun1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f), GUN);
 
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[0], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(-0.4, 0, -1.5f));
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("wheels"), shapes[1], glm::vec3(0.4f, 0.8f, 0.8f), glm::vec3(0.4, 0, -1.5f));
@@ -75,9 +76,24 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     ComponentManager::getInstance()->addPhysicsComponent(entity, rigid1);
     ComponentManager::getInstance()->addDriveComponent(entity, &myVehicleData->myInput, myVehicleData->myVehicle);
     ComponentManager::getInstance()->addHealthComponent(entity, 200.f);
-    ComponentManager::getInstance()->addUpgradeComponent(entity);
+    UpgradeComponent* uc = ComponentManager::getInstance()->addUpgradeComponent(entity);
+    WeaponComponent* wc = ComponentManager::getInstance()->addWeaponComponent(entity);
+
+    // Set the gun to the default values
+    wc->updateGunValues(uc->getCurrentGunROF(), uc->getCurrentGunDamage(), uc->getCurrentProjSpeed());
+
     entities.push_back(entity);
     return entity;
+}
+
+Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat orientation, float speed, float damage) {
+    Entity* projectile = EntityManager::getInstance()->createEntity(origin, orientation, glm::vec3(1));
+    RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, ModelManager::getModel("projectile"));
+    ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);
+    Core::renderEngine->addInstance(*temp->myModel, temp->id, temp->getMatrix());
+
+    entities.push_back(projectile);
+    return projectile;
 }
 
 Entity* EntityManager::createPlayerVehicleEntity(glm::vec3 startPos) {

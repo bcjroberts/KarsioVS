@@ -31,37 +31,40 @@ void CollisionProcessor::onContact(const physx::PxContactPairHeader& pairHeader,
     }*/
 
     // Compute the pre solver velocity. Can be used in later calculations for potentially ramming through crystals.
-    physx::PxVec3 vvv(0,0,0);
+    physx::PxVec3 presolverVelocity(0,0,0);
 
     float f1;
     char b[] = { pairHeader.extraDataStream[11 - 3], pairHeader.extraDataStream[11 - 2], pairHeader.extraDataStream[11 - 1], pairHeader.extraDataStream[11] };
     memcpy(&f1, &b, sizeof(f1));
-    vvv.x = f1;
+    presolverVelocity.x = f1;
     float f2;
     char c[] = { pairHeader.extraDataStream[15 - 3], pairHeader.extraDataStream[15 - 2], pairHeader.extraDataStream[15 - 1], pairHeader.extraDataStream[15] };
     memcpy(&f2, &c, sizeof(f2));
-    vvv.y = f2;
+    presolverVelocity.y = f2;
     float f3;
     char d[] = { pairHeader.extraDataStream[19 - 3], pairHeader.extraDataStream[19 - 2], pairHeader.extraDataStream[19 - 1], pairHeader.extraDataStream[19] };
     memcpy(&f3, &d, sizeof(f3));
-    vvv.z = f3;
+    presolverVelocity.z = f3;
 
-    printf("Pre-solver velocity: %f\n", vvv.magnitude());
+    physx::PxRigidBody* temp = static_cast<physx::PxRigidBody*>(pairHeader.actors[0]);
+    
+    // Calculate the damage based on the velocity change
+    float damage = (temp->getLinearVelocity() - presolverVelocity).magnitude();
+    printf("Damage calculated as %f\n", damage);
 
-    // Grab the rigidbody and calculate the velocity that way as well.
-    // Currently this comes out as the same value, so maybe the above code is unneccissary.
-    physx::PxRigidActor* temp = pairHeader.actors[0];
-    if (temp->getType() == physx::PxActorType::eRIGID_DYNAMIC)
+    //printf("Pre-solver velocity: %f\n", presolverVelocity.magnitude());
+    const char* name0 = pairs[0].shapes[0]->getName();
+    const char* name1 = pairs[0].shapes[1]->getName();
+
+    const char* drillstring = "drill";
+    if (name0 != nullptr && std::strcmp(name0, drillstring) == 0) // actor 0 hit with a drill so damage actor 1
     {
-        physx::PxRigidBody* temp2 = static_cast<physx::PxRigidBody*>(temp);
-        printf("0: Actual velocity: %f\n", temp2->getLinearVelocity().magnitude());
+        static_cast<HealthComponent*>(static_cast<Entity*>(pairHeader.actors[1]->userData)->getComponent(HEALTH))->applyDamage(damage);
     }
 
-    temp = pairHeader.actors[1];
-    if (temp->getType() == physx::PxActorType::eRIGID_DYNAMIC)
+    if (name1 != nullptr && std::strcmp(name1, drillstring) == 0) // actor 1 hit with a drill so damage actor 0
     {
-        physx::PxRigidBody* temp2 = static_cast<physx::PxRigidBody*>(temp);
-        printf("1: Actual velocity: %f\n", temp2->getLinearVelocity().magnitude());
+        static_cast<HealthComponent*>(static_cast<Entity*>(pairHeader.actors[0]->userData)->getComponent(HEALTH))->applyDamage(damage);
     }
 }
 

@@ -3,9 +3,9 @@
 #include "../../Engine/Entity.h"
 
 mat4 RendererComponent::getMatrix() {
-    mat4 myMatrix = glm::translate(glm::scale(glm::toMat4(rotation),scale),position);
-    mat4 ownerMatrix = owner->getMatrix();
-    return ownerMatrix * myMatrix;
+    mat4 myMatrix;
+    myMatrix = glm::translate(myMatrix, position) * glm::toMat4(rotation) * glm::scale(myMatrix, scale);
+    return owner->getMatrix() * myMatrix;
 }
 
 RendererComponent::RendererComponent(Model* newModel, RendererTag newTag) : Component(RENDERER) {
