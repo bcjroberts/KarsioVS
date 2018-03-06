@@ -22,13 +22,7 @@ Movement * moveCamera;
 Entity * player;
 vehicleInput * movePlayer;
 DriveComponent * playerDrive;
-std::vector<vec3> path;
-Entity * goal;
-int state = 0;
-int prevstate = -1;
-vec3 prevPos;
-int notMoving = 0;
-int orbiting = 0;
+
 private:
 	enum States {
 		DECIDING,
@@ -48,12 +42,14 @@ public:
     bool canVehicleFlip(Entity* vehicle) const;
     void flipVehicle(Entity* vehicle) const;
     void bindCamera(Camera* aCamera);
-	void findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal);
+	void findPath(AStar::Generator* generator, Entity* entity, glm::vec3 goal);
+	//void findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal);
 	void finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
 	void mine(Entity* entity);
 	void attack(Entity* goal, Entity* entity);
 	bool checkStuck(Entity* entity);
 	void unstuck(Entity* entity);
+	void upgrade(Entity* entity);
    ~Logic();
 };
 

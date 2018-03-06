@@ -48,14 +48,6 @@ bool AIComponent::getKilledCrystal() {
 	return collected;
 }
 
-void AIComponent::setGoalID(int id) {
-	goalID = id;
-}
-
-int AIComponent::getGoalID() {
-	return goalID;
-}
-
 AIComponent::~AIComponent()
 {
 }

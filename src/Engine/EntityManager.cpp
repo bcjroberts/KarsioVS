@@ -9,7 +9,7 @@
 #include "Importer/Managers/ModelManager.h"
 #include "Core.h"
 
-#include <random>   // for default_random_engine & uniform_int_distribution<int>
+#include <random>
 #include <chrono> 
 
 // Initialize the Entity Manager global pointer.
@@ -138,7 +138,6 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
 
 	// randomly choose obstacle type and rotation
-	// rand() no good for loops :'I
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());     // provide seed
 	std::uniform_int_distribution<int> uid{ 1, 3};
 	std::string s = std::to_string(uid(dre));
