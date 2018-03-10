@@ -400,7 +400,7 @@ void Logic::finiteStateMachine(Entity* entity, AStar::Generator* generator, Worl
 		std::cout << "searching for player path" << std::endl;
 		findPath(generator, entity, ai->goal->getPosition());
 		if (ai->path.size() > 0) {
-			std::cout << "seeking player id " << ai->goal->id << ", my id is " << entity->id << std::endl;
+			//std::cout << "seeking player id " << ai->goal->id << ", my id is " << entity->id << std::endl;
 			ai->state = SEEKING_PLAYER;
 		}
 		break;

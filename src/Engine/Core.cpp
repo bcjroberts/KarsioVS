@@ -135,11 +135,13 @@ void Core::coreLoop() {
     Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 10, 0));
 	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 10, 0));
     Entity* aiVehicle2 = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(20, 10, 0));
-	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
+	//Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 
 	WorldGenerator worldGen;
 	worldGen.generateWorld();
 	
+	
+	/*
 	AStar::Generator gen;
 	gen.setWorldSize({ 10, 10 });
 
@@ -156,6 +158,7 @@ void Core::coreLoop() {
 		y = (*crystals)[i]->getCoarsePosition().z;
 		gen.addCrystal(vec2(x, y));
 	}
+	*/
 	
     ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -218,8 +221,8 @@ void Core::coreLoop() {
 //			printf("\n");
 						
 			logic.playerMovement(playerVehicle);
-			logic.finiteStateMachine(aiVehicle, &gen, &worldGen);
-            logic.finiteStateMachine(aiVehicle2, &gen, &worldGen);
+			logic.finiteStateMachine(aiVehicle, worldGen.getGrid(), &worldGen);
+            logic.finiteStateMachine(aiVehicle2, worldGen.getGrid(), &worldGen);
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();

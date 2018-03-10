@@ -4,14 +4,27 @@
 WorldGenerator::WorldGenerator() {
 }
 
+WorldGenerator *WorldGenerator::globalInstance = nullptr;
 
 WorldGenerator::~WorldGenerator() = default;
 
-void WorldGenerator::generateWorld() {
-	createWalls();
+WorldGenerator* WorldGenerator::getInstance() {
+	if (!globalInstance) {
+		globalInstance = new WorldGenerator;
+	}
+	return globalInstance;
+}
 
+void WorldGenerator::generateWorld() {
+	int gridSize = 30;
 	std::vector<glm::vec3> positions;
-	
+
+	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
+
+	createWalls(gridSize);
+
+	// populate with positions the vehicles are at to prevent putting crystals/obstacles on or around them	
+	printf("\nentities size = %d\n", EntityManager::getInstance()->getEntities().size());
 	for (int i = 0; i < EntityManager::getInstance()->getEntities().size(); i++) {
 		glm::vec3 pos = EntityManager::getInstance()->getEntities().at(i)->getCoarsePosition();
 		positions.push_back(pos);
@@ -25,8 +38,11 @@ void WorldGenerator::generateWorld() {
 		positions.push_back(glm::vec3(pos.x - 1, pos.y, pos.z));
 	}
 
-	createObstacles(&positions);
-	createCrystals(&positions);
+	createObstacles(&positions, gridSize);
+	createCrystals(&positions, gridSize);
+	generateGrid(gridSize);
+
+	printf("entities size again = %d\n", EntityManager::getInstance()->getEntities().size());
 
 	/// these mark edges of grid for clarity's sake so I can keep my sanity
 	//for (int i = 0; i < 200; i++) {
@@ -44,13 +60,29 @@ void WorldGenerator::generateWorld() {
 	/// end sanity markers
 }
 
-void WorldGenerator::createObstacles(std::vector<glm::vec3> *positions) {
+void WorldGenerator::generateGrid(int gridSize) {
+	aStar.setWorldSize({ gridSize, gridSize });
+	
+	float x, y;
+	for (int i = 0; i < obstacles.size() - 1; i++) {
+		x = obstacles[i]->getCoarsePosition().x;
+		y = obstacles[i]->getCoarsePosition().z;
+		aStar.addCollision(vec2(x, y), obstacles[i]->getScale());
+	}
+	for (int i = 0; i < crystals.size() - 1; i++) {
+		x = crystals[i]->getCoarsePosition().x;
+		y = crystals[i]->getCoarsePosition().z;
+		aStar.addCrystal(vec2(x, y));
+	}
+}
+
+void WorldGenerator::createObstacles(std::vector<glm::vec3> *positions, int gridSize) {
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
 
 	// create boulders
 	int m = 0;
 	for (int i = 0; i < 20; i++) {
-		std::uniform_int_distribution<int> uid{ -9, 9 };
+		std::uniform_int_distribution<int> uid{ -(gridSize - 1), gridSize - 1 };
 		// make sure they end in 5....
 		int x = uid(dre) * 10 + 5;
 		int z = uid(dre) * 10 + 5;
@@ -63,8 +95,8 @@ void WorldGenerator::createObstacles(std::vector<glm::vec3> *positions) {
 		// make 3 boulders side by side
 		for (int j = 0; j < 3; j++) {
 			m = uidb(dre) ? 1 : 0;	// 1 = expand in x, 0 = expand in z
-			if (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) != positions->end() ||
-				(x > 95 || x < -95) || (z > 95 || z < -95)) {
+			if (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) != positions->end() /*||
+				(x > 95 || x < -95) || (z > 95 || z < -95)*/) {
 				// skip making obstacle
 			}
 			else {
@@ -83,7 +115,7 @@ void WorldGenerator::createObstacles(std::vector<glm::vec3> *positions) {
 	}
 }
 
-void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions) {
+void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions, int gridSize) {
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
 
 	// create crystals of variable sizes
@@ -91,7 +123,7 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions) {
 		std::uniform_real_distribution<float> urd{ 0.5, 1.5 };
 		float resourceAmount = urd(dre);
 
-		std::uniform_int_distribution<int> uid{ -8, 8 };
+		std::uniform_int_distribution<int> uid{ -(gridSize - 2), gridSize - 2 };
 		// make sure they end in 5....
 		int x = uid(dre) * 10 + 5;
 		int z = uid(dre) * 10 + 5;
@@ -108,11 +140,11 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions) {
 	}
 }
 
-void WorldGenerator::createWalls() {
+void WorldGenerator::createWalls(int gridSize) {
 	// create edge walls
 	float boulderSize = 2.5f;
-	int bounds = 100;
-	for (int i = 0; i < 200; i++) {
+	int bounds = gridSize * 10;
+	for (int i = 0; i < gridSize * 20; i++) {
 		if (i % 10 == 0) {
 			Entity* boulder1 = EntityManager::getInstance()->createWallBoulder(glm::vec3(-bounds + i, 2, -bounds), glm::vec3(boulderSize));
 			obstacles.push_back(boulder1);
@@ -122,7 +154,7 @@ void WorldGenerator::createWalls() {
 		}
 	}
 
-	for (int i = 0; i < 200; i++) {
+	for (int i = 0; i < gridSize * 20; i++) {
 		if (i % 10 == 0) {
 			Entity* boulder1 = EntityManager::getInstance()->createWallBoulder(glm::vec3(bounds, 2, -bounds + i), glm::vec3(boulderSize));
 			obstacles.push_back(boulder1);
@@ -131,6 +163,10 @@ void WorldGenerator::createWalls() {
 			obstacles.push_back(boulder2);
 		}
 	}
+}
+
+AStar::Generator* WorldGenerator::getGrid() {
+	return &aStar;
 }
 
 std::vector<Entity*>* WorldGenerator::getObstacles() {
