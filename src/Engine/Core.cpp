@@ -135,31 +135,10 @@ void Core::coreLoop() {
     Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 10, 0));
 	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 10, 0));
     Entity* aiVehicle2 = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(20, 10, 0));
-	//Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 
 	WorldGenerator worldGen;
 	worldGen.generateWorld();
-	
-	
-	/*
-	AStar::Generator gen;
-	gen.setWorldSize({ 10, 10 });
-
-	std::vector<Entity*>* obstacles = worldGen.getObstacles();
-	std::vector<Entity*>* crystals = worldGen.getCrystals();
-	float x, y;
-	for (int i = 0; i < obstacles->size() - 1; i++) {
-		x = (*obstacles)[i]->getCoarsePosition().x;
-		y = (*obstacles)[i]->getCoarsePosition().z;
-		gen.addCollision(vec2(x, y), (*obstacles)[i]->getScale());
-	}
-	for (int i = 0; i < crystals->size() - 1; i++) {
-		x = (*crystals)[i]->getCoarsePosition().x;
-		y = (*crystals)[i]->getCoarsePosition().z;
-		gen.addCrystal(vec2(x, y));
-	}
-	*/
-	
+		
     ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
