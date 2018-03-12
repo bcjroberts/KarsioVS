@@ -350,12 +350,16 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 	physx::PxVehicleWheels* vehicles[PX_MAX_NB_VEHICLES];
 	for (int i = 0; i < numberOfVehicles; i++)
 	{
+        printf("Current Gear! %i\n", allVehicleData[i]->myVehicle->mDriveDynData.getCurrentGear());
         // Put the vehicle in the correct gear:
         if (allVehicleData[i]->myInput.getAnalogBrake() > 0.0f) {
             // if we are breaking, set accelration to true and ensure we are in the reverse gear
             allVehicleData[i]->myInput.setAnalogAccel(allVehicleData[i]->myInput.getAnalogBrake());
             allVehicleData[i]->myInput.setAnalogBrake(0.0f);
-            allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eREVERSE);
+            if (allVehicleData[i]->myVehicle->mDriveDynData.getCurrentGear() > physx::PxVehicleGearsData::eREVERSE) {
+                printf("Changing gear to reverse! %i\n", allVehicleData[i]->myVehicle->mDriveDynData.getCurrentGear());
+                allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eREVERSE);
+            }
         } else {
             // otherwise ensure we are in first gear
             allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
