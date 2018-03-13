@@ -35,7 +35,7 @@ float boundInput(float invalue, float lowerbound, float upperbound) {
 // joystick controller stuff
 void ControllableComponent::getInput() {
 	// why is everything set to true in default? Did I break something? O:
-	input.accel = input.brake = input.handbrake = input.steering = 0.0f;
+	input.accel = input.reverse = input.handbrake = input.steering = 0.0f;
 
 	int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
 	if (present) {
@@ -43,7 +43,7 @@ void ControllableComponent::getInput() {
 		const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
 		const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
 		
-		input.brake = boundInput(axes[GAMEPAD_LEFT_TRIGGER], 0.f, 1.f);
+		input.reverse = boundInput(axes[GAMEPAD_LEFT_TRIGGER], 0.f, 1.f);
 		input.accel = boundInput(axes[GAMEPAD_RIGHT_TRIGGER], 0.f, 1.f);
         input.steering = -boundInput(axes[GAMEPAD_LEFT_JOYSTICK_X], -1.f, 1.f);
         input.handbrake = buttons[GAMEPAD_B] ? 1.f : 0.f;
@@ -55,7 +55,7 @@ void ControllableComponent::getInput() {
         upInput.upgradeGun = buttons[GAMEPAD_DPAD_DOWN];
         upInput.upgradeRam = buttons[GAMEPAD_DPAD_LEFT];
 	} else { //Use keyboard inputs instead if no controller is present.
-        input.brake = glfwGetKey(Core::globalWindow, GLFW_KEY_S) ? 1.0f : 0.0f;
+        input.reverse = glfwGetKey(Core::globalWindow, GLFW_KEY_S) ? 1.0f : 0.0f;
         input.accel = glfwGetKey(Core::globalWindow, GLFW_KEY_W) ? 1.0f : 0.0f;
         input.steering = glfwGetKey(Core::globalWindow, GLFW_KEY_D) ? -1.0f : 0.0f;
         input.steering = glfwGetKey(Core::globalWindow, GLFW_KEY_A) ? 1.0f : input.steering;

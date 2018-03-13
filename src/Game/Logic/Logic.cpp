@@ -140,7 +140,7 @@ void Logic::aiMovement(Entity* entity) {
 	} else {
         accel = 1.0f;
 	}
-	// accel, brake, handbrake, steering
+	// accel, reverse, handbrake, steering
     aiDrive->setInputs(accel, 0.0f, 0.0f, steering);
 }
 
@@ -252,7 +252,7 @@ void Logic::mine(Entity* entity) {
 		}
 		else if (glm::distance(ai->getCurrentWaypoint(), entity->getPosition()) < 7.0f) {
 			// crystal is in front of it, back up
-			// accel, brake, handbrake, steering
+			// accel, reverse, handbrake, steering
 			aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 		}
 		else {

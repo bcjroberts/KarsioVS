@@ -11,11 +11,13 @@
 #include <vehicle/PxVehicleUtilControl.h>
 #include <glm/detail/type_vec3.hpp>
 #include <geometry/PxGeometryQuery.h>
+#include "../../Game/Components/DriveComponent.h"
 
 struct vehicleData {
     bool isInAir = false;
     physx::PxVehicleDrive4W* myVehicle;
-    physx::PxVehicleDrive4WRawInputData myInput;
+	vehicleInput myInput;
+    physx::PxVehicleDrive4WRawInputData myPxInput;
 };
 
 struct RaycastData {

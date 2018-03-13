@@ -350,24 +350,23 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 	physx::PxVehicleWheels* vehicles[PX_MAX_NB_VEHICLES];
 	for (int i = 0; i < numberOfVehicles; i++)
 	{
-        printf("Current Gear! %i\n", allVehicleData[i]->myVehicle->mDriveDynData.getCurrentGear());
-        // Put the vehicle in the correct gear:
-        if (allVehicleData[i]->myInput.getAnalogBrake() > 0.0f) {
-            // if we are breaking, set accelration to true and ensure we are in the reverse gear
-            allVehicleData[i]->myInput.setAnalogAccel(allVehicleData[i]->myInput.getAnalogBrake());
-            allVehicleData[i]->myInput.setAnalogBrake(0.0f);
-            if (allVehicleData[i]->myVehicle->mDriveDynData.getCurrentGear() > physx::PxVehicleGearsData::eREVERSE) {
-                printf("Changing gear to reverse! %i\n", allVehicleData[i]->myVehicle->mDriveDynData.getCurrentGear());
-                allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eREVERSE);
-            }
-        } else {
-            // otherwise ensure we are in first gear
-            allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
-        }
+		// Set the Pxinput to match the regular input
+		allVehicleData[i]->myPxInput.setAnalogSteer(allVehicleData[i]->myInput.steering);
+		allVehicleData[i]->myPxInput.setAnalogHandbrake(allVehicleData[i]->myInput.handbrake);
+
+		if (allVehicleData[i]->myInput.reverse > 0.f) {
+			allVehicleData[i]->myPxInput.setAnalogAccel(allVehicleData[i]->myInput.reverse);
+			if (allVehicleData[i]->myVehicle->mDriveDynData.getCurrentGear() != physx::PxVehicleGearsData::eREVERSE) {
+				allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eREVERSE);
+			}
+		} else {
+			allVehicleData[i]->myPxInput.setAnalogAccel(allVehicleData[i]->myInput.accel);
+			allVehicleData[i]->myVehicle->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
+		}
 
 		// Set the vehicle moving
-		//PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
-		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
+		//PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myPxInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
+		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myPxInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
 
 		vehicles[i] = allVehicleData[i]->myVehicle;
 	}

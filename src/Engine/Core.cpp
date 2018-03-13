@@ -188,16 +188,13 @@ void Core::coreLoop() {
             renderEngine->render(camera);
         }else{
             
-//			printf("FrameTime: %f", timeDiff);
 			timeDiff = 0.0f;
 			// Simulate physics in a Fixed Timestep style
 			while (physicsTime < currentTime) {
-				//				printf(" *");
 				physicsTime += physicsTimeStep;
 				PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
 				timeDiff += 1.0f / 60.0f;
 			}
-//			printf("\n");
 						
 			logic.playerMovement(playerVehicle);
 			logic.finiteStateMachine(aiVehicle, worldGen.getGrid(), &worldGen);

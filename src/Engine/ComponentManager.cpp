@@ -49,7 +49,7 @@ PhysicsComponent* ComponentManager::addPhysicsComponent(Entity* addTo, physx::Px
     return pc;
 }
 
-DriveComponent* ComponentManager::addDriveComponent(Entity* addTo, physx::PxVehicleDrive4WRawInputData* inputData, physx::PxVehicleDrive4W* vehicle) {
+DriveComponent* ComponentManager::addDriveComponent(Entity* addTo, vehicleInput* inputData, physx::PxVehicleDrive4W* vehicle) {
     DriveComponent* dc = new DriveComponent(inputData, vehicle);
     driveComponents.push_back(dc);
     addTo->addComponent(dc);
