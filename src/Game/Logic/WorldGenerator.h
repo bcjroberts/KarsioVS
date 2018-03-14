@@ -12,7 +12,7 @@ private:
 	AStar::Generator aStar;
 public:
 	AStar::Generator* getGrid();
-	WorldGenerator* getInstance();
+	static WorldGenerator* getInstance();
 	WorldGenerator();
 	~WorldGenerator();
 	void generateGrid(int gridSize);
@@ -22,6 +22,6 @@ public:
 	void createCrystals(std::vector<glm::vec3> *positions, int gridSize);
 	std::vector<Entity*>* getObstacles();
 	std::vector<Entity*>* getCrystals();
-	int getCrystalSize();
+	void removeCrystal(Entity* entity);
 };
 

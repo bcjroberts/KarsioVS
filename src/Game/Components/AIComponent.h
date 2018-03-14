@@ -8,6 +8,7 @@ class AIComponent : public Component
 private:
 	bool collected = false;
 	int minedID = -2;
+	int attackerID = -1;
 public:
 	std::vector<glm::vec3> path;
 	Entity * goal;
@@ -16,7 +17,7 @@ public:
 	glm::vec3 prevPos;
 	int notMoving = 0;
 	int orbiting = 0;
-	int goalID = -1;
+	
 	
     std::vector<glm::vec3> waypoints;
     int currentWaypointIndex;
@@ -29,6 +30,8 @@ public:
 	int getMinedID();
 	void setKilledCrystal(bool ncollected);
 	bool getKilledCrystal();
+	void setAttackerID(int id);
+	int getAttackerID();
 	
     ~AIComponent();
 };

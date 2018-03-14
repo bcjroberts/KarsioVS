@@ -4,7 +4,7 @@
 WorldGenerator::WorldGenerator() {
 }
 
-WorldGenerator *WorldGenerator::globalInstance = nullptr;
+WorldGenerator* WorldGenerator::globalInstance = nullptr;
 
 WorldGenerator::~WorldGenerator() = default;
 
@@ -24,9 +24,9 @@ void WorldGenerator::generateWorld() {
 	createWalls(gridSize);
 
 	// populate with positions the vehicles are at to prevent putting crystals/obstacles on or around them	
-	printf("\nentities size = %d\n", EntityManager::getInstance()->getEntities().size());
-	for (int i = 0; i < EntityManager::getInstance()->getEntities().size(); i++) {
-		glm::vec3 pos = EntityManager::getInstance()->getEntities().at(i)->getCoarsePosition();
+	//printf("\nentities size = %d\n", EntityManager::getInstance()->getEntities().size());
+	for (int i = 0; i < EntityManager::getInstance()->getVehicleEntities().size(); i++) {
+		glm::vec3 pos = EntityManager::getInstance()->getVehicleEntities().at(i)->getCoarsePosition();
 		positions.push_back(pos);
 		positions.push_back(glm::vec3(pos.x + 1, pos.y, pos.z + 1));
 		positions.push_back(glm::vec3(pos.x - 1, pos.y, pos.z + 1));
@@ -42,7 +42,7 @@ void WorldGenerator::generateWorld() {
 	createCrystals(&positions, gridSize);
 	generateGrid(gridSize);
 
-	printf("entities size again = %d\n", EntityManager::getInstance()->getEntities().size());
+	//printf("entities size again = %d\n", EntityManager::getInstance()->getEntities().size());
 
 	/// these mark edges of grid for clarity's sake so I can keep my sanity
 	//for (int i = 0; i < 200; i++) {
@@ -67,7 +67,7 @@ void WorldGenerator::generateGrid(int gridSize) {
 	for (int i = 0; i < obstacles.size() - 1; i++) {
 		x = obstacles[i]->getCoarsePosition().x;
 		y = obstacles[i]->getCoarsePosition().z;
-		aStar.addCollision(vec2(x, y), obstacles[i]->getScale());
+		aStar.addCollision(vec2(x, y));
 	}
 	for (int i = 0; i < crystals.size() - 1; i++) {
 		x = crystals[i]->getCoarsePosition().x;
@@ -177,6 +177,10 @@ std::vector<Entity*>* WorldGenerator::getCrystals() {
 	return &crystals;
 }
 
-int WorldGenerator::getCrystalSize() {
-	return crystals.size();
+void WorldGenerator::removeCrystal(Entity* entity) {
+	auto it = std::find(crystals.begin(), crystals.end(), entity);
+	if (it != crystals.end()) {
+		crystals.erase(it);
+	}
+	aStar.removeCrystal(glm::vec2(entity->getCoarsePosition().x, entity->getCoarsePosition().z));
 }

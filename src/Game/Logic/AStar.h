@@ -46,7 +46,6 @@ namespace AStar {
 		void removeCrystal(glm::vec2 coordinates);
 		void removeCollision(glm::vec2 coodrinates);
 		void clearCollisions();
-
 	private:
 		HeuristicFunction heuristic;
 		CoordinateList direction, walls, crystals; // add destructable walls later?

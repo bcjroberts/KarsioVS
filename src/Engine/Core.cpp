@@ -139,8 +139,10 @@ void Core::coreLoop() {
 	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 10, 0));
     Entity* aiVehicle2 = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(20, 10, 0));
 
-	WorldGenerator worldGen;
-	worldGen.generateWorld();
+	//WorldGenerator worldGen;
+	//worldGen.generateWorld();
+
+	WorldGenerator::getInstance()->generateWorld();
 		
     ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
@@ -214,8 +216,10 @@ void Core::coreLoop() {
 			}
 
 			logic.playerMovement(playerVehicle);
-			logic.finiteStateMachine(aiVehicle, worldGen.getGrid(), &worldGen);
-            logic.finiteStateMachine(aiVehicle2, worldGen.getGrid(), &worldGen);
+			//logic.finiteStateMachine(aiVehicle, worldGen.getGrid(), &worldGen);
+            //logic.finiteStateMachine(aiVehicle2, worldGen.getGrid(), &worldGen);
+			logic.finiteStateMachine(aiVehicle);
+			logic.finiteStateMachine(aiVehicle2);
 
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();

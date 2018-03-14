@@ -3,7 +3,7 @@
 #include <geometry/PxGeometryQuery.h>
 #include "../../Engine/PhysicsEngine/PhysicsEngine.h"
 #include "HealthComponent.h"
-
+#include "AIComponent.h"
 
 ProjectileComponent::ProjectileComponent(int nownerid, float nspeed, float ndamage) : Component(PROJECTILE) {
     ownerid = nownerid;
@@ -29,8 +29,13 @@ bool ProjectileComponent::checkForHit() {
         // TODO: Apply damage to the thing we hit if it has a health component.
         if (hitEnt != nullptr) {
             HealthComponent* hc = static_cast<HealthComponent*>(hitEnt->getComponent(HEALTH));
-            if (hc != nullptr)
-                hc->applyDamage(damage);
+			if (hc != nullptr) {
+				hc->applyDamage(damage);
+				// let AI know who hit it
+				if (hitEnt->getComponent(AI) != nullptr) {
+					static_cast<AIComponent*>(hitEnt->getComponent(AI))->setAttackerID(ownerid);
+				}
+			}
         }
         return true;
     }

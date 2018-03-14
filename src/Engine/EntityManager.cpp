@@ -31,6 +31,10 @@ std::vector<Entity*> EntityManager::getEntities() {
 	return entities;
 }
 
+std::vector<Entity*> EntityManager::getVehicleEntities() {
+	return vehicleEntities;
+}
+
 EntityManager::~EntityManager() = default;
 
 void EntityManager::destroyEntity(int id) {
@@ -82,6 +86,7 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     // Set the gun to the default values
     wc->updateGunValues(uc->getCurrentGunROF(), uc->getCurrentGunDamage(), uc->getCurrentProjSpeed());
 
+	vehicleEntities.push_back(entity);
     entities.push_back(entity);
     return entity;
 }

@@ -8,6 +8,7 @@
 #include "../../Game/Components/UpgradeComponent.h"
 #include "../../Game/Components/PhysicsComponent.h"
 
+#include "../../Game/Logic/WorldGenerator.h"
 
 CollisionProcessor::CollisionProcessor() {
 }
@@ -139,17 +140,15 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 
     if (crystalHealth->isDead())
     {
-		// tell car that it destroyed the crystal
-		if (carEntity->getComponent(AI) != nullptr) {
-			carAI->setKilledCrystal(true);
-		}
-
         // Add the resources of the crystal to the car whichd estroyed it
         const float crystalValue = crystalHealth->getMaxHealth();
         static_cast<UpgradeComponent*>(static_cast<Entity*>(carActor->userData)->getComponent(UPGRADE))->addResources(crystalValue);
 
         // Mark the crystal for destruction
         destroyedEntities.push_back(crystalEntity);
+
+		// remove from world and pathfinding
+		WorldGenerator::getInstance()->removeCrystal(crystalEntity);
 
         for (int i = 0; i < count; i++)
         {

@@ -10,6 +10,7 @@ class Entity;
 class EntityManager
 {
 private:
+	std::vector<Entity*> vehicleEntities;
 	std::vector<Entity*> entities;
 	static EntityManager* globalInstance;
 public:
@@ -31,6 +32,7 @@ public:
     void updateArmor(Entity* toUpdate, int chassisLevel, int armorLevel);
     static EntityManager* getInstance();
 	std::vector<Entity*> getEntities();
+	std::vector<Entity*> getVehicleEntities();
     ~EntityManager();
 };
 

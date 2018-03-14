@@ -32,7 +32,10 @@ private:
 		SEEKING_PLAYER,
 		MINING,
 		ATTACKING,
-		STUCK
+		STUCK,
+		RETALIATE,
+		FLEE,
+		RUNNING_AWAY
 	};
 public:        
     Logic();
@@ -44,11 +47,13 @@ public:
     void bindCamera(Camera* aCamera);
 	void findPath(AStar::Generator* generator, Entity* entity, glm::vec3 goal);
 	//void findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal);
-	void finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
+	//void finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
+	void finiteStateMachine(Entity* entity);
 	void mine(Entity* entity);
 	void attack(Entity* goal, Entity* entity);
 	bool checkStuck(Entity* entity);
-	void unstuck(Entity* entity);
+	void unstuck(Entity* entity, AStar::Generator* generator);
+	int randomNum(int min, int max);
 	void upgrade(Entity* entity);
    ~Logic();
 };
