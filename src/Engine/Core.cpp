@@ -48,6 +48,9 @@ Movement movement;
 int cameraMode = 1;
 bool refreshMovement = false;
 
+float fpsCounter = 60;
+float timeSinceLastfpsPrint = 0;
+
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool set = action != GLFW_RELEASE && GLFW_REPEAT;
@@ -179,7 +182,17 @@ void Core::coreLoop() {
         UpgradeComponent* playerUC = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE));
         oss << "Resources: " << roundf(playerUC->getCurrentResources()) << "/" << roundf(playerUC->getMaxResources());
         std::string playerResources = oss.str();
-        renderEngine->ui->modifyText(1, &playerResources, nullptr, nullptr, nullptr, nullptr);
+		renderEngine->ui->modifyText(1, &playerResources, nullptr, nullptr, nullptr, nullptr);
+
+		timeSinceLastfpsPrint += timeDiff;
+		if (timeSinceLastfpsPrint > 0.2f) {
+			timeSinceLastfpsPrint = 0;
+			oss.str("");
+			oss.clear();
+			oss << round(fpsCounter);
+			std::string fpsString = oss.str();
+			renderEngine->ui->modifyText(10, &fpsString, nullptr, nullptr, nullptr, nullptr);
+		}
 
         //We could make a pause game feature by just rendering stuff and disabling all
         // the other stuff... although feel free to change this if you think some other
@@ -187,15 +200,19 @@ void Core::coreLoop() {
         if(properties.isPaused){
             renderEngine->render(camera);
         }else{
-            
-			timeDiff = 0.0f;
+			
+			float fixedStepTimediff = 0.0f;
 			// Simulate physics in a Fixed Timestep style
 			while (physicsTime < currentTime) {
 				physicsTime += physicsTimeStep;
 				PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
-				timeDiff += 1.0f / 60.0f;
+				fixedStepTimediff += 1.0f / 60.0f;
 			}
-						
+
+			if (fixedStepTimediff > 0) {
+				fpsCounter = fpsCounter * 0.5f + (1.0f / fixedStepTimediff) * 0.5f;
+			}
+
 			logic.playerMovement(playerVehicle);
 			logic.finiteStateMachine(aiVehicle, worldGen.getGrid(), &worldGen);
             logic.finiteStateMachine(aiVehicle2, worldGen.getGrid(), &worldGen);
@@ -210,7 +227,7 @@ void Core::coreLoop() {
                 // Move camera by keyboard and cursor
                 glfwGetCursorPos(properties.window, &xpos, &ypos);
                 camera.rotateView(vec2(xpos / *properties.screenWidth, -ypos / *properties.screenHeight));
-                camera.moveCamera(movement, timeDiff * 250.0f);
+                camera.moveCamera(movement, fixedStepTimediff * 250.0f);
             }
             else if (cameraMode == 1)
             {
@@ -231,8 +248,8 @@ void Core::coreLoop() {
 
                 const float chassisLevel = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->getChassisLevel();
 
-                camera.rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 10.0f * timeDiff);
-                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 1.f), 0), 5.0f * timeDiff);
+                camera.rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 10.0f * fixedStepTimediff);
+                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 1.f), 0), 5.0f * fixedStepTimediff);
             }
 
             audioEngine.update();

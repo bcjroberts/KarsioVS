@@ -26,24 +26,27 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screen_width, int *screen_he
 	//==========================================================
 	//replace all of this with stuff that isn't in the render engine and then remove it from the project before submission
 	//==========================================================
-	ui->addText("top left", 40, 40, 1, vec3(0.5, 1, 0));
-	ui->addText("top right", 1550, 30, 0.5, vec3(1, 1, 0));
+	ui->addText("health", 40, 40, 1, vec3(0.5, 1, 0));
+	ui->addText("resources", 1550, 30, 0.5, vec3(1, 1, 0));
 
+	// Text headers
     ui->addText("Chassis Lvl: 1", 350, 30, 0.5, vec3(1, 1, 0));
     ui->addText("Armor Lvl: 1", 650, 30, 0.5, vec3(1, 1, 0));
     ui->addText("Gun Lvl: 1", 950, 30, 0.5, vec3(1, 1, 0));
     ui->addText("Ram Lvl: 1", 1250, 30, 0.5, vec3(1, 1, 0));
 
+	// Level indicators
     ui->addText("", 350, 50, 0.5, vec3(1, 1, 0));
     ui->addText("", 650, 50, 0.5, vec3(1, 1, 0));
     ui->addText("", 950, 50, 0.5, vec3(1, 1, 0));
     ui->addText("", 1250, 50, 0.5, vec3(1, 1, 0));
 
-	//ui->addText("bottom right", 1400, 1000, 0.5, vec3(1, 0, 0.5));
-	//ui->addText("bottom left", 20, 1000, 0.5, vec3(1, 1, 1));
+	// fps
+	ui->addText("78", 5, 5, 0.5, vec3(1, 1, 0));
+
 	//ui->addText("Try to use relative values that can be dynamically changed for easy resizing", (*screenWidth)/4, (*screenHeight)/2, 0.5, vec3(0.75, 1, 0.5));
 	//ui->addText("This sample code exists in the render engine's constructor, look at it to figure out how this works", (*screenWidth)/4, 3*(*screenHeight)/4, 0.5, vec3(0.75, 1, 0.5));
-//	ui->removeText(2);
+	//ui->removeText(2);
 	// Sample code for setting up lights. Currenly only 10 lights are supported.
 	setLight(0, vec3(10.0, 10.0, 10.0), vec3(100.0, 100.0, 100.0));
 	setLight(1, vec3(20.0, 10.0, 10.0), vec3(100.0, 70.0, 100.0));
