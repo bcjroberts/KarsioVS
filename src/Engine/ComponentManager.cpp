@@ -100,6 +100,13 @@ ProjectileComponent* ComponentManager::addProjectileComponent(Entity* addTo, int
     return pc;
 }
 
+StaticLightComponent* ComponentManager::addStaticLightComponent(Entity* entity, glm::vec3 pos, glm::vec3 color) {
+    StaticLightComponent* slc = new StaticLightComponent(pos, color);
+    entity->addComponent(slc);
+    slc->owner = entity;
+    return slc;
+}
+
 RendererComponent* ComponentManager::getRenderComponentWithTagFromEntity(Entity* from, RendererTag tag) {
     for (auto & myComponent : from->myComponents)
     {
@@ -187,6 +194,13 @@ void ComponentManager::cleanupComponents(Entity* entity) {
                 break;
             }
         }
+        entity->removeComponent(toRemove->id);
+        delete toRemove;
+    }
+
+    // Ensures the light will free itself
+    toRemove = entity->getComponent(STATIC_LIGHT);
+    if (toRemove != nullptr) {
         entity->removeComponent(toRemove->id);
         delete toRemove;
     }

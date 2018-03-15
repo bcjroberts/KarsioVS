@@ -22,7 +22,7 @@ struct Textures{
     // sampler2D ambiantOcculusion;
 };
 
-const int numLights = 10;
+const int numLights = 100;
 
 uniform Light lights[numLights];
 uniform vec3 viewPos;

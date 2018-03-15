@@ -225,9 +225,9 @@ void Logic::findPath(AStar::Generator* generator, Entity* entity, glm::vec3 goal
 	}
 	ai->path[0] = vec3(goal.x, 0, goal.z);
 	//std::cout << "path for " << entity->id << std::endl;
-	for (int i = ai->path.size() - 1; i > -1; i--) {
-		std::cout << ai->path[i].x << " " << ai->path[i].z << std::endl;
-	}	
+	//for (int i = ai->path.size() - 1; i > -1; i--) {
+	//	std::cout << ai->path[i].x << " " << ai->path[i].z << std::endl;
+	//}	
 }
 
 void Logic::mine(Entity* entity) {
@@ -407,13 +407,13 @@ void Logic::finiteStateMachine(Entity* entity) {
 		i = randomNum(1, EntityManager::getInstance()->getVehicleEntities().size() - 1);
 		if (i != entity->id) {
 			ai->goal = EntityManager::getInstance()->getVehicleEntities().at(i);
-		}
-		findPath(generator, entity, ai->goal->getPosition());
-		if (ai->path.size() > 0) {
-			ai->state = SEEKING_PLAYER;
-		}
-		else {
-			ai->state = DECIDING;
+            findPath(generator, entity, ai->goal->getPosition());
+            if (ai->path.size() > 0) {
+                ai->state = SEEKING_PLAYER;
+            }
+            else {
+                ai->state = DECIDING;
+            }
 		}
 		break;
 	case SEEKING_PLAYER:

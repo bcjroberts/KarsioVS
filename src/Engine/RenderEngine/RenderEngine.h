@@ -24,7 +24,8 @@ using namespace glm;
 
 class RenderEngine{
 private:
-	int NUM_LIGHTS = 10;
+	const static int NUM_LIGHTS = 100;
+    bool lightsInUse[NUM_LIGHTS];
 
     struct Textures{
 		//ALl the texture data here
@@ -87,7 +88,8 @@ public:
     //void removeInstance(RenderData model);
 
 	void setLight(int index, vec3 position, vec3 color);
-
+    int getNextAvailableLightID();
+    void freeLightWithID(int index);
     //Need the model that is being used and the instance that will be added to that model
     void addInstance(Model &model, int id, mat4 transform);
     void updateInstance(Model &model, int id, mat4 transform);

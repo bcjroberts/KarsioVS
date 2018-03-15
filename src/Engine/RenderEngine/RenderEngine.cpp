@@ -17,6 +17,7 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screen_width, int *screen_he
 		newLight.position = vec3(0);
 		newLight.color = vec3(0);
 		lights.push_back(newLight);
+        lightsInUse[i] = false;
 	}
 	this->screenWidth = screen_width;
 	this->screenHeight = screen_height;
@@ -48,13 +49,11 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screen_width, int *screen_he
 	//ui->addText("This sample code exists in the render engine's constructor, look at it to figure out how this works", (*screenWidth)/4, 3*(*screenHeight)/4, 0.5, vec3(0.75, 1, 0.5));
 	//ui->removeText(2);
 	// Sample code for setting up lights. Currenly only 10 lights are supported.
-	setLight(0, vec3(10.0, 10.0, 10.0), vec3(100.0, 100.0, 100.0));
-	setLight(1, vec3(20.0, 10.0, 10.0), vec3(100.0, 70.0, 100.0));
-	setLight(2, vec3(20.0, 10.0, 20.0), vec3(100.0, 70.0, 20.0));
-    setLight(6, vec3(-40.0, 30.0, -40.0), vec3(350.0, 350.0, 350.0));
-    setLight(7, vec3(-40.0, 30.0, 40.0), vec3(350.0, 350.0, 350.0));
-    setLight(8, vec3(40.0, 30.0, -40.0), vec3(350.0, 350.0, 350.0));
-    setLight(9, vec3(40.0, 30.0, 40.0), vec3(350.0, 350.0, 350.0));
+	setLight(0, vec3(20.0, 10.0, 20.0), vec3(1000.0, 1000.0, 1000.0));
+	setLight(1, vec3(-20.0, 10.0, -20.0), vec3(1000.0, 1000.0, 1000.0));
+	setLight(2, vec3(-20.0, 10.0, 20.0), vec3(1000.0, 1000.0, 1000.0));
+    setLight(3, vec3(20.0, 10.0, -20.0), vec3(1000.0, 1000.0, 1000.0));
+    lightsInUse[0] = lightsInUse[1] = lightsInUse[2] = lightsInUse[3] = true;
 	//==========================================================
 	//\End of temp section
 	//==========================================================
@@ -86,6 +85,23 @@ void RenderEngine::setLight(int index, vec3 position, vec3 color) {
 	newLight.position = position;
 	newLight.color = color;
 	lights[index] = newLight;
+}
+
+int RenderEngine::getNextAvailableLightID() {
+    for (int i = 0; i < NUM_LIGHTS; ++i) {
+        if (!lightsInUse[i]) {
+            //printf("Light %i reserved\n", i);
+            lightsInUse[i] = true;
+            return i;
+        }
+    }
+    return -1;
+}
+
+void RenderEngine::freeLightWithID(int index) {
+    setLight(index, vec3(0), vec3(0));
+    //printf("Light %i freed\n", index);
+    lightsInUse[index] = false;
 }
 
 //const void RenderEngine::setShaderVec3(GLuint shaderID, const std::string& name, const glm::vec3& value) {

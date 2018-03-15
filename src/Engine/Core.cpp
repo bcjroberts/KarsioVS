@@ -34,7 +34,7 @@ Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaus
     const char* pathname = "data";
 
     if( stat( pathname, &info ) != 0 ) {
-        printf( "No data found, looking up one folder...\n");
+        printf( "No data found in current dir, looking up one folder...\n");
         dataPath = "../data/";
     } else {
         printf("Data found!");
@@ -107,7 +107,7 @@ void Core::coreLoop() {
     
     audioEngine.loadSound(Core::dataPath + "sound/bgm1.mp3", false, true, true); // load music
     int musicChannel = audioEngine.playSounds(Core::dataPath + "sound/bgm1.mp3", glm::vec3(0, 0, 0), 1); // play music
-    audioEngine.setChannelVolume(musicChannel, -10.f);
+    audioEngine.setChannelVolume(musicChannel, -45.f);
     // end audio init
 
     PhysicsEngine::getInstance()->initPhysics();

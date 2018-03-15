@@ -13,6 +13,7 @@
 #include "../Game/Components/UpgradeComponent.h"
 #include "../Game/Components/WeaponComponent.h"
 #include "../Game/Components/ProjectileComponent.h"
+#include "../Game/Components/StaticLightComponent.h"
 
 class ComponentManager
 {
@@ -38,6 +39,8 @@ public:
     UpgradeComponent* addUpgradeComponent(Entity* addTo);
     WeaponComponent* addWeaponComponent(Entity* addTo);
     ProjectileComponent* addProjectileComponent(Entity* entity, int ownerid, float speed, float damage);
+    StaticLightComponent* addStaticLightComponent(Entity* entity, glm::vec3 pos, glm::vec3 color);
+
 
     RendererComponent* getRenderComponentWithTagFromEntity(Entity* from, RendererTag tag);
     void performRendering();

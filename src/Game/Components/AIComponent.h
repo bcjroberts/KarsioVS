@@ -11,7 +11,7 @@ private:
 	int attackerID = -1;
 public:
 	std::vector<glm::vec3> path;
-	Entity * goal;
+	Entity * goal = nullptr;
 	int state = 0;
 	int prevstate = -1;
 	glm::vec3 prevPos;

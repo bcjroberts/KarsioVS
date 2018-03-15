@@ -178,6 +178,7 @@
     <ClCompile Include="src\Engine\PhysicsEngine\VehicleConfigParser.cpp" />
     <ClCompile Include="src\Game\Components\UpgradeComponent.cpp" />
     <ClCompile Include="src\Game\Components\WeaponComponent.cpp" />
+    <ClCompile Include="src\Game\Components\StaticLightComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\fmod\fmod.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="src\Engine\PhysicsEngine\VehicleConfigParser.h" />
     <ClInclude Include="src\Game\Components\UpgradeComponent.h" />
     <ClInclude Include="src\Game\Components\WeaponComponent.h" />
+    <ClInclude Include="src\Game\Components\StaticLightComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\assets\models\bigCrystal1.txt" />
