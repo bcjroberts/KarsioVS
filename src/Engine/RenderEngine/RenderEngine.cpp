@@ -42,8 +42,10 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screen_width, int *screen_he
     ui->addText("", 950, 50, 0.5, vec3(1, 1, 0));
     ui->addText("", 1250, 50, 0.5, vec3(1, 1, 0));
 
-	// fps
-	ui->addText("78", 5, 5, 0.5, vec3(1, 1, 0));
+	// used for physx cycles fps
+	ui->addText("78", 5, 5, 0.5, vec3(0, 1, 0));
+    // used for cycles through the main loop
+    ui->addText("100", 50, 5, 0.5, vec3(1, 1, 0));
 
 	//ui->addText("Try to use relative values that can be dynamically changed for easy resizing", (*screenWidth)/4, (*screenHeight)/2, 0.5, vec3(0.75, 1, 0.5));
 	//ui->addText("This sample code exists in the render engine's constructor, look at it to figure out how this works", (*screenWidth)/4, 3*(*screenHeight)/4, 0.5, vec3(0.75, 1, 0.5));

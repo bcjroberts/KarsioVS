@@ -48,7 +48,9 @@ Movement movement;
 int cameraMode = 1;
 bool refreshMovement = false;
 
-float fpsCounter = 60;
+float physxfpsCounter = 0;
+float mainfpsCounter = 0;
+
 float timeSinceLastfpsPrint = 0;
 
 // camera, using keyboard events for WASD
@@ -160,7 +162,8 @@ void Core::coreLoop() {
 		const auto currentTime = timeSinceStartup;
 	    float timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
-	
+        mainfpsCounter = mainfpsCounter * 0.5f + 1.f / timeDiff * 0.5f;
+
         // R was pressed, we need to re set the player vehicle
 		if (refreshMovement) {
             VehicleConfigParser::getInstance()->applyConfigToVehicle(static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getVehicle());
@@ -189,9 +192,15 @@ void Core::coreLoop() {
 			timeSinceLastfpsPrint = 0;
 			oss.str("");
 			oss.clear();
-			oss << round(fpsCounter);
-			std::string fpsString = oss.str();
-			renderEngine->ui->modifyText(10, &fpsString, nullptr, nullptr, nullptr, nullptr);
+			oss << round(physxfpsCounter);
+			std::string physxfpsString = oss.str();
+			renderEngine->ui->modifyText(10, &physxfpsString, nullptr, nullptr, nullptr, nullptr);
+
+            oss.str("");
+            oss.clear();
+            oss << round(mainfpsCounter);
+            std::string mainfpsString = oss.str();
+            renderEngine->ui->modifyText(11, &mainfpsString, nullptr, nullptr, nullptr, nullptr);
 		}
 
         //We could make a pause game feature by just rendering stuff and disabling all
@@ -212,7 +221,7 @@ void Core::coreLoop() {
 			}
 
 			if (fixedStepTimediff > 0) {
-				fpsCounter = fpsCounter * 0.5f + (1.0f / fixedStepTimediff) * 0.5f;
+				physxfpsCounter = physxfpsCounter * 0.5f + (1.0f / fixedStepTimediff) * 0.5f;
 			}
 
 			logic.playerMovement(playerVehicle);
