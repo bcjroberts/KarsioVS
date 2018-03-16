@@ -23,7 +23,7 @@ private:
         bool isPaused;
     };
     Properties properties;
-
+    const int MAX_PHYSICS_STEPS_PER_FRAME = 3;
 public:
     Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused);
     void coreLoop();

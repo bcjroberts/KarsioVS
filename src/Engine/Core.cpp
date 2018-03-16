@@ -91,8 +91,6 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	}
 }
 
-
-
 //Main game loop
 void Core::coreLoop() {
     renderEngine = new RenderEngine(properties.window, properties.screenWidth, properties.screenHeight);
@@ -147,8 +145,8 @@ void Core::coreLoop() {
     ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
-	double previousTime = 0;
-    float physicsTime = 0;
+	double previousTime = glfwGetTime();
+    float physicsTime = glfwGetTime();
     const float physicsTimeStep = 1.0f / 60.0f;
 	
 	// for yaw/pitch controlled by cursor
@@ -204,11 +202,13 @@ void Core::coreLoop() {
         }else{
 			
 			float fixedStepTimediff = 0.0f;
+            int current_iter = 0;
 			// Simulate physics in a Fixed Timestep style
-			while (physicsTime < currentTime) {
+			while (physicsTime < currentTime && current_iter < MAX_PHYSICS_STEPS_PER_FRAME) {
 				physicsTime += physicsTimeStep;
 				PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
 				fixedStepTimediff += 1.0f / 60.0f;
+                current_iter++;
 			}
 
 			if (fixedStepTimediff > 0) {
