@@ -198,13 +198,6 @@ void ComponentManager::cleanupComponents(Entity* entity) {
         delete toRemove;
     }
 
-    // Ensures the light will free itself
-    toRemove = entity->getComponent(STATIC_LIGHT);
-    if (toRemove != nullptr) {
-        entity->removeComponent(toRemove->id);
-        delete toRemove;
-    }
-
     // Now we can just delete the other components without any special treatment
 }
 

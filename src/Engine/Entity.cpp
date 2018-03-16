@@ -101,4 +101,9 @@ glm::mat4 Entity::getMatrix() const {
     return myMatrix;
 }
 
-Entity::~Entity() = default;
+Entity::~Entity() {
+    // Here we need to delete all of our components. The idea is that all important components have already been removed.
+    for (int i = 0; i < myComponents.size(); ++i) {
+         delete myComponents[i];
+    }
+}
