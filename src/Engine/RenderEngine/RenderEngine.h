@@ -24,7 +24,7 @@ using namespace glm;
 
 class RenderEngine{
 private:
-	const static int NUM_LIGHTS = 100;
+	const static int NUM_LIGHTS = 50;
     bool lightsInUse[NUM_LIGHTS];
 
     struct Textures{
