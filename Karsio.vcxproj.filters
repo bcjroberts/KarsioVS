@@ -51,6 +51,7 @@
     <ClCompile Include="src\Game\Components\UpgradeComponent.cpp" />
     <ClCompile Include="src\Game\Components\WeaponComponent.cpp" />
     <ClCompile Include="src\Game\Components\StaticLightComponent.cpp" />
+    <ClCompile Include="src\Engine\renderengine\RenderWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\fmod\fmod.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="src\Game\Components\UpgradeComponent.h" />
     <ClInclude Include="src\Game\Components\WeaponComponent.h" />
     <ClInclude Include="src\Game\Components\StaticLightComponent.h" />
+    <ClInclude Include="src\Engine\renderengine\RenderWorld.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="deps\libs\fmod64_vc.lib" />

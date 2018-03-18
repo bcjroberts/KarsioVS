@@ -114,8 +114,12 @@ void Core::coreLoop() {
 
     //initialize camera class, in theory if you modify the position/direction of
     // the camera class it will affect the rendered view
+	//==========================================================================
+	//NOTE: For multiple views it might be a good idea to create and use a camera vector
+	std::vector<Camera*> cameras;
     Camera camera(properties.screenWidth,properties.screenHeight);
-
+	cameras.push_back(&camera);
+	//===========================================================================
     //following set of functions opens an object file, I considered sticking an shaderID
     // of some kind into the mesh data (hence the constructor takes a string) but
     // in actually that's never used
@@ -207,7 +211,7 @@ void Core::coreLoop() {
         // the other stuff... although feel free to change this if you think some other
         // approach is better
         if(properties.isPaused){
-            renderEngine->render(camera);
+            renderEngine->render(cameras);
         }else{
 			
 			float fixedStepTimediff = 0.0f;
@@ -239,7 +243,7 @@ void Core::coreLoop() {
             {
                 // Move camera by keyboard and cursor
                 glfwGetCursorPos(properties.window, &xpos, &ypos);
-                camera.rotateView(vec2(xpos / *properties.screenWidth, -ypos / *properties.screenHeight));
+                camera.rotateView(glm::vec2(xpos / *properties.screenWidth, -ypos / *properties.screenHeight));
                 camera.moveCamera(movement, fixedStepTimediff * 250.0f);
             }
             else if (cameraMode == 1)
@@ -266,7 +270,7 @@ void Core::coreLoop() {
             }
 
             audioEngine.update();
-            renderEngine->render(camera);
+            renderEngine->render(cameras);
         }
     }
 }

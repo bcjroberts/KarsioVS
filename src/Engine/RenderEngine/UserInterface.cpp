@@ -36,7 +36,7 @@ UserInterface::UserInterface(int *screenWidth, int *screenHeight) {
  * \param y the start y position
  * \param scale the scale from the inital size
  * \param color the color of the text
- * \return 
+ * \return index
  */
 int UserInterface::addText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
 	int index = textArray.size();

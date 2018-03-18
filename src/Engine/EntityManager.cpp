@@ -95,7 +95,7 @@ Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat
     Entity* projectile = EntityManager::getInstance()->createEntity(origin, orientation, glm::vec3(1));
     RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, ModelManager::getModel("projectile"));
     ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);
-    Core::renderEngine->addInstance(*temp->myModel, temp->id, temp->getMatrix());
+    Core::renderEngine->world->addInstance(*temp->myModel, temp->id, temp->getMatrix());
 
     entities.push_back(projectile);
     return projectile;
@@ -227,7 +227,7 @@ void EntityManager::updateChassis (Entity* toUpdate, float newScale, int level) 
 
     // Get the chassis, remove it from the render engine, update the model, add it back to the render engine
     ShapeRendererComponent* chassis = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, CHASSIS));
-    Core::renderEngine->removeInstance(*chassis->myModel, chassis->id);
+    Core::renderEngine->world->removeInstance(*chassis->myModel, chassis->id);
     switch(level) {
         case 1:
             chassis->myModel = ModelManager::getModel("chassis-lvl1");
@@ -239,7 +239,7 @@ void EntityManager::updateChassis (Entity* toUpdate, float newScale, int level) 
             chassis->myModel = ModelManager::getModel("chassis-lvl3");
         break;
     }
-    Core::renderEngine->addInstance(*chassis->myModel, chassis->id, chassis->getMatrix());
+    Core::renderEngine->world->addInstance(*chassis->myModel, chassis->id, chassis->getMatrix());
 
     // Now iterate through every ShapeRendererComponent and modify the relevant scalable values. This includes the chassis.
     for (auto & myComponent : toUpdate->myComponents) {
@@ -261,7 +261,7 @@ void EntityManager::updateChassis (Entity* toUpdate, float newScale, int level) 
 
 void EntityManager::updateGun (Entity* toUpdate, int gunLevel) {
     ShapeRendererComponent* gun = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, GUN));
-    Core::renderEngine->removeInstance(*gun->myModel, gun->id);
+    Core::renderEngine->world->removeInstance(*gun->myModel, gun->id);
     switch(gunLevel) {
     case 1:
         gun->myModel = ModelManager::getModel("gun1");
@@ -279,12 +279,12 @@ void EntityManager::updateGun (Entity* toUpdate, int gunLevel) {
         gun->myModel = ModelManager::getModel("gun5");
         break;
     }
-    Core::renderEngine->addInstance(*gun->myModel, gun->id, gun->getMatrix());
+    Core::renderEngine->world->addInstance(*gun->myModel, gun->id, gun->getMatrix());
 }
 
 void EntityManager::updateRam (Entity* toUpdate, int ramLevel) {
     ShapeRendererComponent* ram = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, RAM));
-    Core::renderEngine->removeInstance(*ram->myModel, ram->id);
+    Core::renderEngine->world->removeInstance(*ram->myModel, ram->id);
     switch(ramLevel) {
     case 1:
         ram->myModel = ModelManager::getModel("ram1");
@@ -302,7 +302,7 @@ void EntityManager::updateRam (Entity* toUpdate, int ramLevel) {
         ram->myModel = ModelManager::getModel("ram5");
         break;
     }
-    Core::renderEngine->addInstance(*ram->myModel, ram->id, ram->getMatrix());
+    Core::renderEngine->world->addInstance(*ram->myModel, ram->id, ram->getMatrix());
 }
 
 void EntityManager::updateArmor (Entity* toUpdate, int chassisLevel, int armorLevel) {
@@ -311,7 +311,7 @@ void EntityManager::updateArmor (Entity* toUpdate, int chassisLevel, int armorLe
     visualLevel = visualLevel < 0 ? 0 : visualLevel; // Ensure we don't have a negative value
 
     ShapeRendererComponent* armor = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, ARMOR));
-    Core::renderEngine->removeInstance(*armor->myModel, armor->id);
+    Core::renderEngine->world->removeInstance(*armor->myModel, armor->id);
     switch(visualLevel) {
     case 0:
         armor->myModel = ModelManager::getModel("projectile"); // This means it won't be visible
@@ -323,5 +323,5 @@ void EntityManager::updateArmor (Entity* toUpdate, int chassisLevel, int armorLe
         armor->myModel = ModelManager::getModel("armour-lvl2");
         break;
     }
-    Core::renderEngine->addInstance(*armor->myModel, armor->id, armor->getMatrix());
+    Core::renderEngine->world->addInstance(*armor->myModel, armor->id, armor->getMatrix());
 }

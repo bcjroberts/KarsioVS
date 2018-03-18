@@ -1,6 +1,7 @@
 #include "WorldGenerator.h"
 #include "../../engine/EntityManager.h"
 
+using namespace glm;
 WorldGenerator::WorldGenerator() {
 }
 

@@ -8,6 +8,7 @@
 #include <random>
 #include <chrono> 
 
+using namespace glm;
 Logic::Logic(){
 };
 void Logic::cameraMovement(Movement* newMovement) {

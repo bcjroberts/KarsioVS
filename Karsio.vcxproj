@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Engine\renderengine\RenderWorld.cpp" />
     <ClCompile Include="src\Game\Components\ProjectileComponent.cpp" />
     <ClCompile Include="src\Engine\AudioObserver.cpp" />
     <ClCompile Include="src\Engine\CollideEvent.cpp" />
@@ -192,6 +193,7 @@
     <ClInclude Include="deps\include\fmod\fmod_studio.h" />
     <ClInclude Include="deps\include\fmod\fmod_studio.hpp" />
     <ClInclude Include="deps\include\fmod\fmod_studio_common.h" />
+    <ClInclude Include="src\Engine\renderengine\RenderWorld.h" />
     <ClInclude Include="src\Game\Components\ProjectileComponent.h" />
     <ClInclude Include="src\Engine\AudioObserver.h" />
     <ClInclude Include="src\Engine\Observer.h" />

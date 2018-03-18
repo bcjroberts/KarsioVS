@@ -7,6 +7,8 @@
 #include "../Managers/ModelDataManager.h"
 #include "../Managers/MaterialDataManager.h"
 
+//using namespace glm;
+
 void Model::loadModel(std::string filepath) {
 	//	std::string filename = filepath;
 	// try to open the file

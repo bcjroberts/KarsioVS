@@ -130,14 +130,14 @@ ComponentManager* ComponentManager::getInstance() {
 
 void ComponentManager::performRendering() {
     for (auto rc : rendererComponents) {
-        renderEngine->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
+        renderEngine->world->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
     }
 }
 
 void ComponentManager::initializeRendering(RenderEngine* re) {
     renderEngine = re;
     for (auto rc : rendererComponents) {
-        re->addInstance(*rc->myModel, rc->id, rc->getMatrix());
+        re->world->addInstance(*rc->myModel, rc->id, rc->getMatrix());
     }
 }
 
@@ -159,7 +159,7 @@ void ComponentManager::cleanupComponents(Entity* entity) {
         RendererComponent* rc = static_cast<RendererComponent*>(toRemove);
 
         // destroy the object
-        renderEngine->removeInstance(*rc->myModel, rc->id);
+        renderEngine->world->removeInstance(*rc->myModel, rc->id);
 
         // This is the spot where I would remove the component from the renderer rc->myModel;
         for (int i = 0; i < rendererComponents.size(); ++i)

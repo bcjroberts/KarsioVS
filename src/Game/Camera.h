@@ -18,7 +18,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-using namespace glm;
+//using namespace glm;
 
 struct Movement
 {
@@ -32,32 +32,32 @@ struct Movement
 
 class Camera {
 private:
-    vec3 cameraPosition = vec3(0.0f, 0.0f, 0.0f);
-    vec3 cameraFront = vec3(0.0f, 0.0f, -1.0f);
-    vec3 cameraUp = vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 cameraPosition;
+	glm::vec3 cameraFront;
+	glm::vec3 cameraUp;
     //vec3 cameraRight = vec3(0.0f, 0.0f, 0.0f);
     //vec3 worldUp = vec3(0.0f, 1.0f, 0.0f);
 
-    float cameraSpeed = 0.05f;
-    float cameraFOV = 45.0f;
+    float cameraSpeed;
+    float cameraFOV;
 
-    GLfloat xRoll = -90.0f;
-    GLfloat yRoll = 0.0f;
+    GLfloat xRoll;
+	GLfloat yRoll;
 
     int *window_width;
     int *window_height;
-    mat4 view;
-    mat4 projection;
+    glm::mat4 view;
+    glm::mat4 projection;
     //void updateCameraVectors();
 
 public:
-    vec3 lookAtPos;
+    glm::vec3 lookAtPos;
     Camera(int *window_width, int *window_height);
     //void centerView(int scaleX, int scaleY);
     //void fpsMouseMovement();
     //void moveCamera(bool forward, bool backward, bool right, bool left);
     void moveCamera(Movement movement, float deltaTime);
-    void rotateView(vec2 mouseOffset);
+    void rotateView(glm::vec2 mouseOffset);
 	void rotateCameraTowardPoint(glm::vec3 point, float amount);
 	void lerpCameraTowardPoint(glm::vec3 point, float amount);
     void changeCameraSpeed(float changeSpeed);
@@ -66,9 +66,9 @@ public:
 
     ~Camera()= default;
 
-    mat4 getView();
-
-    mat4 getProjection();
+    glm::mat4 getView();
+    glm::mat4 getProjection();
+	glm::vec3 getPosition();
 };
 
 

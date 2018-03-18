@@ -19,7 +19,7 @@
 #include "MaterialData.h"
 #include "ModelData.h"
 
-using namespace glm;
+//using namespace glm;
 
 class Model {
 private:
