@@ -193,12 +193,12 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     float heightOffset = 0;
     if (resourceAmount <= 1.5f) {
         crystalModel = ModelManager::getModel("smallCrystal1");
-        heightOffset = (physicsScale.y - (modelScale.y + resourceAmount * 2.75f) + 4.0f) / 2.0f;
+        heightOffset = (physicsScale.y - (modelScale.y + resourceAmount * 0.6f) + 1.5f) / 2.0f;
     } else {
         modelScale *= 0.5f;
         physicsScale *= 1.0f;
         crystalModel = ModelManager::getModel("bigCrystal1");
-        heightOffset = (physicsScale.y - (modelScale.y + resourceAmount * 3.5f) + 8.0f) / 2.0f;
+        heightOffset = (physicsScale.y - (modelScale.y + resourceAmount * 0.5f) + 2.5f) / 2.0f;
     }
 
     
