@@ -86,10 +86,15 @@ void setupWheelsSimulationData
 	PxVehicleTireData tires[PX_MAX_NB_WHEELS];
 	{
 		//Set up the tires.
-		for(PxU32 i = 0; i < numWheels; i++)
+		for(PxU32 i = 0; i < numWheels - 2; i++)
 		{
 			tires[i].mType = TIRE_TYPE_NORMAL;
 		}
+
+        for(PxU32 i = numWheels - 2; i < numWheels; i++)
+        {
+            tires[i].mType = TIRE_TYPE_WORN;
+        }
 	}
 
 	//Set up the suspensions
