@@ -16,6 +16,7 @@
 #include "..\glm\glm.hpp"
 #include <math.h>
 #include <iostream>
+#include "..\AudioObserver.h"
 
 struct Implementation {
     Implementation();
@@ -25,6 +26,9 @@ struct Implementation {
 
     FMOD::Studio::System* mpStudioSystem;
     FMOD::System* mpSystem;
+
+    FMOD::ChannelGroup *musicChannels;
+    FMOD::ChannelGroup *soundChannels;
 
     int mnNextChannelId;
 
@@ -46,7 +50,11 @@ public:
     static void update();
     static void shutdown();
     static int ErrorCheck(FMOD_RESULT result);
+    float musicVol = 1.0f;
+    float soundVol = 1.0f;
     int musicChannel = -1;
+
+    AudioObserver* audioObserver = new AudioObserver();
 
     void loadBank(const std::string& strBankName, FMOD_STUDIO_LOAD_BANK_FLAGS flags);
     void loadEvent(const std::string& strEventName);

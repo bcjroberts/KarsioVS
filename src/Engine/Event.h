@@ -5,7 +5,7 @@
 #ifndef PROJECTKARSIO_EVENT_H
 #define PROJECTKARSIO_EVENT_H
 
-enum EventType {COLLIDE, PLAYSOUND };
+enum EventType {COLLIDE, PLAYSOUND, NULLEVENT };
 
 class Event {
 public:

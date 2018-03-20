@@ -14,6 +14,9 @@ Implementation::Implementation() {
 
     mpSystem = NULL;
     AudioEngine::ErrorCheck(mpStudioSystem->getLowLevelSystem(&mpSystem));
+
+    AudioEngine::ErrorCheck(mpSystem->createChannelGroup(NULL, &musicChannels));
+    AudioEngine::ErrorCheck(mpSystem->createChannelGroup(NULL, &soundChannels));
 }
 
 Implementation::~Implementation() {

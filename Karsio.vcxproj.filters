@@ -52,6 +52,8 @@
     <ClCompile Include="src\Game\Components\WeaponComponent.cpp" />
     <ClCompile Include="src\Game\Components\StaticLightComponent.cpp" />
     <ClCompile Include="src\Engine\renderengine\RenderWorld.cpp" />
+    <ClCompile Include="src\Engine\AudioEvent.cpp" />
+    <ClCompile Include="src\Engine\NullEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\fmod\fmod.h" />
@@ -119,6 +121,8 @@
     <ClInclude Include="src\Game\Components\WeaponComponent.h" />
     <ClInclude Include="src\Game\Components\StaticLightComponent.h" />
     <ClInclude Include="src\Engine\renderengine\RenderWorld.h" />
+    <ClInclude Include="src\Engine\AudioEvent.h" />
+    <ClInclude Include="src\Engine\NullEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="deps\libs\fmod64_vc.lib" />
