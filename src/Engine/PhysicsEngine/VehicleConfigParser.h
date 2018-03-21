@@ -22,7 +22,7 @@ public:
     VehicleConfigParser();
     ~VehicleConfigParser();
     static VehicleConfigParser* getInstance();
-    void parseConfigFile();
+    void parseConfigFile(std::string& toLoad);
     void applyConfigToVehicle(physx::PxVehicleDrive4W* vehicle);
 
 };

@@ -28,6 +28,7 @@ class PhysicsEngine {
 private:
 	std::vector<vehicleData*> allVehicleData;
     static PhysicsEngine* globalInstance;
+    std::string chassisType = "";
 public:
     PhysicsEngine();
     void simulateTimeInSeconds(float timeInSeconds) const;

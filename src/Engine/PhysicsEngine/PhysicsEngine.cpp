@@ -17,6 +17,7 @@
 #include "../../game/components/PhysicsComponent.h"
 #include "../EntityManager.h"
 #include "VehicleConfigParser.h"
+#include "../../Game/Components/UpgradeComponent.h"
 
 // Initialize the Physics Manager global pointer
 PhysicsEngine *PhysicsEngine::globalInstance = nullptr;
@@ -125,8 +126,8 @@ void PhysicsEngine::initPhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-    baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.4f);
-    boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.4f);
+    baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.7f);
+    boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.7f);
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
 
@@ -195,7 +196,25 @@ glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from) {
 }
 
 void PhysicsEngine::modifyVehicleScale(float scale, physx::PxRigidDynamic* rigid, physx::PxVehicleDrive4W* vehicle) {
+    
+    // First update the size of the vehicle
     snippetvehicle::customizeVehicleToLengthScale(scale, rigid, &vehicle->mWheelsSimData, &vehicle->mDriveSimData);
+
+    int chassisLevel = static_cast<UpgradeComponent*>(static_cast<Entity*>(rigid->userData)->getComponent(UPGRADE))->getChassisLevel();
+    switch(chassisLevel) {
+        case 1:
+            chassisType = "chassis1";
+        case 2:
+            chassisType = "chassis2";
+        case 3:
+            chassisType = "chassis3";
+        default:
+            chassisType = "chassis1";
+        break;
+    }
+    // Then update its torque values
+    VehicleConfigParser::getInstance()->parseConfigFile(chassisType);
+    VehicleConfigParser::getInstance()->applyConfigToVehicle(vehicle);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// START: Section where physics objects are created
 
@@ -260,15 +279,9 @@ vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
     gVehicle4W->mDriveDynData.forceGearChange(physx::PxVehicleGearsData::eFIRST);
     gVehicle4W->mDriveDynData.setUseAutoGears(true);
 
-    // Test of scaling vehicles up.
-    if (scaleUpVehicle)
-    {
-        scaleUpVehicle = false;
-        snippetvehicle::customizeVehicleToLengthScale(2.0f, gVehicle4W->getRigidDynamicActor(), &gVehicle4W->mWheelsSimData, &gVehicle4W->mDriveSimData);
-    }
-
     // Now lets read the car config file and update the values from there
-    VehicleConfigParser::getInstance()->parseConfigFile();
+    chassisType = "chassis1";
+    VehicleConfigParser::getInstance()->parseConfigFile(chassisType);
     VehicleConfigParser::getInstance()->applyConfigToVehicle(gVehicle4W);
 
     // Create the vehicleData object to store the data, push to vector and return

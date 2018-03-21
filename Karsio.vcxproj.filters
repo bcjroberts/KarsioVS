@@ -150,6 +150,7 @@
     <None Include="deps\include\fmod\fmod_dsp.cs" />
     <None Include="deps\include\fmod\fmod_errors.cs" />
     <None Include="deps\include\fmod\fmod_studio.cs" />
+    <None Include="data\configs\car\default.ini" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="data\assets\models\bigCrystal1.txt" />

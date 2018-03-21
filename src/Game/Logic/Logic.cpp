@@ -164,6 +164,8 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     return false;
 }
 
+float flipForceValues[] = {5000.f, 10000.f, 20000.f};
+
 void Logic::flipVehicle(Entity* vehicle) const{
     glm::vec3 torqueDirection = vehicle->getForwardVector();
     float oangle = glm::dot(vehicle->getRightVector(), glm::vec3(0, 1, 0)) * -1.f;
@@ -175,8 +177,9 @@ void Logic::flipVehicle(Entity* vehicle) const{
         torqueDirection = torqueDirection * oangle;
     }
 
-    const physx::PxVec3 verticalForce = physx::PxVec3(0, 1, 0) * 10000.f;
-    const physx::PxVec3 torqueForce = PhysicsEngine::toPxVec3(torqueDirection) * 5000.f;
+    int chassisLevel = static_cast<UpgradeComponent*>(vehicle->getComponent(UPGRADE))->getChassisLevel();
+    const physx::PxVec3 verticalForce = physx::PxVec3(0, 1, 0) * flipForceValues[chassisLevel - 1] * 2.f;
+    const physx::PxVec3 torqueForce = PhysicsEngine::toPxVec3(torqueDirection) * flipForceValues[chassisLevel - 1];
 
     static_cast<PhysicsComponent*>(vehicle->getComponent(PHYSICS))->getRigidBody()->addForce(verticalForce, physx::PxForceMode::eIMPULSE, true);
     static_cast<PhysicsComponent*>(vehicle->getComponent(PHYSICS))->getRigidBody()->addTorque(torqueForce, physx::PxForceMode::eIMPULSE, true);

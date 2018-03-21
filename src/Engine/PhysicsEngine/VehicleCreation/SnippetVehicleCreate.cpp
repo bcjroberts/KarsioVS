@@ -190,6 +190,8 @@ const char* drillstring = "drill";
 
 void customizeVehicleToLengthScale(const PxReal lengthScale, PxRigidDynamic* rigidDynamic, PxVehicleWheelsSimData* wheelsSimData, PxVehicleDriveSimData* driveSimData)
 {
+    rigidDynamic->setMass(rigidDynamic->getMass() * 1.4f);
+
 	//Rigid body center of mass and moment of inertia.
 	{
 		PxTransform t = rigidDynamic->getCMassLocalPose();

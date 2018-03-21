@@ -24,11 +24,11 @@ VehicleConfigParser::getInstance()
     return globalInstance;
 }
 
-void VehicleConfigParser::parseConfigFile()
+void VehicleConfigParser::parseConfigFile(std::string &toLoad)
 {
     // This parses the config file for vehicles, and updates the local struct with the values
     std::ifstream file;
-    file.open(Core::dataPath + "configs/car/default.ini", std::fstream::in);
+    file.open(Core::dataPath + "configs/car/" + toLoad + ".ini", std::fstream::in);
     if (file.fail())
     {
         printf("ERROR: Failed to load the default car config file...");

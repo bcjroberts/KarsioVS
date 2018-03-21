@@ -273,6 +273,7 @@
     <Library Include="deps\libs\libfmodstudioL.a" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\configs\car\default.ini" />
     <None Include="Debug\fmodL.dll" />
     <None Include="Debug\fmodL64.dll" />
     <None Include="Debug\fmodstudioL.dll" />

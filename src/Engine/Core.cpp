@@ -81,7 +81,8 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 	}
 
     if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
-        VehicleConfigParser::getInstance()->parseConfigFile();
+        std::string temp = "default";
+        VehicleConfigParser::getInstance()->parseConfigFile(temp);
         refreshMovement = true;
     }
 
@@ -272,7 +273,7 @@ void Core::coreLoop() {
                 const float chassisLevel = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->getChassisLevel();
 
                 camera.rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 10.0f * fixedStepTimediff);
-                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 0.5f), 0), 10.0f * fixedStepTimediff);
+                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -12.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 0.5f), 0), 10.0f * fixedStepTimediff);
             }
 
             audioEngine.update();
