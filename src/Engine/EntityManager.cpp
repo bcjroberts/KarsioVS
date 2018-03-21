@@ -69,7 +69,6 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gunHolder-lvl1"), shapes[4], glm::vec3(1.f));
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("chassisWires-lvl1"), shapes[4], glm::vec3(1.f));
 
-    ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("projectile"), shapes[4], glm::vec3(1.f), glm::vec3(0), ARMOR);
     ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("ram1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.25f, -3.5f), RAM);
 	ComponentManager::getInstance()->addShapeRendererComponent(entity, ModelManager::getModel("gun1"), shapes[5], glm::vec3(1.f), glm::vec3(0.f, 1.f, -3.f), GUN);
 
@@ -307,21 +306,29 @@ void EntityManager::updateRam (Entity* toUpdate, int ramLevel) {
 
 void EntityManager::updateArmor (Entity* toUpdate, int chassisLevel, int armorLevel) {
 
-    int visualLevel = armorLevel - chassisLevel;
-    visualLevel = visualLevel < 0 ? 0 : visualLevel; // Ensure we don't have a negative value
+    // Grab the chassis to check for scale and PxShape
+    ShapeRendererComponent* chassisSR = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, CHASSIS));
 
-    ShapeRendererComponent* armor = static_cast<ShapeRendererComponent*>(ComponentManager::getInstance()->getRenderComponentWithTagFromEntity(toUpdate, ARMOR));
-    Core::renderEngine->world->removeInstance(*armor->myModel, armor->id);
-    switch(visualLevel) {
-    case 0:
-        armor->myModel = ModelManager::getModel("projectile"); // This means it won't be visible
-        break;
-    case 1:
-        armor->myModel = ModelManager::getModel("armour-lvl1");
-        break;
+    // Create the a new ShapeRendererComponent with the approppriate scale and pxShape.
+    ShapeRendererComponent* addedArmor = nullptr;
+    switch(armorLevel) {
     case 2:
-        armor->myModel = ModelManager::getModel("armour-lvl2");
+        addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl1"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
+        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
+        break;
+    case 3:
+        addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl2"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
+        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
+        break;
+    case 4:
+        addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl3"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
+        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
+        break;
+    case 5:
+        addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl4"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
+        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
+        addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl5"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
+        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
         break;
     }
-    Core::renderEngine->world->addInstance(*armor->myModel, armor->id, armor->getMatrix());
 }
