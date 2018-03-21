@@ -224,6 +224,11 @@ void Core::coreLoop() {
                 current_iter++;
 			}
 
+            // Prevents the fast forward effect
+            if (current_iter == MAX_PHYSICS_STEPS_PER_FRAME) {
+                physicsTime = currentTime;
+            }
+
 			if (fixedStepTimediff > 0) {
 				physxfpsCounter = physxfpsCounter * 0.5f + (1.0f / fixedStepTimediff) * 0.5f;
 			}
@@ -255,18 +260,19 @@ void Core::coreLoop() {
 
                 float dotProd = glm::dot(velocity, playerVehicle->getForwardVector());
 
-                if (dotProd < -30.0f && static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getBrake()) {
+                // Makes the cmaera look behind the car at certain speeds.
+                /*if (dotProd < -30.0f && static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getBrake()) {
                     movingForward = false;
                 } else if (dotProd > 5.f) {
                     movingForward = true;
-                }
+                }*/
 
                 if (!movingForward) offset = -offset;
 
                 const float chassisLevel = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->getChassisLevel();
 
                 camera.rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 10.0f * fixedStepTimediff);
-                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 1.f), 0), 5.0f * fixedStepTimediff);
+                camera.lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 0.5f), 0), 10.0f * fixedStepTimediff);
             }
 
             audioEngine.update();

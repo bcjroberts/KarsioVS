@@ -75,8 +75,8 @@ void setupWheelsSimulationData
 		}
 
 		//Enable the handbrake for the rear wheels only.
-		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=4000.0f;
-		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=4000.0f;
+		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=10000.0f;
+		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=10000.0f;
 		//Enable steering for the front wheels only.
 		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.25f;
 		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.25f;
@@ -88,12 +88,12 @@ void setupWheelsSimulationData
 		//Set up the tires.
 		for(PxU32 i = 0; i < numWheels - 2; i++)
 		{
-			tires[i].mType = TIRE_TYPE_NORMAL;
+			tires[i].mType = TIRE_TYPE_FRONT;
 		}
 
         for(PxU32 i = numWheels - 2; i < numWheels; i++)
         {
-            tires[i].mType = TIRE_TYPE_WORN;
+            tires[i].mType = TIRE_TYPE_REAR;
         }
 	}
 
@@ -183,12 +183,12 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barFront;
 	barFront.mWheel0 = PxVehicleDrive4WWheelOrder::eFRONT_LEFT;
 	barFront.mWheel1 = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT;
-	barFront.mStiffness = 100000.0f; //0
+	barFront.mStiffness = 100000.0f; //0 added
 	wheelsSimData->addAntiRollBarData(barFront);
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 100000.0f;
+	barRear.mStiffness = 2000000.0f; //00 added
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 
@@ -230,7 +230,7 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 
 		//Chassis just has a single convex shape for simplicity.
 		PxConvexMesh* chassisConvexMesh = createChassisMesh(chassisDims, *physics, *cooking);
-        PxConvexMesh* drillConvexMesh = createChassisMesh(PxVec3(chassisDims.x-1.5f, 1.0f, 2.0f), *physics, *cooking);
+        PxConvexMesh* drillConvexMesh = createChassisMesh(PxVec3(chassisDims.x-0.2f, 1.0f, 2.0f), *physics, *cooking);
 		PxConvexMesh* chassisConvexMeshes[2] = {chassisConvexMesh, drillConvexMesh};
 		PxMaterial* chassisMaterials[1] = {vehicle4WDesc.chassisMaterial};
 
@@ -274,8 +274,8 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 
 		//Engine
 		PxVehicleEngineData engine;
-		engine.mPeakTorque=5000.0f;
-		engine.mMaxOmega=600.0f;//approx 6000 rpm
+		engine.mPeakTorque=5.0f; // These values are set by a config file.
+		engine.mMaxOmega=6.0f;
 		driveSimData.setEngineData(engine);
 
 		//Gears

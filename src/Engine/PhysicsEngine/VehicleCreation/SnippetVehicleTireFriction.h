@@ -47,8 +47,8 @@ enum
 //Tire types.
 enum
 {
-	TIRE_TYPE_NORMAL=0,
-	TIRE_TYPE_WORN,
+	TIRE_TYPE_FRONT=0,
+	TIRE_TYPE_REAR,
 	MAX_NUM_TIRE_TYPES
 };
 
