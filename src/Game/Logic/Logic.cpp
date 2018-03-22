@@ -102,11 +102,6 @@ void Logic::aiMovement(Entity* entity) {
     // First thing we need to do is see if we are close enough to the waypoint to head toward the next one
     AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 
-	// populate waypoints
-	//if (ai->waypoints.empty()) {
-	//	ai->setWaypoints(ai->path);
-	//}
-	
     // Check if the distance is less than some threshold. If so, then we have "arrived at the waypoint", head to the next waypoint.
     if (glm::distance(ai->getCurrentWaypoint(), entity->getCoarsePosition()) < 1.0f) {
         ai->nextWaypoint();
@@ -263,7 +258,20 @@ void Logic::mine(Entity* entity) {
 		ai->setMinedID(-2);
 	}
 	else {
-		aiMovement(entity);
+		float oangle = glm::orientedAngle(glm::normalize(ai->getCurrentWaypoint() - entity->getCoarsePosition()), entity->getForwardVector(), glm::vec3(0, 1, 0));
+		float steering = 0;
+		float accel = 1;
+		if (oangle > .1f) {
+			steering = -1.0f;
+
+		}
+		else if (oangle < -.1f) {
+			steering = 1.0f;
+		}
+		// no slowing doooown
+		// accel, reverse, handbrake, steering
+		aiDrive->setInputs(accel, 0.0f, 0.0f, steering);
+		//aiMovement(entity);
 	}
 }
 

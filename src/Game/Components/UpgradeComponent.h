@@ -52,5 +52,6 @@ public:
     float getMaxResources() {return resourcesForNextLevel; }
 
 	bool fullyUpgraded();
+	void setPreUpgradeLevels(int chassis = 1, int armor = 1, int gun = 1, int ram = 1);
 };
 

@@ -85,3 +85,30 @@ bool UpgradeComponent::fullyUpgraded() {
 	}
 }
 
+void UpgradeComponent::setPreUpgradeLevels(int chassis, int armor, int gun, int ram) {
+	chassisLevel = chassis;
+	armorLevel = armor;
+	gunLevel = gun;
+	ramLevel = ram;
+	
+	// chassis
+	for (int i = 1; i < chassis; i++) {
+		static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setMaxHealth(chassisHealth[i - 1], true);
+		EntityManager::getInstance()->updateChassis(owner, 1.5f, i);
+		EntityManager::getInstance()->updateArmor(owner, i, armorLevel);
+	}
+	
+	// armor
+	for (int i = 1; i < armor; i++) {
+		static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setArmor(armorChange[i - 1]);
+		EntityManager::getInstance()->updateArmor(owner, chassisLevel, i);
+	}
+	
+	// gun
+	static_cast<WeaponComponent*>(owner->getComponent(WEAPON))->updateGunValues(gunROFChange[gunLevel - 1], gunDamageChange[gunLevel - 1], projectileSpeedChange[gunLevel - 1]);
+	EntityManager::getInstance()->updateGun(owner, gunLevel);
+	
+	// ram
+	EntityManager::getInstance()->updateRam(owner, ramLevel);
+}
+

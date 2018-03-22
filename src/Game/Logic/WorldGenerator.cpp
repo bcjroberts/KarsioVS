@@ -1,6 +1,8 @@
 #include "WorldGenerator.h"
 #include "../../engine/EntityManager.h"
 #include "../../Engine/Core.h"
+#include "../Components/UpgradeComponent.h"
+#include "../Components/AIComponent.h"
 
 using namespace glm;
 WorldGenerator::WorldGenerator() {
@@ -21,44 +23,60 @@ void WorldGenerator::generateWorld() {
 	int gridSize = 30;
 	std::vector<glm::vec3> positions;
 	
+	// for the sake of the id's being nice numbers, vehicles will be generated before anything else
+	createVehicles(&positions, gridSize);
+	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
+	createWalls(gridSize);
+	createObstacles(&positions, gridSize);
+	createCrystals(&positions, gridSize);
+	generateGrid(gridSize);
+}
+
+void WorldGenerator::createVehicles(std::vector<glm::vec3> *positions, int gridSize) {
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
 	std::uniform_int_distribution<int> uid{ -(gridSize - 5), gridSize - 5 };
+	
 	int x, z;
-	// spawn a bunch of vehicles
 	for (unsigned int i = 0; i < 10; i++) {
 		do {
 			x = uid(dre) * 10 + 5;
 			z = uid(dre) * 10 + 5;
-		} while (std::find(positions.begin(), positions.end(), glm::vec3(x, 2, z)) != positions.end());
+		} while (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) != positions->end());
 
 		if (i == 0) {
 			Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(x, 10, z));
 		}
 		else {
 			Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(x, 10, z));
+
+			// make this the big scary strong one
+			if (i == 1) {
+				static_cast<UpgradeComponent*>(aiVehicle->getComponent(UPGRADE))->setPreUpgradeLevels(3, 5, 5, 5);
+				static_cast<AIComponent*>(aiVehicle->getComponent(AI))->setPersonality(AIComponent::KILL_ONLY);
+			}
+
+			// make some midranged, midscary ones
+			else if (i < 6) {
+				static_cast<UpgradeComponent*>(aiVehicle->getComponent(UPGRADE))->setPreUpgradeLevels(2, 3, 3, 3);
+				static_cast<AIComponent*>(aiVehicle->getComponent(AI))->setPersonality(AIComponent::RANDOM);
+			}
 		}
-		
-		positions.push_back(glm::vec3(x, 2, z));	// actual position
+
+		// actual position
+		positions->push_back(glm::vec3(x, 2, z));	
 
 		// diagonal
-		positions.push_back(glm::vec3(x + 10, 2, z + 10));
-		positions.push_back(glm::vec3(x - 10, 2, z + 10));
-		positions.push_back(glm::vec3(x + 10, 2, z - 10));
-		positions.push_back(glm::vec3(x - 10, 2, z - 10));
+		positions->push_back(glm::vec3(x + 10, 2, z + 10));
+		positions->push_back(glm::vec3(x - 10, 2, z + 10));
+		positions->push_back(glm::vec3(x + 10, 2, z - 10));
+		positions->push_back(glm::vec3(x - 10, 2, z - 10));
 
 		// adjacent
-		positions.push_back(glm::vec3(x, 2, z + 10));
-		positions.push_back(glm::vec3(x, 2, z - 10));
-		positions.push_back(glm::vec3(x + 10, 2, z));
-		positions.push_back(glm::vec3(x - 10, 2, z));
+		positions->push_back(glm::vec3(x, 2, z + 10));
+		positions->push_back(glm::vec3(x, 2, z - 10));
+		positions->push_back(glm::vec3(x + 10, 2, z));
+		positions->push_back(glm::vec3(x - 10, 2, z));
 	}
-
-	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
-
-	createWalls(gridSize);
-	createObstacles(&positions, gridSize);
-	createCrystals(&positions, gridSize);
-	generateGrid(gridSize);
 }
 
 void WorldGenerator::generateGrid(int gridSize) {

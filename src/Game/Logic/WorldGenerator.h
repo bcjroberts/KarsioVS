@@ -19,6 +19,7 @@ public:
 	~WorldGenerator();
 	void generateGrid(int gridSize);
 	void generateWorld();
+	void createVehicles(std::vector<glm::vec3> *positions, int gridSize);
 	void createWalls(int gridSize);
 	void createObstacles(std::vector<glm::vec3> *positions, int gridSize);
 	void createCrystals(std::vector<glm::vec3> *positions, int gridSize);

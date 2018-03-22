@@ -60,6 +60,10 @@ int AIComponent::getPersonality() {
 	return personality;
 }
 
+void AIComponent::setPersonality(int npersonality) {
+	personality = npersonality;
+}
+
 AIComponent::~AIComponent()
 {
 }

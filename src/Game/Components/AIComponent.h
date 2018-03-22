@@ -35,7 +35,7 @@ public:
 	void setAttackerID(int id);
 	int getAttackerID();
 	int getPersonality();
-	
+	void setPersonality(int npersonality);
     ~AIComponent();
 };
 
