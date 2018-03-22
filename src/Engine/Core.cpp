@@ -140,15 +140,17 @@ void Core::coreLoop() {
     // END Brian's shenanigans
 
     // Create the starting Entities
-    Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 10, 0));
-	Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 10, 0));
-    Entity* aiVehicle2 = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(20, 10, 0));
 
-	//WorldGenerator worldGen;
-	//worldGen.generateWorld();
+    //Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(0, 10, 0));
+
+	//Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(10, 10, 0));
+    //Entity* aiVehicle2 = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(20, 10, 0));
+
+
 
 	WorldGenerator::getInstance()->generateWorld();
-		
+	Entity* playerVehicle = EntityManager::getInstance()->getVehicleEntities().at(0);
+
     ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
@@ -159,11 +161,10 @@ void Core::coreLoop() {
 	// for yaw/pitch controlled by cursor
 	double xpos, ypos;
     bool movingForward = true;
-
+	float time;
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
         timeSinceStartup = glfwGetTime();
-
 		const auto currentTime = timeSinceStartup;
 	    float timeDiff = currentTime - previousTime;
 		previousTime = currentTime;
@@ -235,16 +236,18 @@ void Core::coreLoop() {
 			}
 
 			logic.playerMovement(playerVehicle);
-			//logic.finiteStateMachine(aiVehicle, worldGen.getGrid(), &worldGen);
-            //logic.finiteStateMachine(aiVehicle2, worldGen.getGrid(), &worldGen);
-			logic.finiteStateMachine(aiVehicle);
-			logic.finiteStateMachine(aiVehicle2);
 
+			for (unsigned int i = 1; i < EntityManager::getInstance()->getVehicleEntities().size(); i++) {
+				logic.finiteStateMachine(EntityManager::getInstance()->getVehicleEntities().at(i));
+			}
+
+			WorldGenerator::getInstance()->regenerateCrystal();
+						
             // Render all of the renderer components here
             ComponentManager::getInstance()->performPhysicsLogic();
             ComponentManager::getInstance()->performProjectileLogic();
             ComponentManager::getInstance()->performRendering();
-
+			
             if (cameraMode == 0)
             {
                 // Move camera by keyboard and cursor

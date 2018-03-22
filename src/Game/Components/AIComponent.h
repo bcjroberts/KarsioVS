@@ -9,7 +9,10 @@ private:
 	bool collected = false;
 	int minedID = -2;
 	int attackerID = -1;
+	int personality = rand() % NUM_PERSONALITIES;
 public:
+	enum personalityTypes { GRINDER, KILL_ONLY, RANDOM, GLASS_CANNON, DEFENSIVE, NUM_PERSONALITIES };
+
 	std::vector<glm::vec3> path;
 	Entity * goal = nullptr;
 	int state = 0;
@@ -17,7 +20,6 @@ public:
 	glm::vec3 prevPos;
 	int notMoving = 0;
 	int orbiting = 0;
-	
 	
     std::vector<glm::vec3> waypoints;
     int currentWaypointIndex;
@@ -32,6 +34,7 @@ public:
 	bool getKilledCrystal();
 	void setAttackerID(int id);
 	int getAttackerID();
+	int getPersonality();
 	
     ~AIComponent();
 };

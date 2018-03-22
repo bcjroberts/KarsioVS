@@ -33,9 +33,10 @@ private:
 		MINING,
 		ATTACKING,
 		STUCK,
+		REACT_TO_ATTACK,
 		RETALIATE,
-		FLEE,
-		RUNNING_AWAY
+		FINDING_SAFETY,
+		FLEEING
 	};
 public:        
     Logic();
@@ -55,6 +56,8 @@ public:
 	void unstuck(Entity* entity, AStar::Generator* generator);
 	int randomNum(int min, int max);
 	void upgrade(Entity* entity);
+	void decide(Entity* entity);
+	void reactToAttack(Entity* entity);
    ~Logic();
 };
 

@@ -61,7 +61,7 @@ glm::vec3 Entity::getCoarsePosition() const {
 	float x = position.x;
 	float y = position.y;
 	float z = position.z;
-	float gridSize = 10; // larger size = larger grid
+	float gridSize = 20; // larger size = larger grid
 	x = floor(x / gridSize);
 	y = floor(y / gridSize);
 	z = floor(z / gridSize);

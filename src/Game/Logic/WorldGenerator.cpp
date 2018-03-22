@@ -1,5 +1,6 @@
 #include "WorldGenerator.h"
 #include "../../engine/EntityManager.h"
+#include "../../Engine/Core.h"
 
 using namespace glm;
 WorldGenerator::WorldGenerator() {
@@ -19,88 +20,83 @@ WorldGenerator* WorldGenerator::getInstance() {
 void WorldGenerator::generateWorld() {
 	int gridSize = 30;
 	std::vector<glm::vec3> positions;
+	
+	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
+	std::uniform_int_distribution<int> uid{ -(gridSize - 5), gridSize - 5 };
+	int x, z;
+	// spawn a bunch of vehicles
+	for (unsigned int i = 0; i < 10; i++) {
+		do {
+			x = uid(dre) * 10 + 5;
+			z = uid(dre) * 10 + 5;
+		} while (std::find(positions.begin(), positions.end(), glm::vec3(x, 2, z)) != positions.end());
+
+		if (i == 0) {
+			Entity* playerVehicle = EntityManager::getInstance()->createPlayerVehicleEntity(glm::vec3(x, 10, z));
+		}
+		else {
+			Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(x, 10, z));
+		}
+		
+		positions.push_back(glm::vec3(x, 2, z));	// actual position
+
+		// diagonal
+		positions.push_back(glm::vec3(x + 10, 2, z + 10));
+		positions.push_back(glm::vec3(x - 10, 2, z + 10));
+		positions.push_back(glm::vec3(x + 10, 2, z - 10));
+		positions.push_back(glm::vec3(x - 10, 2, z - 10));
+
+		// adjacent
+		positions.push_back(glm::vec3(x, 2, z + 10));
+		positions.push_back(glm::vec3(x, 2, z - 10));
+		positions.push_back(glm::vec3(x + 10, 2, z));
+		positions.push_back(glm::vec3(x - 10, 2, z));
+	}
 
 	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
 
 	createWalls(gridSize);
-
-	// populate with positions the vehicles are at to prevent putting crystals/obstacles on or around them	
-	//printf("\nentities size = %d\n", EntityManager::getInstance()->getEntities().size());
-	for (int i = 0; i < EntityManager::getInstance()->getVehicleEntities().size(); i++) {
-		glm::vec3 pos = EntityManager::getInstance()->getVehicleEntities().at(i)->getCoarsePosition();
-		positions.push_back(pos);
-		positions.push_back(glm::vec3(pos.x + 1, pos.y, pos.z + 1));
-		positions.push_back(glm::vec3(pos.x - 1, pos.y, pos.z + 1));
-		positions.push_back(glm::vec3(pos.x + 1, pos.y, pos.z - 1));
-		positions.push_back(glm::vec3(pos.x - 1, pos.y, pos.z - 1));
-		positions.push_back(glm::vec3(pos.x, pos.y, pos.z + 1));
-		positions.push_back(glm::vec3(pos.x + 1, pos.y, pos.z));
-		positions.push_back(glm::vec3(pos.x, pos.y, pos.z - 1));
-		positions.push_back(glm::vec3(pos.x - 1, pos.y, pos.z));
-	}
-
 	createObstacles(&positions, gridSize);
 	createCrystals(&positions, gridSize);
 	generateGrid(gridSize);
-
-	//printf("entities size again = %d\n", EntityManager::getInstance()->getEntities().size());
-
-	/// these mark edges of grid for clarity's sake so I can keep my sanity
-	//for (int i = 0; i < 200; i++) {
-	//	if (i % 10 == 0 && i != 100) {
-	//		Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(-100 + i, 1.f, 0), glm::vec3(.5f));
-	//		obstacles.push_back(obstacle);
-	//	}
-	//}
-	//for (int i = 0; i < 200; i++) {
-	//	if (i % 10 == 0 && i != 100) {
-	//		Entity* obstacle = EntityManager::getInstance()->createBox(glm::vec3(0, 1.f, -100 + i), glm::vec3(.5f));
-	//		obstacles.push_back(obstacle);
-	//	}
-	//}
-	/// end sanity markers
 }
 
 void WorldGenerator::generateGrid(int gridSize) {
 	aStar.setWorldSize({ gridSize, gridSize });
 	
 	float x, y;
-	for (int i = 0; i < obstacles.size() - 1; i++) {
+	for (unsigned int i = 0; i < obstacles.size() - 1; i++) {
 		x = obstacles[i]->getCoarsePosition().x;
 		y = obstacles[i]->getCoarsePosition().z;
 		aStar.addCollision(vec2(x, y));
 	}
-	for (int i = 0; i < crystals.size() - 1; i++) {
+	for (unsigned int i = 0; i < crystals.size() - 1; i++) {
 		x = crystals[i]->getCoarsePosition().x;
 		y = crystals[i]->getCoarsePosition().z;
 		aStar.addCrystal(vec2(x, y));
 	}
 }
 
+
 void WorldGenerator::createObstacles(std::vector<glm::vec3> *positions, int gridSize) {
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
 
 	// create boulders
 	int m = 0;
-	for (int i = 0; i < 20; i++) {
+	for (int i = 0; i < 50; i++) {
 		std::uniform_int_distribution<int> uid{ -(gridSize - 1), gridSize - 1 };
 		// make sure they end in 5....
-		int x = uid(dre) * 10 + 5;
-		int z = uid(dre) * 10 + 5;
-		while (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) != positions->end()) {
+		int x, z;
+		do {
 			x = uid(dre) * 10 + 5;
 			z = uid(dre) * 10 + 5;
-		}
-		std::uniform_int_distribution<int> uidb{ 0, 1 };
+		} while (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) != positions->end());
 
+		std::uniform_int_distribution<int> uidb{ 0, 1 };
 		// make 3 boulders side by side
 		for (int j = 0; j < 3; j++) {
 			m = uidb(dre) ? 1 : 0;	// 1 = expand in x, 0 = expand in z
-			if (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) != positions->end() /*||
-				(x > 95 || x < -95) || (z > 95 || z < -95)*/) {
-				// skip making obstacle
-			}
-			else {
+			if (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) == positions->end()) {
 				// choose to grow in x or y
 				Entity* boulder = EntityManager::getInstance()->createBoulder(glm::vec3(x, 2, z), glm::vec3(3.8f));
 				obstacles.push_back(boulder);
@@ -121,19 +117,19 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions, int gridS
 
 	// create crystals of variable sizes
 	for (int i = 0; i < 45; i++) {
-		std::uniform_real_distribution<float> urd{ 0.5, 1.5 };
+		std::uniform_real_distribution<float> urd{ 0.5, 2.5 };
 		float resourceAmount = urd(dre);
 
 		std::uniform_int_distribution<int> uid{ -(gridSize - 2), gridSize - 2 };
 		// make sure they end in 5....
-		int x = uid(dre) * 10 + 5;
-		int z = uid(dre) * 10 + 5;
-		while (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) != positions->end()) {
-			//std::cout << "oh no, " << x << ", " << z << std::endl;
-			x = uid(dre) * 10 + 5;
-			z = uid(dre) * 10 + 5;
-		}
+		int x, z;
+		do {
+			x = uid(dre);
+			z = uid(dre);
+		} while (std::find(positions->begin(), positions->end(), glm::vec3(x * 10 + 5, 2, z * 10 + 5)) != positions->end());
 
+		x = x * 10 + 5;
+		z = z * 10 + 5;
 		positions->push_back(glm::vec3(x, 2, z));
 
 		Entity* crystal = EntityManager::getInstance()->createCrystal(glm::vec3(x, 2, z), resourceAmount);
@@ -184,4 +180,28 @@ void WorldGenerator::removeCrystal(Entity* entity) {
 		crystals.erase(it);
 	}
 	aStar.removeCrystal(glm::vec2(entity->getCoarsePosition().x, entity->getCoarsePosition().z));
+
+	// mark area for regeneration
+	emptyCrystals.push_back(glm::vec2(entity->getPosition().x, entity->getPosition().z));
+}
+
+void WorldGenerator::createSingleCrystal(glm::vec2 position) {
+	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
+	std::uniform_real_distribution<float> urd{ 0.5, 2.5 };
+	float resourceAmount = urd(dre);
+
+	Entity* crystal = EntityManager::getInstance()->createCrystal(glm::vec3(position.x, 2, position.y), resourceAmount);
+	crystals.push_back(crystal);
+	aStar.addCrystal(vec2(crystal->getCoarsePosition().x, crystal->getCoarsePosition().z));
+}
+
+void WorldGenerator::regenerateCrystal() {
+	if (!emptyCrystals.empty()) {
+		int i = rand() % emptyCrystals.size();
+		if (Core::timeSinceStartup - lastRegenTime > 30.f) {
+			createSingleCrystal(emptyCrystals[i]);
+			emptyCrystals.erase(emptyCrystals.begin() + i);
+			lastRegenTime = Core::timeSinceStartup;
+		}
+	}
 }

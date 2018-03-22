@@ -56,6 +56,10 @@ int AIComponent::getAttackerID() {
 	return attackerID;
 }
 
+int AIComponent::getPersonality() {
+	return personality;
+}
+
 AIComponent::~AIComponent()
 {
 }

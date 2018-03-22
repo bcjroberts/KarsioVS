@@ -5,6 +5,7 @@
 
 #include "AStar.h"
 #include <algorithm>
+#include "../../Main/initOpenGL/OpenGL.h"
 
 using namespace std::placeholders;
 
@@ -29,10 +30,10 @@ AStar::uint AStar::Node::getScore() {
 // square grid + moving diagonally
 AStar::Generator::Generator() {
 	//setDiagonalMovement(true);
-	setHeuristic(&Heuristic::manhattan);
+	setHeuristic(&Heuristic::euclidean);
 	direction = {
-		{ 0,1 },{ 1,0 },{ 0,-1 },{ -1,0 },
-		{ -1,-1 },{ 1,1 },{ -1,1 },{ 1,-1 }		
+		{ -1,-1 },{ 1,1 },{ -1,1 },{ 1,-1 },
+		{ 0,1 },{ 1,0 },{ 0,-1 },{ -1,0 }		
 	};
 }
 
@@ -92,13 +93,17 @@ void AStar::Generator::clearCollisions() {
 }
 
 // the actual path finding algorithm
-AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 target) {
+std::vector<glm::vec3> AStar::Generator::findPath(glm::vec2 source, glm::vec2 target) {
 	Node *current = nullptr;
 	NodeSet openSet, closedSet;
 	openSet.insert(new Node(source));
 	bool pathFound = false;
-
+	float time = glfwGetTime();
 	while (!openSet.empty()) {
+		if (glfwGetTime() - time > 0.0045f) {
+			std::vector<glm::vec3> path;
+			return path;
+		}
 		current = *openSet.begin();
 		// for all nodes in openSet, get one with smallest score
 		// which is shortest path
@@ -149,9 +154,10 @@ AStar::CoordinateList AStar::Generator::findPath(glm::vec2 source, glm::vec2 tar
 	}
 
 	// get the ideal path into a list
-	CoordinateList path;
+	//CoordinateList path;
+	std::vector<glm::vec3> path;
 	while (current != nullptr) {
-		path.push_back(current->coordinates);
+		path.push_back(glm::vec3(current->coordinates.x, 0, current->coordinates.y));
 		current = current->parent;
 	}
 
@@ -211,6 +217,7 @@ AStar::uint AStar::Heuristic::euclidean(glm::vec2 source, glm::vec2 target) {
 	auto delta = std::move(getDelta(source, target));
 	return static_cast<uint>(10 * sqrt(pow(delta.x, 2) + pow(delta.y, 2)));
 }
+
 
 AStar::uint AStar::Heuristic::manhattan(glm::vec2 source, glm::vec2 target){
 	auto delta = std::move(getDelta(source, target));

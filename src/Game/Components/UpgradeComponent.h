@@ -50,5 +50,7 @@ public:
     int getRamLevel() {return ramLevel;}
     float getCurrentResources() {return resources; }
     float getMaxResources() {return resourcesForNextLevel; }
+
+	bool fullyUpgraded();
 };
 

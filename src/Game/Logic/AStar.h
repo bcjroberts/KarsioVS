@@ -39,7 +39,7 @@ namespace AStar {
 		void setWorldSize(glm::vec2 aWorldSize);
 		//void setDiagonalMovement(bool enable);
 		void setHeuristic(HeuristicFunction aHeuristic);
-		CoordinateList findPath(glm::vec2 source, glm::vec2 target);
+		std::vector<glm::vec3> findPath(glm::vec2 source, glm::vec2 target);
 		void addCollision(glm::vec2 coordinates);
 		void addCollision(glm::vec2 coordinates, glm::vec3 scale);
 		void addCrystal(glm::vec2 coordinates);

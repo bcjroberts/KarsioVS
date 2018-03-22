@@ -76,3 +76,12 @@ bool UpgradeComponent::upgradeVehicle(UpgradeType type) {
     return false;
 }
 
+bool UpgradeComponent::fullyUpgraded() {
+	if (chassisLevel == 3 && gunLevel == 5 && armorLevel == 5 && ramLevel == 5) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+

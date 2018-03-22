@@ -207,7 +207,7 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
 
     ComponentManager::getInstance()->addStaticLightComponent(entity, entity->getPosition() + glm::vec3(0,1 * resourceAmount,0), glm::vec3(10 * resourceAmount, 20 * resourceAmount, 40 * resourceAmount));
 	ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
-    
+
     // Render the physics hitbox for the crystal
     //ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), physicsScale);
 
