@@ -1,6 +1,7 @@
 #include "ComponentManager.h"
 #include "Entity.h"
 #include "EntityManager.h"
+#include "Core.h"
 
 // Initialize the Component Manager global pointer.
 ComponentManager *ComponentManager::globalInstance = nullptr;
@@ -14,23 +15,26 @@ RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, Model* 
     return addRendererComponent(addTo, model, glm::vec3(), glm::quat(), glm::vec3(1));
 }
 
+void ComponentManager::registerRenderComponent(RendererComponent* rc) {
+    rendererComponents.push_back(rc);
+    Core::renderEngine->world->addInstance(*rc->myModel, rc->id, rc->getMatrix());
+}
+
 RendererComponent* ComponentManager::addRendererComponent(Entity* addTo, Model* model,  glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
     RendererComponent* rc = new RendererComponent(model);
-    rendererComponents.push_back(rc);
     addTo->addComponent(rc);
     rc->position = position;
     rc->rotation = rotation;
     rc->scale = scale;
     rc->owner = addTo;
+
+    registerRenderComponent(rc);
     return rc;
 }
-
-RenderEngine* renderEngine = nullptr;
 
 ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addTo, Model* model, physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos, RendererTag tag)
 {
     ShapeRendererComponent* src = new ShapeRendererComponent(model, newShape, tag);
-    rendererComponents.push_back(src);
     addTo->addComponent(src);
 
     // SPECIAL: set the scale and local position if given
@@ -38,6 +42,8 @@ ShapeRendererComponent* ComponentManager::addShapeRendererComponent(Entity* addT
     src->localPos = newLocalPos;
 
     src->owner = addTo;
+
+    registerRenderComponent(src);
     return src;
 }
 
@@ -130,14 +136,7 @@ ComponentManager* ComponentManager::getInstance() {
 
 void ComponentManager::performRendering() {
     for (auto rc : rendererComponents) {
-        renderEngine->world->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
-    }
-}
-
-void ComponentManager::initializeRendering(RenderEngine* re) {
-    renderEngine = re;
-    for (auto rc : rendererComponents) {
-        re->world->addInstance(*rc->myModel, rc->id, rc->getMatrix());
+        Core::renderEngine->world->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
     }
 }
 
@@ -159,7 +158,7 @@ void ComponentManager::cleanupComponents(Entity* entity) {
         RendererComponent* rc = static_cast<RendererComponent*>(toRemove);
 
         // destroy the object
-        renderEngine->world->removeInstance(*rc->myModel, rc->id);
+        Core::renderEngine->world->removeInstance(*rc->myModel, rc->id);
 
         // This is the spot where I would remove the component from the renderer rc->myModel;
         for (int i = 0; i < rendererComponents.size(); ++i)

@@ -28,6 +28,7 @@ public:
     // Components moved here temporarily
 
     ComponentManager();
+    void registerRenderComponent(RendererComponent* rc);
     RendererComponent* addRendererComponent(Entity* addTo, Model* model);
     RendererComponent* addRendererComponent(Entity* addTo, Model* model, glm::vec3 position, glm::quat rotation, glm::vec3 scale);
     ShapeRendererComponent* addShapeRendererComponent(Entity* addTo, Model* model,  physx::PxShape* newShape, glm::vec3 newScale, glm::vec3 newLocalPos = glm::vec3(0), RendererTag tag = NA);
@@ -44,7 +45,6 @@ public:
 
     RendererComponent* getRenderComponentWithTagFromEntity(Entity* from, RendererTag tag);
     void performRendering();
-    void initializeRendering(RenderEngine* re);
     void performPhysicsLogic();
     void cleanupComponents(Entity* entity);
     void performProjectileLogic();

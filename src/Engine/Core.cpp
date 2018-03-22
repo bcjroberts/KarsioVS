@@ -151,7 +151,6 @@ void Core::coreLoop() {
 	WorldGenerator::getInstance()->generateWorld();
 	Entity* playerVehicle = EntityManager::getInstance()->getVehicleEntities().at(0);
 
-    ComponentManager::getInstance()->initializeRendering(renderEngine);
     // -----------------End of temp initialize model/instance in rendering code
 
 	double previousTime = glfwGetTime();

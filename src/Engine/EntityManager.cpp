@@ -94,7 +94,6 @@ Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat
     Entity* projectile = EntityManager::getInstance()->createEntity(origin, orientation, glm::vec3(1));
     RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, ModelManager::getModel("projectile"), glm::vec3(0), glm::quat(), glm::vec3(1, 1, 12));
     ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);
-    Core::renderEngine->world->addInstance(*temp->myModel, temp->id, temp->getMatrix());
 
     entities.push_back(projectile);
     return projectile;
@@ -314,21 +313,16 @@ void EntityManager::updateArmor (Entity* toUpdate, int chassisLevel, int armorLe
     switch(armorLevel) {
     case 2:
         addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl1"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
-        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
         break;
     case 3:
         addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl2"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
-        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
         break;
     case 4:
         addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl3"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
-        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
         break;
     case 5:
         addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl4"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
-        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
         addedArmor = ComponentManager::getInstance()->addShapeRendererComponent(toUpdate, ModelManager::getModel("armour-lvl5"), chassisSR->getMyShape(), chassisSR->scale, glm::vec3(0));
-        Core::renderEngine->world->addInstance(*addedArmor->myModel, addedArmor->id, addedArmor->getMatrix());
         break;
     }
 }
