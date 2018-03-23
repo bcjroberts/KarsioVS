@@ -159,7 +159,7 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     return false;
 }
 
-float flipForceValues[] = {5000.f, 10000.f, 20000.f};
+float flipForceValues[] = {4500.f, 8000.f, 15000.f};
 
 void Logic::flipVehicle(Entity* vehicle) const{
     glm::vec3 torqueDirection = vehicle->getForwardVector();
@@ -297,29 +297,27 @@ bool Logic::checkStuck(Entity* entity) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 
 	glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
-	float speed = glm::dot(velocity, entity->getForwardVector());
+	float magnitude = glm::length(velocity);
 
     // First thing we check is if the Vehicle can flip
     if(canVehicleFlip(entity)) {
         flipVehicle(entity);
     }
 
-	if (speed < 1 && speed > -1 && ai->state != ATTACKING) {
+	if (abs(magnitude) < 0.5f) {
 		ai->notMoving++;
-	}
-	else {
+	} else {
 		ai->notMoving = 0;
 	}
 	// speed has to be 0 for a while
-	if (ai->notMoving > 50 && ai->state != STUCK) {
+	if (ai->notMoving > 100 && ai->state != STUCK) {
 		if (ai->prevstate == -1) {
 			ai->prevstate = ai->state;
 		}
 		ai->state = STUCK;
 		ai->prevPos = entity->getPosition();
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -328,7 +326,7 @@ void Logic::unstuck(Entity* entity, AStar::Generator* generator) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
 	
-	if (glm::distance(ai->prevPos, entity->getPosition()) < 15.0f) {
+	if (glm::distance(ai->prevPos, entity->getPosition()) < 20.0f) {
 		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
@@ -554,21 +552,25 @@ void Logic::finiteStateMachine(Entity* entity) {
 		if (ai->currentWaypointIndex == ai->path.size() - 1) {
 			ai->state = ATTACKING;
 		}
-		if (glm::distance(ai->goal->getPosition(), entity->getPosition()) < 15.0f) {
+		/*if (glm::distance(ai->goal->getPosition(), entity->getPosition()) < 15.0f) {
 			findPath(generator, entity, ai->goal->getPosition());
 			ai->state = ATTACKING;
-		}
+		}*/
 		// if goal manages to drive away very fast, give up and do something else
-		if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 50.0f) {
+		/*if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 50.0f) {
 			ai->state = DECIDING;
-		}
+		}*/
 		break;
 	case ATTACKING:
-		if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 15.0f) {
+		if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 30.0f) {
 			findPath(generator, entity, ai->goal->getPosition());
 			if (ai->path.size() > 0) {
 				ai->state = SEEKING_PLAYER;
+			} else { // No path so go back to deciding
+                ai->state = DECIDING;
 			}
+		} else if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 60.f) {
+		    ai->state = DECIDING;
 		}
 		attack(ai->goal, entity);
 		break;
@@ -603,6 +605,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 			ai->state = DECIDING;
 		}
 		aiMovement(entity);
+        break;
 	}
 }
 

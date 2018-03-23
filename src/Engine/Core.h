@@ -32,6 +32,7 @@ public:
     static float timeSinceStartup;
     static RenderEngine* renderEngine;
     static std::string dataPath;
+    static std::vector<Camera*> cameras;
 };
 
 

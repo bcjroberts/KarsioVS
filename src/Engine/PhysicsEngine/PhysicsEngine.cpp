@@ -156,7 +156,11 @@ snippetvehicle::VehicleDesc initVehicleDesc()
         ((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
             (chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
             (chassisDims.x*chassisDims.x + chassisDims.y*chassisDims.y)*chassisMass / 12.0f);
-    const physx::PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f-0.5f, 0.f);
+
+    // Centred on the x axis. This MUST be 0.
+    // Y is set to be slightly lower to the ground than normal to prevent tipping.
+    // Z is set to be centred, but can be adjusted slightly.
+    const physx::PxVec3 chassisCMOffset(0.0f, -chassisDims.y*0.5f-0.5f, 0.25f);
 
     //Set up the wheel mass, radius, width, moment of inertia, and number of wheels.
     //Moment of inertia is just the moment of inertia of a cylinder.

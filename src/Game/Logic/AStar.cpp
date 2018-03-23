@@ -92,6 +92,7 @@ void AStar::Generator::clearCollisions() {
 	walls.clear();
 }
 
+const int MAX_LOOP_ITERATIONS = 150;
 // the actual path finding algorithm
 std::vector<glm::vec3> AStar::Generator::findPath(glm::vec2 source, glm::vec2 target) {
 	Node *current = nullptr;
@@ -99,12 +100,15 @@ std::vector<glm::vec3> AStar::Generator::findPath(glm::vec2 source, glm::vec2 ta
 	openSet.insert(new Node(source));
 	bool pathFound = false;
 	float time = glfwGetTime();
+    int currentLoopIterations = 0;
 	while (!openSet.empty()) {
-		if (glfwGetTime() - time > 0.0045f) {
-			std::vector<glm::vec3> path;
-			return path;
-		}
 		current = *openSet.begin();
+        // At this point there is probably not a path, so stop looking for one.
+	    if (currentLoopIterations >= MAX_LOOP_ITERATIONS) {
+            std::vector<glm::vec3> path;
+            return path;
+        }
+        currentLoopIterations++;
 		// for all nodes in openSet, get one with smallest score
 		// which is shortest path
 		for (auto node : openSet) {
@@ -158,7 +162,7 @@ std::vector<glm::vec3> AStar::Generator::findPath(glm::vec2 source, glm::vec2 ta
 	std::vector<glm::vec3> path;
 	while (current != nullptr) {
 		path.push_back(glm::vec3(current->coordinates.x, 0, current->coordinates.y));
-		current = current->parent;
+	    current = current->parent;
 	}
 
 	// clean up

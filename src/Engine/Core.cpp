@@ -20,6 +20,7 @@ GLFWwindow* Core::globalWindow = nullptr;
 float Core::timeSinceStartup = 0.f;
 RenderEngine* Core::renderEngine = nullptr;
 std::string Core::dataPath = "data/";
+std::vector<Camera*> Core::cameras;
 
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
@@ -117,7 +118,7 @@ void Core::coreLoop() {
     // the camera class it will affect the rendered view
 	//==========================================================================
 	//NOTE: For multiple views it might be a good idea to create and use a camera vector
-	std::vector<Camera*> cameras;
+	//std::vector<Camera*> cameras;
     Camera camera(properties.screenWidth,properties.screenHeight);
 	cameras.push_back(&camera);
 	//===========================================================================
@@ -252,7 +253,7 @@ void Core::coreLoop() {
                 // Move camera by keyboard and cursor
                 glfwGetCursorPos(properties.window, &xpos, &ypos);
                 camera.rotateView(glm::vec2(xpos / *properties.screenWidth, -ypos / *properties.screenHeight));
-                camera.moveCamera(movement, fixedStepTimediff * 250.0f);
+                camera.moveCamera(movement, fixedStepTimediff * 1000.0f);
             }
             else if (cameraMode == 1)
             {
