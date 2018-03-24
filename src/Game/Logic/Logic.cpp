@@ -530,7 +530,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 		else {
 			i = randomNum(0, EntityManager::getInstance()->getVehicleEntities().size() - 1);
 		}
-		if (i != entity->id) {
+		if (EntityManager::getInstance()->getVehicleEntities()[i]->id != entity->id) {
 			ai->goal = EntityManager::getInstance()->getVehicleEntities().at(i);
 			findPath(generator, entity, ai->goal->getPosition());
 			if (ai->path.size() > 0) {
@@ -581,7 +581,12 @@ void Logic::finiteStateMachine(Entity* entity) {
 		break;
 	case RETALIATE:
 		//std::cout << entity->id << " retaliating against " << ai->getAttackerID() << std::endl;
-		ai->goal = EntityManager::getInstance()->getVehicleEntities().at(ai->getAttackerID());
+		ai->goal = EntityManager::getInstance()->getVehicleEntityWithID(ai->getAttackerID());
+        if (ai->goal == nullptr) {
+            ai->state = DECIDING;
+            ai->setAttackerID(-1);
+            break;
+        }
 		findPath(generator, entity, ai->goal->getPosition());
 		if (ai->path.size() > 0) {
 			ai->state = SEEKING_PLAYER;
@@ -591,7 +596,12 @@ void Logic::finiteStateMachine(Entity* entity) {
 		break;
 	case FINDING_SAFETY:
 		// just go to its opposite position wahahahahaaaa
-		ai->goal = EntityManager::getInstance()->getVehicleEntities().at(ai->getAttackerID());
+		ai->goal = EntityManager::getInstance()->getVehicleEntityWithID(ai->getAttackerID());
+        if (ai->goal == nullptr) {
+            ai->state = DECIDING;
+            ai->setAttackerID(-1);
+            break;
+        }
 		findPath(generator, entity, ai->goal->getPosition() * -1.0f);
 		//std::cout << entity->id << " fleeing to " << ai->goal->getPosition().x * -1.f << ", " << ai->goal->getPosition().z * -1.f << std::endl;
 		if (ai->path.size() > 0) {

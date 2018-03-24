@@ -11,10 +11,7 @@ RenderWorld::RenderWorld() {
 		lights.push_back(newLight);
 		lightsInUse[i] = false;
 	}
-	setLight(0, vec3(20.0, 10.0, 20.0), vec3(1000.0, 1000.0, 1000.0));
-	setLight(1, vec3(-20.0, 10.0, -20.0), vec3(1000.0, 1000.0, 1000.0));
-	setLight(2, vec3(-20.0, 10.0, 20.0), vec3(1000.0, 1000.0, 1000.0));
-	setLight(3, vec3(20.0, 10.0, -20.0), vec3(1000.0, 1000.0, 1000.0));
+	setLight(0, vec3(0.0, 100.0, 0.0), vec3(10000.0, 10000.0, 10000.0));
 	lightsInUse[0] = lightsInUse[1] = lightsInUse[2] = lightsInUse[3] = true;
 }
 

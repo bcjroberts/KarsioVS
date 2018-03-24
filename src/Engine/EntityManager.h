@@ -33,6 +33,7 @@ public:
     static EntityManager* getInstance();
 	std::vector<Entity*> getEntities();
 	std::vector<Entity*> getVehicleEntities();
+    Entity* getVehicleEntityWithID(int id);
     ~EntityManager();
 };
 

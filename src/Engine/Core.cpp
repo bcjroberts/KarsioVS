@@ -176,8 +176,6 @@ void Core::coreLoop() {
 		}
 
         const float playerHealth = static_cast<HealthComponent*>(playerVehicle->getComponent(HEALTH))->getCurrentHealth();
-        //const float AIHealth = static_cast<HealthComponent*>(aiVehicle->getComponent(HEALTH))->getCurrentHealth();
-        //printf("PlayerHealth: %f AIHealth: %f\n",playerHealth, AIHealth);
 
         std::ostringstream oss;
         oss << "Health: " << round(playerHealth);

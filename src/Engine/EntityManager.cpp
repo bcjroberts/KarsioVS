@@ -35,6 +35,13 @@ std::vector<Entity*> EntityManager::getVehicleEntities() {
 	return vehicleEntities;
 }
 
+Entity* EntityManager::getVehicleEntityWithID(int id) {
+    for (Entity* ve : vehicleEntities) {
+        if (ve->id == id) return ve;
+    }
+    return nullptr;
+}
+
 EntityManager::~EntityManager() = default;
 
 void EntityManager::destroyEntity(int id) {
