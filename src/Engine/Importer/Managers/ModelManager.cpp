@@ -7,6 +7,9 @@ std::map<std::string, Model*> ModelManager::modelMap;
 
 // Retrieves the mesh data either by returning an existing reference or creating a new one.
 Model* ModelManager::getModel(std::string modelName) {
+    if (loadOnlyBoxes && modelName != "plane") {
+        modelName = "cube";
+    }
     Model* result = modelMap[modelName];
     if (!result) {
         result = new Model();

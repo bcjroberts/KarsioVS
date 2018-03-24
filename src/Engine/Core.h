@@ -34,6 +34,7 @@ public:
     static RenderEngine* renderEngine;
     static std::string dataPath;
     static std::vector<Camera*> cameras;
+    static bool fastStartup;
 };
 
 

@@ -23,6 +23,10 @@ RenderEngine* Core::renderEngine = nullptr;
 std::string Core::dataPath = "data/";
 std::vector<Camera*> Core::cameras;
 
+// CHANGE THIS TO FAST STARTUP THE PROGRAM WITH REDUCED GRAPHICS
+bool Core::fastStartup = false;
+// *************************************************************
+
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {
     //this->properties.openGL_Program = openGL_Program;
     this->properties.window = window;
