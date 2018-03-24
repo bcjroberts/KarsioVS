@@ -216,10 +216,10 @@ void WorldGenerator::createSingleCrystal(glm::vec2 position) {
 void WorldGenerator::regenerateCrystal() {
 	if (!emptyCrystals.empty()) {
 		int i = rand() % emptyCrystals.size();
-		if (Core::timeSinceStartup - lastRegenTime > 30.f) {
+		if (Core::simtimeSinceStartup - lastRegenTime > 30.f) {
 			createSingleCrystal(emptyCrystals[i]);
 			emptyCrystals.erase(emptyCrystals.begin() + i);
-			lastRegenTime = Core::timeSinceStartup;
+			lastRegenTime = Core::simtimeSinceStartup;
 		}
 	}
 }

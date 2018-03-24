@@ -29,7 +29,8 @@ public:
     void coreLoop();
     ~Core();
     static GLFWwindow* globalWindow;
-    static float timeSinceStartup;
+    static float simtimeSinceStartup;
+    static float realtimeSinceStartup;
     static RenderEngine* renderEngine;
     static std::string dataPath;
     static std::vector<Camera*> cameras;

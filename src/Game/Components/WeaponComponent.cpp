@@ -5,7 +5,7 @@
 
 WeaponComponent::WeaponComponent() : Component(WEAPON) {
     setROF(1.0f);
-    lastTimeFired = Core::timeSinceStartup;
+    lastTimeFired = Core::simtimeSinceStartup;
     projectileSpeed = 2.0f;
     gunDamage = 5.0f;
 }
@@ -15,9 +15,9 @@ WeaponComponent::~WeaponComponent() = default;
 
 void WeaponComponent::fireWeapon() {
     // First check to see if we can fire
-    if (Core::timeSinceStartup - lastTimeFired > timeBetweenShots) {
+    if (Core::simtimeSinceStartup - lastTimeFired > timeBetweenShots) {
         // If we can fire, update the time value
-        lastTimeFired = Core::timeSinceStartup;
+        lastTimeFired = Core::simtimeSinceStartup;
         // Now spawn the projectile with the correct weapon stats
         EntityManager::getInstance()->createProjectile(owner->id, owner->getPosition(), owner->getRotation(), projectileSpeed, gunDamage);
     }

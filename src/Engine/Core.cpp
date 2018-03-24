@@ -17,7 +17,8 @@
 #include "PhysicsEngine/VehicleConfigParser.h"
 
 GLFWwindow* Core::globalWindow = nullptr;
-float Core::timeSinceStartup = 0.f;
+float Core::simtimeSinceStartup = 0.f;
+float Core::realtimeSinceStartup = 0.f;
 RenderEngine* Core::renderEngine = nullptr;
 std::string Core::dataPath = "data/";
 std::vector<Camera*> Core::cameras;
@@ -164,10 +165,9 @@ void Core::coreLoop() {
 	float time;
 	while (properties.isRunning && !glfwWindowShouldClose(properties.window)){
         glfwPollEvents();
-        timeSinceStartup = glfwGetTime();
-		const auto currentTime = timeSinceStartup;
-	    float timeDiff = currentTime - previousTime;
-		previousTime = currentTime;
+        realtimeSinceStartup = glfwGetTime();
+	    float timeDiff = realtimeSinceStartup - previousTime;
+		previousTime = realtimeSinceStartup;
         mainfpsCounter = mainfpsCounter * 0.5f + 1.f / timeDiff * 0.5f;
 
         // R was pressed, we need to re set the player vehicle
@@ -219,16 +219,17 @@ void Core::coreLoop() {
 			float fixedStepTimediff = 0.0f;
             int current_iter = 0;
 			// Simulate physics in a Fixed Timestep style
-			while (physicsTime < currentTime && current_iter < MAX_PHYSICS_STEPS_PER_FRAME) {
+			while (physicsTime < realtimeSinceStartup && current_iter < MAX_PHYSICS_STEPS_PER_FRAME) {
 				physicsTime += physicsTimeStep;
 				PhysicsEngine::getInstance()->simulateTimeInSeconds(physicsTimeStep);
-				fixedStepTimediff += 1.0f / 60.0f;
+				fixedStepTimediff += physicsTimeStep;
+                simtimeSinceStartup += physicsTimeStep;
                 current_iter++;
 			}
 
             // Prevents the fast forward effect
             if (current_iter == MAX_PHYSICS_STEPS_PER_FRAME) {
-                physicsTime = currentTime;
+                physicsTime = realtimeSinceStartup;
             }
 
 			if (fixedStepTimediff > 0) {

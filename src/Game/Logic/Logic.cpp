@@ -151,7 +151,7 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     // If less than some threshold, then condition 1 is met.
     if (oangle < 0.9f) {
         // Now we check condition 2. If we havent flipped in 2.5 seconds, allow flipping.
-        if (Core::timeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 2.5f) {
+        if (Core::simtimeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 2.5f) {
             return true;
         }
     }
@@ -180,7 +180,7 @@ void Logic::flipVehicle(Entity* vehicle) const{
     static_cast<PhysicsComponent*>(vehicle->getComponent(PHYSICS))->getRigidBody()->addTorque(torqueForce, physx::PxForceMode::eIMPULSE, true);
 
     // Set the time since the last flip attempt was made.
-    static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime = Core::timeSinceStartup;
+    static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime = Core::simtimeSinceStartup;
 }
 
 void Logic::bindCamera(Camera* aCamera) {

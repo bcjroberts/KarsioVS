@@ -7,7 +7,7 @@
 
 
 UpgradeComponent::UpgradeComponent() : Component(UPGRADE) {
-    timeSinceLastUpgrade = Core::timeSinceStartup;
+    timeSinceLastUpgrade = Core::realtimeSinceStartup;
 }
 
 
@@ -22,7 +22,7 @@ float UpgradeComponent::getCurrentRamMultiplier() {
 }
 
 bool UpgradeComponent::isUpgradeAvailable() const {
-    return (resources >= resourcesForNextLevel && Core::timeSinceStartup - timeSinceLastUpgrade > 1.0f);
+    return (resources >= resourcesForNextLevel && Core::realtimeSinceStartup - timeSinceLastUpgrade > 1.0f);
 }
 
 bool UpgradeComponent::canUpgradeType(UpgradeType type) {
@@ -48,7 +48,7 @@ bool UpgradeComponent::upgradeVehicle(UpgradeType type) {
     resources -= resourcesForNextLevel;
     resourcesForNextLevel *= increasedResourceAmountModifier;
     numberOfUpgrades++;
-    timeSinceLastUpgrade = Core::timeSinceStartup;
+    timeSinceLastUpgrade = Core::realtimeSinceStartup;
 
     if (type == CHASSIS_UPGRADE) {
         chassisLevel++;

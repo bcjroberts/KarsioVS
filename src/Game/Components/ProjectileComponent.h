@@ -7,6 +7,7 @@ private:
     float speed;
     float damage;
     float distanceToCheck;
+    float previousSimTime;
 public:
     ProjectileComponent(int nownerid, float nspeed, float ndamage);
     ~ProjectileComponent();

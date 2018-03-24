@@ -4,12 +4,14 @@
 #include "../../Engine/PhysicsEngine/PhysicsEngine.h"
 #include "HealthComponent.h"
 #include "AIComponent.h"
+#include "../../Engine/Core.h"
 
 ProjectileComponent::ProjectileComponent(int nownerid, float nspeed, float ndamage) : Component(PROJECTILE) {
     ownerid = nownerid;
     speed = nspeed;
     damage = ndamage;
     distanceToCheck = speed * (1.f/60.f) * 2.f;
+    previousSimTime = Core::simtimeSinceStartup - (1.f/60.f);
 }
 
 
@@ -44,9 +46,8 @@ bool ProjectileComponent::checkForHit() {
     return false;
 }
 
-const float timeDiff = 1.f/60.f;
-
 void ProjectileComponent::move() {
-    glm::vec3 newPos = owner->getPosition() + (owner->getForwardVector() * speed * timeDiff);
+    glm::vec3 newPos = owner->getPosition() + (owner->getForwardVector() * speed * (Core::simtimeSinceStartup - previousSimTime));
     owner->updatePosition(newPos);
+    previousSimTime = Core::simtimeSinceStartup;
 }
