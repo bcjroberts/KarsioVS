@@ -15,6 +15,7 @@ public:
 	glm::quat rotation;
 	glm::vec3 scale;
     Model* myModel;
+    bool isStatic;
     virtual glm::mat4 getMatrix();
 	RendererComponent(Model* newModel, RendererTag newTag = NA);
 	virtual ~RendererComponent();

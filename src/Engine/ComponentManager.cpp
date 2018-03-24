@@ -136,7 +136,9 @@ ComponentManager* ComponentManager::getInstance() {
 
 void ComponentManager::performRendering() {
     for (auto rc : rendererComponents) {
-        Core::renderEngine->world->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
+        if (!rc->isStatic) { // Only update instances that are not static
+            Core::renderEngine->world->updateInstance(*rc->myModel, rc->id, rc->getMatrix());
+        }
     }
 }
 

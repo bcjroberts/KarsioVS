@@ -127,7 +127,8 @@ Entity* EntityManager::createAIVehicleEntity(glm::vec3 startPos) {
 
 Entity* EntityManager::createGroundPlane() {
 	Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.0f));
-	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("plane"), glm::vec3(0, 0, 0), glm::quat(glm::vec3(0, 0, -1.57f)), glm::vec3(300, 10, 300));
+	RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("plane"), glm::vec3(0, 0, 0), glm::quat(), glm::vec3(300, 10, 300));
+    rc->isStatic = true;
     physx::PxRigidActor* plane = PhysicsEngine::getInstance()->createPhysicsPlane();
     plane->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, plane);
@@ -137,7 +138,8 @@ Entity* EntityManager::createGroundPlane() {
 
 Entity* EntityManager::createBox(glm::vec3 startPos, glm::vec3 scale) {
 	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
-	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), glm::vec3(1));
+    RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), glm::vec3(1));
+    rc->isStatic = true;
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
@@ -155,8 +157,8 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	std::uniform_real_distribution<float> urd{0.f, 3.14f};
 	float y = urd(dre);
 
-	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("obstacle"+s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
-	
+    RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("obstacle"+s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
+	rc->isStatic = true;
 	// Render the physics hitbox for the boulder
 	//ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), vec3(1.5f, 2.f, 1.5f));
 
@@ -176,8 +178,8 @@ Entity* EntityManager::createWallBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	std::uniform_real_distribution<float> urd{ 0.f, 3.14f };
 	float y = urd(dre);
 
-	ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("wall" + s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
-	
+    RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("wall" + s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
+	rc->isStatic = true;
 	// Render the physics hitbox for the wall
 	//ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), vec3(4.5f, 12.f, 4.5f));
 
@@ -210,7 +212,8 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     
     startPos.y = resourceAmount * 2.0f;
     Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), glm::vec3(1));
-    ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(0, float(rand() % 314) / 100.0f,0)), modelScale);
+    RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, crystalModel, glm::vec3(0,-heightOffset,0), glm::quat(glm::vec3(0, float(rand() % 314) / 100.0f,0)), modelScale);
+    rc->isStatic = true;
 
     ComponentManager::getInstance()->addStaticLightComponent(entity, entity->getPosition() + glm::vec3(0,1 * resourceAmount,0), glm::vec3(10 * resourceAmount, 20 * resourceAmount, 40 * resourceAmount));
 	ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);

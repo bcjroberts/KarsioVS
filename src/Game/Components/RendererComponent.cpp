@@ -11,6 +11,7 @@ glm::mat4 RendererComponent::getMatrix() {
 RendererComponent::RendererComponent(Model* newModel, RendererTag newTag) : Component(RENDERER) {
     myModel = newModel;
     tag = newTag;
+    isStatic = false;
 }
 
 RendererComponent::~RendererComponent() = default;
