@@ -38,6 +38,8 @@ public:
     physx::PxRigidActor* createCrystalBoxCollider(physx::PxVec3 pos, physx::PxVec3 scale) const;
     vehicleData* createVehicle(physx::PxVec3 startpos);
     bool fireRaycast(physx::PxRaycastBuffer* dataToFill, physx::PxVec3 origin, physx::PxVec3 dir, float distance);
+    void removePhysicsActor(physx::PxActor* actor);
+    void removeVehicleData(physx::PxVehicleDrive4W* vehicleDrive);
     static PhysicsEngine* getInstance();
 	static physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from);
     static glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from);

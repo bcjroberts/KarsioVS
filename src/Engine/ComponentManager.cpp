@@ -181,6 +181,8 @@ void ComponentManager::cleanupComponents(Entity* entity) {
                 break;
             }
         }
+        // Tell the physics engine to remove the actor from the physics simulation
+        PhysicsEngine::getInstance()->removePhysicsActor(static_cast<PhysicsComponent*>(toRemove)->myActor);
         entity->removeComponent(toRemove->id);
         delete toRemove;
     }
@@ -193,6 +195,8 @@ void ComponentManager::cleanupComponents(Entity* entity) {
                 break;
             }
         }
+        // Remove the vehicle from the physx list so it is no longer updated
+        PhysicsEngine::getInstance()->removeVehicleData(static_cast<DriveComponent*>(toRemove)->getVehicle());
         entity->removeComponent(toRemove->id);
         delete toRemove;
     }

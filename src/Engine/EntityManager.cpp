@@ -38,6 +38,14 @@ std::vector<Entity*> EntityManager::getVehicleEntities() {
 EntityManager::~EntityManager() = default;
 
 void EntityManager::destroyEntity(int id) {
+    // If this entity is contained within the vehicle entities list remove it
+    for (uint32_t i = 0; i < vehicleEntities.size(); ++i) {
+        if (vehicleEntities[i]->id == id) {
+            vehicleEntities.erase(vehicleEntities.begin() + i);
+            break;
+        }
+    }
+    // Remove from the general entities list
 	for (uint32_t i = 0; i < entities.size(); ++i) {
 		if (entities[i]->id == id) {
 			Entity* e = entities[i]; // keep for cleanup purposes

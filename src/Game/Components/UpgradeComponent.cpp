@@ -22,7 +22,8 @@ float UpgradeComponent::getCurrentRamMultiplier() {
 }
 
 bool UpgradeComponent::isUpgradeAvailable() const {
-    return (resources >= resourcesForNextLevel && Core::realtimeSinceStartup - timeSinceLastUpgrade > 1.0f);
+    return (resources >= resourcesForNextLevel && Core::realtimeSinceStartup - timeSinceLastUpgrade > 1.0f) &&
+    (chassisLevel < 3 || gunLevel < 5 || ramLevel < 5 || armorLevel < 5); // Can't upgrade if we are fully upgraded
 }
 
 bool UpgradeComponent::canUpgradeType(UpgradeType type) {

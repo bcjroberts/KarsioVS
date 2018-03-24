@@ -470,9 +470,8 @@ void Logic::reactToAttack(Entity* entity) {
 void Logic::finiteStateMachine(Entity* entity) {
     HealthComponent* aiHealth = static_cast<HealthComponent*>(entity->getComponent(HEALTH));
     if (aiHealth->isDead()) {
-        if (aiHealth->isDeathProcessed()) {
-            static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-350, 10, -350)), false);
-        }
+        //static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-350, 10, -350)), false);
+        EntityManager::getInstance()->destroyEntity(entity->id);
         return;
     }
 

@@ -295,11 +295,26 @@ vehicleData* PhysicsEngine::createVehicle(physx::PxVec3 startPos) {
     return vd;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// END: Section where physics objects are created
+
 bool PhysicsEngine::fireRaycast(physx::PxRaycastBuffer* dataToFill, physx::PxVec3 origin, physx::PxVec3 dir, float distance) {
     return gScene->raycast(origin, dir, distance, *dataToFill);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// END: Section where physics objects are created
+void PhysicsEngine::removePhysicsActor(physx::PxActor* actor) {
+    gScene->removeActor(*actor);
+}
+
+void PhysicsEngine::removeVehicleData(physx::PxVehicleDrive4W* vehicleDrive) {
+    for (int i = 0; i < allVehicleData.size(); ++i) {
+        if (allVehicleData[i]->myVehicle == vehicleDrive) {
+            vehicleData* temp = allVehicleData[i];
+            allVehicleData.erase(allVehicleData.begin() + i);
+            delete temp;
+            break;
+        }
+    }
+}
 
 PhysicsEngine* PhysicsEngine::getInstance()
 {
@@ -411,10 +426,7 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 	
     // Remove all of the destroyed physics stuff from the scene
     for (int i = 0; i < colproc.destroyedEntities.size(); ++i) {
-        physx::PxRigidActor* temp = static_cast<PhysicsComponent*>(colproc.destroyedEntities[i]->getComponent(PHYSICS))->myActor;
-        gScene->removeActor(*temp);
         EntityManager::getInstance()->destroyEntity(colproc.destroyedEntities[i]->id);
-
     }
     // Clear the array so items are not removed twice
     colproc.destroyedEntities.clear();
