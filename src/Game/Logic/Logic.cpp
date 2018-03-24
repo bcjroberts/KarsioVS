@@ -159,7 +159,7 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     return false;
 }
 
-float flipForceValues[] = {4500.f, 8000.f, 15000.f};
+float flipForceValues[] = {6000.f, 10000.f, 18000.f};
 
 void Logic::flipVehicle(Entity* vehicle) const{
     glm::vec3 torqueDirection = vehicle->getForwardVector();

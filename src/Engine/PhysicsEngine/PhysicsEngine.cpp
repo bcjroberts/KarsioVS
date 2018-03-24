@@ -35,6 +35,8 @@ physx::PxCooking* gCooking = NULL;
 
 physx::PxMaterial* baseMaterial = NULL;
 physx::PxMaterial* boxMaterial = NULL;
+physx::PxMaterial* vehicleBoxMat = NULL;
+physx::PxMaterial* drillMat = NULL;
 
 physx::PxPvd* gPvd = NULL;
 
@@ -109,7 +111,7 @@ void PhysicsEngine::initPhysics()
     gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, physx::PxTolerancesScale(), true, gPvd);
 
     physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-    sceneDesc.gravity = physx::PxVec3(0.0f, -20.f, 0.0f);
+    sceneDesc.gravity = physx::PxVec3(0.0f, -40.f, 0.0f);
 
     physx::PxU32 numWorkers = 1;
     gDispatcher = physx::PxDefaultCpuDispatcherCreate(numWorkers);
@@ -126,8 +128,10 @@ void PhysicsEngine::initPhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-    baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.7f);
-    boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.7f);
+    baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.2f);
+    vehicleBoxMat = gPhysics->createMaterial(0.f, 0.25f, 0.6f);
+    drillMat = gPhysics->createMaterial(0.f, 0.25f, 0.1f);
+    boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.2f);
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
 
@@ -175,7 +179,8 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     vehicleDesc.chassisDims = chassisDims;
     vehicleDesc.chassisMOI = chassisMOI;
     vehicleDesc.chassisCMOffset = chassisCMOffset;
-    vehicleDesc.chassisMaterial = baseMaterial;
+    vehicleDesc.chassisMaterial = vehicleBoxMat;
+    vehicleDesc.drillMaterial = drillMat;
     vehicleDesc.chassisSimFilterData = physx::PxFilterData(snippetvehicle::COLLISION_FLAG_CHASSIS, snippetvehicle::COLLISION_FLAG_CHASSIS_AGAINST, 0, snippetvehicle::COLLISION_FLAG_CAR);
 
     vehicleDesc.wheelMass = wheelMass;

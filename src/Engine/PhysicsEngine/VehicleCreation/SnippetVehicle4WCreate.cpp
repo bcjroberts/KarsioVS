@@ -192,7 +192,7 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 2000000.0f; //00 added
+	barRear.mStiffness = 1000000.0f; //00 added
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 
@@ -236,7 +236,7 @@ PxVehicleDrive4W* createVehicle4W(const VehicleDesc& vehicle4WDesc, PxPhysics* p
 		PxConvexMesh* chassisConvexMesh = createChassisMesh(chassisDims, *physics, *cooking);
         PxConvexMesh* drillConvexMesh = createChassisMesh(PxVec3(chassisDims.x-0.2f, 1.0f, 2.0f), *physics, *cooking);
 		PxConvexMesh* chassisConvexMeshes[2] = {chassisConvexMesh, drillConvexMesh};
-		PxMaterial* chassisMaterials[1] = {vehicle4WDesc.chassisMaterial};
+		PxMaterial* chassisMaterials[2] = {vehicle4WDesc.chassisMaterial, vehicle4WDesc.drillMaterial};
 
 		//Rigid body data.
 		PxVehicleChassisData rigidBodyData;

@@ -77,6 +77,7 @@ struct VehicleDesc
 		  chassisMOI(PxVec3(0.0f, 0.0f, 0.0f)),
 		  chassisCMOffset(PxVec3(0.0f, 0.0f, 0.0f)),
 		  chassisMaterial(NULL),
+          drillMaterial(NULL),
 		  wheelMass(0.0f),
 		  wheelWidth(0.0f),
 		  wheelRadius(0.0f),
@@ -92,6 +93,7 @@ struct VehicleDesc
 	PxVec3 chassisMOI;
 	PxVec3 chassisCMOffset;
 	PxMaterial* chassisMaterial;
+    PxMaterial* drillMaterial;
 	PxFilterData chassisSimFilterData;  //word0 = collide type, word1 = collide against types, word2 = PxPairFlags
 
 	PxF32 wheelMass;
