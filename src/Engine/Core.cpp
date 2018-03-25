@@ -200,7 +200,7 @@ void Core::coreLoop() {
 			timeSinceLastfpsPrint = 0;
 			oss.str("");
 			oss.clear();
-			oss << round(physxfpsCounter);
+			oss << (round(physxfpsCounter * 10.f) / 10.f);
 			std::string physxfpsString = oss.str();
 			renderEngine->ui->modifyText(10, &physxfpsString, nullptr, nullptr, nullptr, nullptr);
 
@@ -220,6 +220,7 @@ void Core::coreLoop() {
 			
 			float fixedStepTimediff = 0.0f;
             int current_iter = 0;
+            float physxIters = 0;
 			// Simulate physics in a Fixed Timestep style
 			while (physicsTime < realtimeSinceStartup && current_iter < MAX_PHYSICS_STEPS_PER_FRAME) {
 				physicsTime += physicsTimeStep;
@@ -227,16 +228,16 @@ void Core::coreLoop() {
 				fixedStepTimediff += physicsTimeStep;
                 simtimeSinceStartup += physicsTimeStep;
                 current_iter++;
+                physxIters++;
 			}
+
+            // Calculate the physx updates per frame
+            physxfpsCounter = (physxfpsCounter * 0.5f) + (physxIters * 0.5f);
 
             // Prevents the fast forward effect
             if (current_iter == MAX_PHYSICS_STEPS_PER_FRAME) {
                 physicsTime = realtimeSinceStartup;
             }
-
-			if (fixedStepTimediff > 0) {
-				physxfpsCounter = physxfpsCounter * 0.5f + (1.0f / fixedStepTimediff) * 0.5f;
-			}
 
 			logic.playerMovement(playerVehicle);
 
