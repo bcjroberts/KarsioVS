@@ -17,6 +17,7 @@ public:
 	TextureDataManager() = default;
 	~TextureDataManager() = default;
 	static TextureData* getTextureData(std::string textureName);
+	static TextureData* getImageData(std::string imageName);
 	static GLuint defaultAlbedo();
 	static GLuint defaultRoughness();
 	static GLuint defaultMetalness();

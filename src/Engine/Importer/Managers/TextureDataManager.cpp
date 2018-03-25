@@ -8,10 +8,23 @@ TextureData* TextureDataManager::getTextureData(std::string textureName) {
 	TextureData* result = textureDataMap[textureName];
 	if (!result) {
 		result = new TextureData();
-//		std::cout << textureName << std::endl;
+		//		std::cout << textureName << std::endl;
 		result->loadTexture(Core::dataPath + "assets/textures/" + textureName);
-//		std::cout << result << std::endl;
+		//		std::cout << result << std::endl;
 		textureDataMap.insert_or_assign(textureName, result);
+	}
+	//	std::cout << shaderName << std::endl;
+	return result;
+}
+
+TextureData* TextureDataManager::getImageData(std::string imageName) {
+	TextureData* result = textureDataMap[imageName];
+	if (!result) {
+		result = new TextureData();
+		//		std::cout << textureName << std::endl;
+		result->loadTexture(Core::dataPath + "assets/images/" + imageName);
+		//		std::cout << result << std::endl;
+		textureDataMap.insert_or_assign(imageName, result);
 	}
 	//	std::cout << shaderName << std::endl;
 	return result;
@@ -35,7 +48,7 @@ GLuint TextureDataManager::defaultAlbedo() {
 		texAlbedo = createTexture(pixels, GL_RGB);
 	}
 	return texAlbedo;
-//	std::cout << texAlbedo << std::endl;
+	//	std::cout << texAlbedo << std::endl;
 }
 
 GLuint TextureDataManager::defaultRoughness() {

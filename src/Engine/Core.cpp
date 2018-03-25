@@ -24,7 +24,7 @@ std::string Core::dataPath = "data/";
 std::vector<Camera*> Core::cameras;
 
 // CHANGE THIS TO FAST STARTUP THE PROGRAM WITH REDUCED GRAPHICS
-bool Core::loadOnlyBoxes = true;
+bool Core::loadOnlyBoxes = false;
 // *************************************************************
 
 Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused) {

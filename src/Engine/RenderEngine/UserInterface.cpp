@@ -11,36 +11,74 @@
 
 
 UserInterface::UserInterface(int *screenWidth, int *screenHeight) {
-	width = screenWidth;
-	height = screenHeight;
+	windowWidth = *screenWidth;
+	windowHeight = *screenHeight;
+	//TODO: maybe add a feature to keep the hud the same aspect ratio as the window
 
-//	std::cout << width << ":" << height << std::endl;
+	//	std::cout << width << ":" << height << std::endl;
 	fontShaderID = ShaderDataManager::getShaderData("font")->shaderID;
+	imageShaderID = ShaderDataManager::getShaderData("image")->shaderID;
 
-	// Configure VAO/VBO for texture quads
-	glGenVertexArrays(1, &this->VAO);
-	glGenBuffers(1, &this->VBO);
-	glBindVertexArray(this->VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+	createSquare();
+}
+
+// Configure VAO/VBO for texture quads
+void UserInterface::createSquare() {
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+//	float vertices[] = {
+//		1.0f,  1.0f, 1.0f, 1.0f,  // top right
+//		1.0f, -1.0f, 1.0f, 0.0f,  // bottom right
+//		-1.0f, -1.0f, 0.0f, 0.0f,  // bottom left
+//		-1.0f,  1.0f, 0.0f, 1.0f   // top left 
+//	};
+	float vertices[] = {
+		1.0f,  0.0f, 1.0f, 1.0f,  // top right
+		1.0f,  1.0f, 1.0f, 0.0f,  // bottom right
+		0.0f,  1.0f, 0.0f, 0.0f,  // bottom left
+		0.0f, 0.0f, 0.0f, 1.0f   // top left 
+	};	
+//	float vertices[] = {
+//		0.5f,  0.5f, 1.0f, 1.0f,  // top right
+//		0.5f, -0.5f, 1.0f, 0.0f,  // bottom right
+//		-0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
+//		-0.5f,  0.5f, 0.0f, 1.0f   // top left 
+//	};
+	unsigned int indices[] = {  // note that we start from 0!
+		0, 3, 1,  // first Triangle
+		1, 3, 2   // second Triangle
+	};
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
 /**
- * \brief 
- * \param text The string you want to display
- * \param x the start x position
- * \param y the start y position
- * \param scale the scale from the inital size
- * \param color the color of the text
- * \return index
- */
-int UserInterface::addText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
+* \brief
+* \param text The string you want to display
+* \param x the start x position
+* \param y the start y position
+* \param z the z position at which to place the object.
+* \param scale the scale from the inital size
+* \param color the color of the text
+* \return index to text element
+*/
+int UserInterface::addText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color, GLfloat z) {
 	int index = textArray.size();
-	Text tempText{ text,x,y,scale,color };
+	Text tempText(text, color, x, y, z, scale);
 	textArray.push_back(tempText);
 	return index;
 }
@@ -49,16 +87,19 @@ void UserInterface::removeText(int index) {
 	textArray.erase(textArray.begin() + index);
 }
 
-void UserInterface::modifyText(int index, std::string* contents, int* xpos, int* ypos, int* scale, glm::vec3* color) {
+void UserInterface::modifyText(int index, std::string* contents, GLfloat* xpos, GLfloat* ypos, GLfloat* scale, glm::vec3* color, GLfloat* zLevel) {
 	//Check if not null and then replace that value
-	if(contents!=nullptr) {
+	if (contents != nullptr) {
 		textArray[index].contents = *contents;
 	}
 	if (xpos != nullptr) {
-		textArray[index].xpos = *xpos;
+		textArray[index].xPos = *xpos;
 	}
 	if (ypos != nullptr) {
-		textArray[index].ypos = *ypos;
+		textArray[index].yPos = *ypos;
+	}
+	if (zLevel != nullptr) {
+		textArray[index].zLevel = *zLevel;
 	}
 	if (scale != nullptr) {
 		textArray[index].scale = *scale;
@@ -68,58 +109,72 @@ void UserInterface::modifyText(int index, std::string* contents, int* xpos, int*
 	}
 }
 
-void UserInterface::renderTextArray() {
-	for (Text text : textArray) {
-		renderText(text.contents, text.xpos, text.ypos, text.scale, text.color);
+void UserInterface::renderUI() {
+	for (Image image : imageArray) {
+		renderImage(image);
 	}
-}
 
-void UserInterface::renderText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color) {
-	// Activate corresponding render state	
-	glUseProgram(fontShaderID);
-	ShaderUniforms::setMat4(fontShaderID, "projection", glm::ortho(0.0f, static_cast<GLfloat>(*width),static_cast<GLfloat>(*height), 0.0f));
-	ShaderUniforms::setInt(fontShaderID, "text", 0);
-//	color = glm::vec3(1.0f, 1.0f, 0);
-	ShaderUniforms::setVec3(fontShaderID, "textColor", color);
-	glActiveTexture(GL_TEXTURE0);
-	glBindVertexArray(this->VAO);
-
-//	std::cout << "Font shader ID: " << fontShaderID << std::endl;
-	// Iterate through all characters
-	std::string::const_iterator c;
-	for (c = text.begin(); c != text.end(); c++)
-	{
-		Character ch = characters[*c];
-
-		GLfloat xpos = x + ch.bearing.x * scale;
-		GLfloat ypos = y + (this->characters['H'].bearing.y - ch.bearing.y) * scale;
-
-		GLfloat w = ch.size.x * scale;
-		GLfloat h = ch.size.y * scale;
-		// Update VBO for each character
-		GLfloat vertices[6][4] = {
-				{ xpos,     ypos + h,   0.0, 1.0 },
-				{ xpos + w, ypos,       1.0, 0.0 },
-				{ xpos,     ypos,       0.0, 0.0 },
-
-				{ xpos,     ypos + h,   0.0, 1.0 },
-				{ xpos + w, ypos + h,   1.0, 1.0 },
-				{ xpos + w, ypos,       1.0, 0.0 } };
-		// Render glyph texture over quad
-		glBindTexture(GL_TEXTURE_2D, ch.textureID);
-		// Update content of VBO memory
-		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
-
-		// Render quad
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		// Now advance cursors for next glyph
-		// Bitshift by 6 to get value in pixels (1/64th times 2^6 = 64)
-		x += (ch.advance >> 6) * scale; 
+	for (Text text : textArray) {
+		renderText(text);
 	}
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+
+void UserInterface::renderImage(Image image) {
+	glUseProgram(imageShaderID);
+	ShaderUniforms::setMat4(imageShaderID, "projection", glm::ortho(0.0f, static_cast<GLfloat>(windowWidth), static_cast<GLfloat>(windowHeight), 0.0f));
+
+	glm::mat4 transform;
+	transform = glm::translate(transform, glm::vec3(image.xPos, image.yPos, 0.5f));
+	transform = glm::scale(transform, glm::vec3(image.scale * image.width, image.scale * image.height, 1.0f));
+
+	ShaderUniforms::setMat4(imageShaderID, "transformation", transform);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, image.imageID);
+	ShaderUniforms::setInt(imageShaderID, "image", 0);
+
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+}
+
+void UserInterface::renderText(Text text) {
+
+	glUseProgram(fontShaderID);
+	ShaderUniforms::setMat4(fontShaderID, "projection", glm::ortho(0.0f, static_cast<GLfloat>(windowWidth), static_cast<GLfloat>(windowHeight), 0.0f));
+	ShaderUniforms::setInt(fontShaderID, "glyph", 0);
+	ShaderUniforms::setVec3(fontShaderID, "textColor", text.color);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindVertexArray(VAO);
+	for (auto letter : text.contents) {
+
+		Character character = characters[static_cast<int>(letter)];
+
+		GLfloat xpos = text.xPos + character.bearing.x * text.scale;
+		GLfloat ypos = text.yPos + (this->characters['H'].bearing.y - character.bearing.y) * text.scale;
+
+		GLfloat w = ((character.size.x) * text.scale);
+		GLfloat h = ((character.size.y) * text.scale);
+
+
+		glm::mat4 transform;
+		transform = glm::translate(transform, glm::vec3(xpos, ypos, 1.0f));
+		transform = glm::scale(transform, glm::vec3(w, h, 1.0f));
+
+
+		ShaderUniforms::setMat4(fontShaderID, "transformation", transform);
+		glBindTexture(GL_TEXTURE_2D, character.textureID);
+
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		text.xPos += (character.advance >> 6) * text.scale;
+	}
 }
 
 
@@ -181,4 +236,31 @@ void UserInterface::loadFont(std::string font, GLuint fontSize) {
 	// Destroy FreeType once we're finished
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
+}
+
+int UserInterface::addImage(TextureData image, GLfloat x, GLfloat y, GLfloat scale, GLfloat z) {
+	int index = imageArray.size();
+	Image tempText(image, x, y, z, scale);
+	imageArray.push_back(tempText);
+	return index;
+}
+
+void UserInterface::removeImage(int index) {
+	imageArray.erase(imageArray.begin() + index);
+}
+
+void UserInterface::modifyImage(int index, GLfloat* xPos, GLfloat* yPos, GLfloat* scale, GLfloat* zLevel) {
+	//Check if not null and then replace that value
+	if (xPos != nullptr) {
+		imageArray[index].xPos = *xPos;
+	}
+	if (yPos != nullptr) {
+		imageArray[index].yPos = *yPos;
+	}
+	if (scale != nullptr) {
+		imageArray[index].scale = *scale;
+	}
+	if (zLevel != nullptr) {
+		imageArray[index].zLevel = *zLevel;
+	}
 }
