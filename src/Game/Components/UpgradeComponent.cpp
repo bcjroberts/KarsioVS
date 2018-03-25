@@ -92,6 +92,8 @@ void UpgradeComponent::setPreUpgradeLevels(int chassis, int armor, int gun, int 
 	gunLevel = gun;
 	ramLevel = ram;
 	
+    // The - 4 takes into account that all of these values start at 1, but that isnt counted as an upgrade.
+    numberOfUpgrades += chassis + armor + gun + ram - 4;
 	// chassis
 	for (int i = 1; i < chassis; i++) {
 		static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setMaxHealth(chassisHealth[i - 1], true);
