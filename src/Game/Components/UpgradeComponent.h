@@ -8,7 +8,7 @@ class UpgradeComponent : public Component
 {
 private:
     float resources = 0.f;
-    float resourcesForNextLevel = 1.0f;
+    float resourcesForNextLevel = 100.0f;
     float increasedResourceAmountModifier = 1.25f; // multiplied by the resourcesForNextLevel value after each upgrade
     
     int numberOfUpgrades = 0; // This is how many upgrades the vehicle has undertaken.
