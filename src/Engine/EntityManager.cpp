@@ -64,6 +64,17 @@ void EntityManager::destroyEntity(int id) {
 	}
 }
 
+void EntityManager::destroyAllEntities() {
+    vehicleEntities.clear();
+    for (uint32_t i = 0; i < entities.size(); ++i) {
+        Entity* e = entities[i];
+        entities.erase(entities.begin() + i);
+        ComponentManager::getInstance()->cleanupComponents(e);
+        delete e;
+    }
+    entities.clear();
+}
+
 Entity* EntityManager::createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
 	Entity* e = new Entity(position, rotation, scale);
 	entities.push_back(e);

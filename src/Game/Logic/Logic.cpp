@@ -14,6 +14,30 @@ void Logic::cameraMovement(Movement* newMovement) {
     moveCamera = newMovement;
 }
 
+
+
+int playerChassisLevelTextId = -1;
+int playerArmorLevelTextId = -1;
+int playerGunLevelTextId = -1;
+int playerRamLevelTextId = -1;
+
+int playerChassisUpgradeTextId = -1;
+int playerArmorUpgradeTextId = -1;
+int playerGunUpgradeTextId = -1;
+int playerRamUpgradeTextId = -1;
+
+void Logic::createPlayerUpgradeUI() {
+    playerChassisLevelTextId = Core::renderEngine->ui->addText("Chassis Lvl: 1", 350, 30, 0.5, glm::vec3(1, 1, 0));
+    playerArmorLevelTextId = Core::renderEngine->ui->addText("Armor Lvl: 1", 650, 30, 0.5, glm::vec3(1, 1, 0));
+    playerGunLevelTextId = Core::renderEngine->ui->addText("Gun Lvl: 1", 950, 30, 0.5, glm::vec3(1, 1, 0));
+    playerRamLevelTextId = Core::renderEngine->ui->addText("Ram Lvl: 1", 1250, 30, 0.5, glm::vec3(1, 1, 0));
+
+    // This holds the text for when upgrades are available
+    playerChassisUpgradeTextId = Core::renderEngine->ui->addText("", 350, 50, 0.5, glm::vec3(1, 1, 0));
+    playerArmorUpgradeTextId = Core::renderEngine->ui->addText("", 650, 50, 0.5, glm::vec3(1, 1, 0));
+    playerGunUpgradeTextId = Core::renderEngine->ui->addText("", 950, 50, 0.5, glm::vec3(1, 1, 0));
+    playerRamUpgradeTextId = Core::renderEngine->ui->addText("", 1250, 50, 0.5, glm::vec3(1, 1, 0));
+}
 //void Logic::playerMovement(vehicleInput *newMovement, Entity* targetEnt) {
 void Logic::playerMovement(Entity* targetEnt) {
 	ControllableComponent* con = static_cast<ControllableComponent*>(targetEnt->getComponent(CONTROLLABLE));
@@ -34,25 +58,25 @@ void Logic::playerMovement(Entity* targetEnt) {
     std::ostringstream oss;
     oss << "Chassis lvl: " << uc->getChassisLevel();
     std::string chassisLevel = oss.str();
-    Core::renderEngine->ui->modifyText(2, &chassisLevel, nullptr, nullptr, nullptr, nullptr);
+    Core::renderEngine->ui->modifyText(playerChassisLevelTextId, &chassisLevel, nullptr, nullptr, nullptr, nullptr);
     oss.str("");
     oss.clear();
 
     oss << "Armor lvl: " << uc->getArmorLevel();
     std::string armorLevel = oss.str();
-    Core::renderEngine->ui->modifyText(3, &armorLevel, nullptr, nullptr, nullptr, nullptr);
+    Core::renderEngine->ui->modifyText(playerArmorLevelTextId, &armorLevel, nullptr, nullptr, nullptr, nullptr);
     oss.str("");
     oss.clear();
 
     oss << "Gun lvl: " << uc->getGunLevel();
     std::string gunLevel = oss.str();
-    Core::renderEngine->ui->modifyText(4, &gunLevel, nullptr, nullptr, nullptr, nullptr);
+    Core::renderEngine->ui->modifyText(playerGunLevelTextId, &gunLevel, nullptr, nullptr, nullptr, nullptr);
     oss.str("");
     oss.clear();
 
     oss << "Ram lvl: " << uc->getRamLevel();
     std::string ramLevel = oss.str();
-    Core::renderEngine->ui->modifyText(5, &ramLevel, nullptr, nullptr, nullptr, nullptr);
+    Core::renderEngine->ui->modifyText(playerRamLevelTextId, &ramLevel, nullptr, nullptr, nullptr, nullptr);
     oss.str("");
     oss.clear();
 
@@ -61,40 +85,40 @@ void Logic::playerMovement(Entity* targetEnt) {
     glm::vec3 defaultColor(1,1,0);
     std::string empty = "";
     if (uc->canUpgradeType(CHASSIS_UPGRADE)) {
-        std::string chassisUpgrade = "UP: Press 3 or DPAD Up";
-        Core::renderEngine->ui->modifyText(6, &chassisUpgrade, nullptr, nullptr, nullptr, nullptr);
+        std::string chassisUpgrade = "UP: Press 3/DPAD Up";
+        Core::renderEngine->ui->modifyText(playerChassisUpgradeTextId, &chassisUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeChassis) {
             uc->upgradeVehicle(CHASSIS_UPGRADE);
         }
     } else {
-        Core::renderEngine->ui->modifyText(6, &empty, nullptr, nullptr, nullptr, nullptr);
+        Core::renderEngine->ui->modifyText(playerChassisUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
     }
     if (uc->canUpgradeType(ARMOR_UPGRADE)) {
-        std::string armorUpgrade = "UP: Press 4 or DPAD Right";
-        Core::renderEngine->ui->modifyText(7, &armorUpgrade, nullptr, nullptr, nullptr, nullptr);
+        std::string armorUpgrade = "UP: Press 4/DPAD Right";
+        Core::renderEngine->ui->modifyText(playerArmorUpgradeTextId, &armorUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeArmor) {
             uc->upgradeVehicle(ARMOR_UPGRADE);
         }
     } else {
-        Core::renderEngine->ui->modifyText(7, &empty, nullptr, nullptr, nullptr, nullptr);
+        Core::renderEngine->ui->modifyText(playerArmorUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
     }
     if (uc->canUpgradeType(GUN_UPGRADE)) {
-        std::string gunUpgrade = "UP: Press 5 or DPAD Down";
-        Core::renderEngine->ui->modifyText(8, &gunUpgrade, nullptr, nullptr, nullptr, nullptr);
+        std::string gunUpgrade = "UP: Press 5/DPAD Down";
+        Core::renderEngine->ui->modifyText(playerGunUpgradeTextId, &gunUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeGun) {
             uc->upgradeVehicle(GUN_UPGRADE);
         }
     } else {
-        Core::renderEngine->ui->modifyText(8, &empty, nullptr, nullptr, nullptr, nullptr);
+        Core::renderEngine->ui->modifyText(playerGunUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
     }
     if (uc->canUpgradeType(RAM_UPGRADE)) {
-        std::string ramUpgrade = "UP: Press 6 or DPAD Left";
-        Core::renderEngine->ui->modifyText(9, &ramUpgrade, nullptr, nullptr, nullptr, nullptr);
+        std::string ramUpgrade = "UP: Press 6/DPAD Left";
+        Core::renderEngine->ui->modifyText(playerRamUpgradeTextId, &ramUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeRam) {
             uc->upgradeVehicle(RAM_UPGRADE);
         }
     } else {
-        Core::renderEngine->ui->modifyText(9, &empty, nullptr, nullptr, nullptr, nullptr);
+        Core::renderEngine->ui->modifyText(playerRamUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
     }
 }
 

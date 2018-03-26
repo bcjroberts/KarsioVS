@@ -41,6 +41,7 @@ private:
 public:        
     Logic();
     void cameraMovement(Movement* newMovement);
+    void createPlayerUpgradeUI();
 	void playerMovement(Entity* targetEnt);
     void aiMovement(Entity* entity);
     bool canVehicleFlip(Entity* vehicle) const;

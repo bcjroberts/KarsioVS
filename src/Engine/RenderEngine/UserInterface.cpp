@@ -76,18 +76,33 @@ void UserInterface::createSquare() {
 * \param color the color of the text
 * \return index to text element
 */
+int nextTextId = 0;
+
 int UserInterface::addText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color, GLfloat z) {
-	int index = textArray.size();
 	Text tempText(text, color, x, y, z, scale);
+    tempText.myId = nextTextId++;
 	textArray.push_back(tempText);
-	return index;
+	return tempText.myId;
 }
 
-void UserInterface::removeText(int index) {
-	textArray.erase(textArray.begin() + index);
+void UserInterface::removeText(int textId) {
+    for (int i = 0; i < textArray.size(); ++i) {
+        if (textArray[i].myId == textId) {
+            textArray.erase(textArray.begin() + i);
+            break;
+        }
+    }
 }
 
-void UserInterface::modifyText(int index, std::string* contents, GLfloat* xpos, GLfloat* ypos, GLfloat* scale, glm::vec3* color, GLfloat* zLevel) {
+void UserInterface::modifyText(int textId, std::string* contents, GLfloat* xpos, GLfloat* ypos, GLfloat* scale, glm::vec3* color, GLfloat* zLevel) {
+    int index = -1;
+    for (int i = 0; i < textArray.size(); ++i) {
+        if (textArray[i].myId == textId) {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1) return;
 	//Check if not null and then replace that value
 	if (contents != nullptr) {
 		textArray[index].contents = *contents;
@@ -238,18 +253,39 @@ void UserInterface::loadFont(std::string font, GLuint fontSize) {
 	FT_Done_FreeType(ft);
 }
 
+void UserInterface::clearAllUI() {
+    imageArray.clear();
+    textArray.clear();
+}
+
+int nextImageId = 0;
+
 int UserInterface::addImage(TextureData image, GLfloat x, GLfloat y, GLfloat scale, GLfloat z) {
-	int index = imageArray.size();
-	Image tempText(image, x, y, z, scale);
-	imageArray.push_back(tempText);
-	return index;
+	Image tempImage(image, x, y, z, scale);
+    tempImage.myId = nextImageId++;
+	imageArray.push_back(tempImage);
+	return tempImage.myId;
 }
 
-void UserInterface::removeImage(int index) {
-	imageArray.erase(imageArray.begin() + index);
+void UserInterface::removeImage(int imageId) {
+    for (int i = 0; i < imageArray.size(); ++i) {
+        if (imageArray[i].myId == imageId) {
+            imageArray.erase(imageArray.begin() + i);
+            break;
+        }
+    }
 }
 
-void UserInterface::modifyImage(int index, GLfloat* xPos, GLfloat* yPos, GLfloat* scale, GLfloat* zLevel) {
+void UserInterface::modifyImage(int imageId, GLfloat* xPos, GLfloat* yPos, GLfloat* scale, GLfloat* zLevel) {
+    int index = -1;
+    for (int i = 0; i < imageArray.size(); ++i) {
+        if (imageArray[i].myId == imageId) {
+            index = i;
+            break;
+        }
+    }
+    if (index == -1) return;
+
 	//Check if not null and then replace that value
 	if (xPos != nullptr) {
 		imageArray[index].xPos = *xPos;

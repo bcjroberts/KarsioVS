@@ -28,6 +28,7 @@ private:
 		GLuint imageID;
 		int width;
 		int height;
+        int myId;
 
 		Image(TextureData image, GLfloat x, GLfloat y, GLfloat z, GLfloat scale) : Element(x, y, z, scale) {
 			this->imageID = image.textureID;
@@ -41,8 +42,9 @@ private:
 	struct Text : Element {
 		std::string contents;
 		glm::vec3 color;
+	    int myId;
 
-		Text(std::string contents, glm::vec3 color, GLfloat x, GLfloat y, GLfloat z, GLfloat scale) : Element(x, y, z, scale) {
+	    Text(std::string contents, glm::vec3 color, GLfloat x, GLfloat y, GLfloat z, GLfloat scale) : Element(x, y, z, scale) {
 			this->contents = contents;
 			this->color = color;
 		}
@@ -79,17 +81,18 @@ private:
 public:
 	UserInterface(int* width, int* height);
 
-	int addText(std::string text, GLfloat x, GLfloat y, GLfloat z = 1.0f, glm::vec3 color = glm::vec3(1.0f), GLfloat scale = 1.0f);
-	void removeText(int index);
-	void modifyText(int index, std::string* contents = nullptr, GLfloat* xpos = nullptr, GLfloat* ypos = nullptr,
+	int addText(std::string text, GLfloat x, GLfloat y, GLfloat scale = 1.0f, glm::vec3 color = glm::vec3(1.0f), GLfloat z = 1.0f);
+	void removeText(int textId);
+	void modifyText(int textId, std::string* contents = nullptr, GLfloat* xpos = nullptr, GLfloat* ypos = nullptr,
 		GLfloat* scale = nullptr, glm::vec3* color = nullptr, GLfloat* zLevel = nullptr);
 
 	int addImage(TextureData image, GLfloat x, GLfloat y, GLfloat scale = 1.0f, GLfloat z = 0.5f);
-	void removeImage(int index);
-	void modifyImage(int index, GLfloat* xPos = nullptr, GLfloat* yPos = nullptr, GLfloat* scale = nullptr, GLfloat* zLevel = nullptr);
+	void removeImage(int imageId);
+	void modifyImage(int imageId, GLfloat* xPos = nullptr, GLfloat* yPos = nullptr, GLfloat* scale = nullptr, GLfloat* zLevel = nullptr);
 
 	void renderUI();
 
 	void loadFont(std::string font, GLuint fontSize);
 	~UserInterface() = default;
+    void clearAllUI();
 };

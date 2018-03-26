@@ -35,53 +35,6 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screenWidth, int *screenHeig
 	//  or clutter the core. Ideally there'll be a seperate class for all the strings which will 
 	//  be easily accessible.
 
-	struct Label {
-		std::string name; // or enum, bascially something by which identifying them will be trival
-		int index;
-	};
-	std::vector<Label> labels;
-	Label temp_label;
-	temp_label.name = "health";
-	temp_label.index = ui->addText("health", 40, 40, 1, vec3(0.5, 1, 0));
-	labels.push_back(temp_label);
-
-	temp_label.name = "resources";
-	ui->addText("resources", 1550, 30, 0.5, vec3(1, 1, 0));
-	labels.push_back(temp_label);
-
-	// Text headers
-	temp_label.name = "upgrades";
-    temp_label.index = ui->addText("Chassis Lvl: 1", 350, 30, 0.5, vec3(1, 1, 0));
-    temp_label.index = ui->addText("Armor Lvl: 1", 650, 30, 0.5, vec3(1, 1, 0));
-    temp_label.index = ui->addText("Gun Lvl: 1", 950, 30, 0.5, vec3(1, 1, 0));
-    temp_label.index = ui->addText("Ram Lvl: 1", 1250, 30, 0.5, vec3(1, 1, 0));
-
-
-
-	// Level indicators
-    temp_label.index = ui->addText("", 350, 50, 0.5, vec3(1, 1, 0));
-    temp_label.index = ui->addText("", 650, 50, 0.5, vec3(1, 1, 0));
-    temp_label.index = ui->addText("", 950, 50, 0.5, vec3(1, 1, 0));
-    temp_label.index = ui->addText("", 1250, 50, 0.5, vec3(1, 1, 0));
-
-	// used for physx cycles fps
-	ui->addText("78", 5, 5, 0.5, vec3(0, 1, 0));
-    // used for cycles through the main loop
-    ui->addText("100", 50, 5, 0.5, vec3(1, 1, 0));
-
-
-	// The same is true for images as for text.
-	struct uiImage {
-		std::string name; // or enum, bascially something by which identifying them will be trival
-		int index; 
-	};
-	std::vector<uiImage> uiImages;
-	uiImage temp;
-	temp.name = "hud images";
-	temp.index=ui->addImage(*TextureDataManager::getImageData("testSquareImage.jpg"), 1800, 800, 0.1);
-	temp.index=ui->addImage(*TextureDataManager::getImageData("testTallerImage.jpg"), 960, 270, 0.25);
-	temp.index=ui->addImage(*TextureDataManager::getImageData("testWiderImage.jpg"), 100, 25, 0.25);
-
 	//==========================================================
 	//\End of temp section
 	//==========================================================

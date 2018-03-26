@@ -21,9 +21,13 @@ private:
         bool isRunning;
         //all the stuff we might want to allow the game logic to modify but will take effect within the core engine
         bool isPaused;
+        bool inMainMenu;
+        bool isGameInitialized;
     };
     Properties properties;
     const int MAX_PHYSICS_STEPS_PER_FRAME = 3;
+    void runGame();
+    void runMenu();
 public:
     Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused);
     void coreLoop();

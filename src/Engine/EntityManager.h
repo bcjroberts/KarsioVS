@@ -16,6 +16,7 @@ private:
 public:
     EntityManager();
 	void destroyEntity(int id);
+    void destroyAllEntities();
 	Entity* createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 scale);
     Entity* createBasicVehicleEntity(glm::vec3 startPos);
     Entity* createAIVehicleEntity(glm::vec3 startPos);
