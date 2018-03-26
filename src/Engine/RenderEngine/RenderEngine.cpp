@@ -47,7 +47,7 @@ RenderEngine::~RenderEngine() {
 void RenderEngine::render(std::vector<Camera*> cameras) {
 
     // clear screen to a dark grey colour
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClearColor(10.f/255.f, 18.f/255.f, 30.f/255.f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (int i = 0; i < cameras.size(); ++i) {
