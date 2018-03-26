@@ -12,17 +12,23 @@
 #include "../Engine/ComponentManager.h"
 #include "../Engine/Entity.h"
 //Used for my not-so-great struct -Brian
+#include "AudioObservable.h"
 #include "../Game/Components/DriveComponent.h"
 #include "../Game/Logic/WorldGenerator.h"
 #include "PhysicsEngine/VehicleConfigParser.h"
 #include "Importer/Managers/TextureDataManager.h"
-
+#include "AudioPaths.h"
 GLFWwindow* Core::globalWindow = nullptr;
 float Core::simtimeSinceStartup = 0.f;
 float Core::realtimeSinceStartup = 0.f;
 RenderEngine* Core::renderEngine = nullptr;
 std::string Core::dataPath = "data/";
 std::vector<Camera*> Core::cameras;
+
+// string names rather than paths
+
+
+AudioObservable* audioEvents;
 
 // CHANGE THIS TO FAST STARTUP THE PROGRAM WITH REDUCED GRAPHICS
 bool Core::loadOnlyBoxes = false;
@@ -37,7 +43,6 @@ Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaus
     this->properties.isPaused = gamePaused;
     this->properties.inMainMenu = true;
     this->properties.isGameInitialized = true;
-    this->properties.isIngameMenuInitialized = false;
     globalWindow = properties.window;
 
     struct stat info;
@@ -66,14 +71,14 @@ float timeSinceLastfpsPrint = 0;
 bool keyPressedUp = false;
 bool keyPressedDown = false;
 bool enterPressed = false;
-bool pauseButtonPressed = false;
-
-bool forceReplay = false;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool set = action != GLFW_RELEASE && GLFW_REPEAT;
 	switch (key) {
+	case GLFW_KEY_ESCAPE:
+		glfwSetWindowShouldClose(window, GL_TRUE);
+		break;
 	case GLFW_KEY_UP:
 		movement.forward = set ? 1 : 0;
 		break;
@@ -104,12 +109,11 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
     keyPressedUp = (key == GLFW_KEY_UP || key == GLFW_KEY_W) && action == GLFW_RELEASE;
     keyPressedDown = (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) && action == GLFW_RELEASE;
     enterPressed = key == GLFW_KEY_ENTER && action == GLFW_RELEASE;
-    pauseButtonPressed = key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE;
-    forceReplay = key == GLFW_KEY_Y && action == GLFW_RELEASE;
 }
 
 float timeDiff = 0;
 AudioEngine* audioEngine = nullptr;
+AudioObserver* audioObserver = nullptr;
 Logic* logic = nullptr;
 
 //Main game loop
@@ -122,10 +126,19 @@ void Core::coreLoop() {
 	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // initialize audio engine
+    audioObserver = new AudioObserver;
     audioEngine->init();
-    
-    audioEngine->loadSound(Core::dataPath + "sound/bgm1.mp3", false, true, true); // load music
-    int musicChannel = audioEngine->playSounds(Core::dataPath + "sound/bgm1.mp3", glm::vec3(0, 0, 0), 1); // play music
+    audioEngine->bindObserver(audioObserver);
+    audioEngine->loadSound(AudioPaths::bgm1, false, true, true); // load music
+    audioEvents = new AudioObservable();
+    audioEvents->addObserver(audioObserver);
+    // load common sounds
+    audioEngine->loadSound(AudioPaths::engineIdle, true, false, false);
+    audioEngine->loadSound(AudioPaths::engineRev, true, false, false);
+    audioEngine->loadSound(AudioPaths::rifleShot, true, false, false);
+
+    // play music
+    int musicChannel = audioEngine->playSounds(Core::dataPath + "sound/bgm1.mp3", glm::vec3(0, 0, 0), 1);
     audioEngine->setChannelVolume(musicChannel, -45.f);
     // end audio init
 
@@ -135,6 +148,7 @@ void Core::coreLoop() {
 	cameras.push_back(&camera);
 
     logic->bindCamera(&camera);
+    logic->bindAudioObservable(audioEvents);
 
     // -----------------End of temp initialize model/instance in rendering code
 
@@ -171,12 +185,6 @@ int mainfpsCounterId = -1;
 int playerHealthId = -1;
 int playerResourceId = -1;
 
-bool controllerButtonPressed = false;
-#define     GAMEPAD_START	7
-
-bool replayUIShown = false;
-bool replayUIInitialized = false;
-
 void Core::runGame() {
     if (properties.isGameInitialized == false) {
         // We need to clear the menu and all of its buttons and spawn the UI/Game elements for our scene
@@ -196,59 +204,16 @@ void Core::runGame() {
         WorldGenerator::getInstance()->generateWorld();
         playerVehicle = EntityManager::getInstance()->getVehicleEntities().at(0);
         properties.isGameInitialized = true;
-
-        // Last thing to do is correctly set the time
-        realtimeSinceStartup = glfwGetTime();
-        physicsTime = realtimeSinceStartup;
     }
 
     // ***************************************** START OF GAME SPECIFIC CODE *******************************************************
-    HealthComponent* playerHealthComp = static_cast<HealthComponent*>(playerVehicle->getComponent(HEALTH));
-    const float playerHealth = playerHealthComp->getCurrentHealth();
-
-    // Check to see if the game should pause:
-    int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
-    if (present) {
-        int buttonCount;
-        const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-        if (buttons[GAMEPAD_START]) {
-            if (!controllerButtonPressed) {
-                pauseButtonPressed = true;
-            }
-            controllerButtonPressed = true;
-        } else {
-            controllerButtonPressed = false;
-        }
-    }
+    const float playerHealth = static_cast<HealthComponent*>(playerVehicle->getComponent(HEALTH))->getCurrentHealth();
 
     std::ostringstream oss;
     oss << "Health: " << round(playerHealth);
     std::string playerHealthStr = oss.str();
 
     renderEngine->ui->modifyText(playerHealthId, &playerHealthStr, nullptr, nullptr, nullptr, nullptr);
-    bool isPlayerDead = playerHealthComp->isDead();
-
-    // Only set this value to false if the game has yet to be paused. Also used for unpausing.
-    if (pauseButtonPressed && properties.isPaused == false) {
-        pauseButtonPressed = false;
-        if (!replayUIShown) { // only allow pausing if the game is not over
-            properties.isPaused = true;
-        }
-    }
-
-    if (replayUIShown == false && isPlayerDead) { // Defeat!
-        renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
-        replayUIShown = true;
-        replayUIInitialized = false;
-    } else if (replayUIShown == false && EntityManager::getInstance()->getVehicleEntities().size() == 1) { // Victory!
-        renderEngine->ui->addText("VICTORY!", 100, 150, 4, glm::vec3(0, 1, 0));
-        replayUIShown = true;
-        replayUIInitialized = false;
-    }
-
-    if (replayUIShown) {
-        runEndGameMenu();
-    }
 
     // Now we need to update the resources collected
     oss.str("");
@@ -274,8 +239,20 @@ void Core::runGame() {
         renderEngine->ui->modifyText(mainfpsCounterId, &mainfpsString, nullptr, nullptr, nullptr, nullptr);
     }
 
+
+
+    //We could make a pause game feature by just rendering stuff and disabling all
+    // the other stuff... although feel free to change this if you think some other
+    // approach is better
     if(properties.isPaused){
-        runPauseMenu();
+
+        // Show a UI here with game options.
+        // Back to main menu
+        // Restart?
+        // Options?
+        // Resume
+
+
     }else{
 
         float fixedStepTimediff = 0.0f;
@@ -312,12 +289,6 @@ void Core::runGame() {
         ComponentManager::getInstance()->performProjectileLogic();
         ComponentManager::getInstance()->performRendering();
 
-        if (forceReplay) {
-            printf("Forcing game reset!\n");
-            forceReplay = false;
-            properties.isGameInitialized = false;
-        }
-
         if (cameraMode == 0)
         {
             // Move camera by keyboard and cursor
@@ -351,12 +322,11 @@ void Core::runGame() {
     }
 }
 
-// **************************** Variables for menu ********************************
+// **************************** Variables for main menu ********************************
 std::vector<int> currentImageUiIds;
 std::vector<int> currentTextUiIds;
 
 std::vector<int> constantTextUI;
-std::vector<int> constantImageUI;
 Entity* mainMenuEnt = nullptr;
 
 enum MainMenuState {NONE, MAINMENU, OPTIONS, GAMEMODES};
@@ -369,8 +339,6 @@ int maxChoiceIndex = 1;
 #define 	GAMEPAD_DPAD_UP   10
 #define 	GAMEPAD_DPAD_DOWN   12
 
-int menuLightId1;
-int menuLightId2;
 
 bool previouslyPressed = false;
 
@@ -384,14 +352,7 @@ void Core::runMenu() {
         currentMainMenuState = NONE;
         nextMainMenuState = MAINMENU;
 
-        renderEngine->ui->addText("KARSIO", 90, 140, 2, glm::vec3(0.7, 0.7, 0), 1);
-        currentChoiceIndex = 0;
-        
-        menuLightId1 = renderEngine->world->getNextAvailableLightID();
-        menuLightId2 = renderEngine->world->getNextAvailableLightID();
-
-        renderEngine->world->setLight(menuLightId1, glm::vec3(15, 0, 0), glm::vec3(80,80,100));
-        renderEngine->world->setLight(menuLightId2, glm::vec3(5, 0, 10), glm::vec3(80,80,100));
+        constantTextUI.push_back(renderEngine->ui->addText("KARSIO", 90, 140, 2, glm::vec3(0.7, 0.7, 0), 1));
 
         // Now render the spinning vehicle
         mainMenuEnt = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(5, 0, 0));
@@ -423,7 +384,7 @@ void Core::runMenu() {
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 300));
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 140, 335, 0.7, glm::vec3(0, 1, 0), 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Survival", 140, 330, 1, glm::vec3(0, 1, 0), 1));
             currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, glm::vec3(1, 1, 0), 1));
             maxChoiceIndex = 2;
             break;
@@ -495,8 +456,6 @@ void Core::runMenu() {
             case GAMEMODES:
                 if (currentChoiceIndex == 0) {
                     // Time to launch the actual game
-                    renderEngine->world->freeLightWithID(menuLightId1);
-                    renderEngine->world->freeLightWithID(menuLightId2);
                     properties.inMainMenu = false;
                 } else if (currentChoiceIndex == 1) {
                     nextMainMenuState = MAINMENU;
@@ -518,9 +477,6 @@ void Core::runMenu() {
         }
     }
 
-    // Make the camera look at the vehicle
-    cameras[0]->rotateCameraTowardPoint(mainMenuEnt->getPosition(), 5.f * timeDiff);
-    cameras[0]->lerpCameraTowardPoint(glm::vec3(-20,10,0), 5.0f * timeDiff);
 
     // We need to render the UI if this is the case and keep track of where we are/what is selected.
     UpgradeComponent* uc = static_cast<UpgradeComponent*>(mainMenuEnt->getComponent(UPGRADE));
@@ -537,244 +493,7 @@ void Core::runMenu() {
     static_cast<PhysicsComponent*>(mainMenuEnt->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(5, 0, 0),physx::PxQuat(realtimeSinceStartup, physx::PxVec3(0,1,0))));
 
     // Update the physics and rendering aspects of the simulation
-    PhysicsEngine::getInstance()->simulateTimeInSeconds(0.01f);
+    PhysicsEngine::getInstance()->simulateTimeInSeconds(0.0);
     ComponentManager::getInstance()->performPhysicsLogic();
     ComponentManager::getInstance()->performRendering();
-}
-
-enum PauseMenuState {PAUSENONE, PAUSEMAIN, PAUSEOPTIONS};
-PauseMenuState currentPauseMenuState = PAUSENONE;
-PauseMenuState nextPauseMenuState = PAUSEMAIN;
-
-void Core::runPauseMenu() {
-    
-
-    if (!properties.isIngameMenuInitialized) {
-
-        currentPauseMenuState = PAUSENONE;
-        nextPauseMenuState = PAUSEMAIN;
-        currentChoiceIndex = 0;
-
-        constantTextUI.push_back(renderEngine->ui->addText("Game Paused", 75, 225, 1.25, glm::vec3(1, 1, 0), 1));
-        properties.isIngameMenuInitialized = true;
-    }
-
-    // If we clicked something and change the menu state, then load the new menu
-    if (currentPauseMenuState != nextPauseMenuState) {
-        currentPauseMenuState = nextPauseMenuState;
-
-        for (int i = 0; i < currentImageUiIds.size(); ++i) {
-            renderEngine->ui->removeImage(currentImageUiIds[i]);
-        }
-        currentImageUiIds.clear();
-        for (int i = 0; i < currentTextUiIds.size(); ++i) {
-            renderEngine->ui->removeText(currentTextUiIds[i]);
-        }
-        currentTextUiIds.clear();
-        currentChoiceIndex = 0;
-        switch (currentPauseMenuState) {
-        case PAUSEOPTIONS:
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
-
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, glm::vec3(1, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 75, 400, 1, glm::vec3(1, 1, 0), 1));
-            maxChoiceIndex = 1;
-            break;
-        default: // Default is the PAUSEMENU
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 300));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 450));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
-
-            currentTextUiIds.push_back(renderEngine->ui->addText("Resume", 140, 330, 1, glm::vec3(0, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 140, 480, 1, glm::vec3(1, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 140, 630, 1, glm::vec3(1, 1, 0), 1));
-            maxChoiceIndex = 3;
-            break;
-        }
-    }
-
-    // Process user input to change the selection: 
-    // CONTROLLER IMPLEMENTATION
-    int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
-    if (present) {
-        int buttonCount;
-        const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-        if (buttons[GAMEPAD_DPAD_DOWN]) {
-            if (!previouslyPressed) {
-                currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
-            }
-            previouslyPressed = true;
-        } else if (buttons[GAMEPAD_DPAD_UP]) {
-            if (!previouslyPressed) {
-                currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1: currentChoiceIndex - 1;
-            }
-            previouslyPressed = true;
-        } else if (buttons[GAMEPAD_X]) {
-            if (!previouslyPressed) {
-                enterPressed = true;
-            }
-            previouslyPressed = true;
-        } else {
-            previouslyPressed = false;
-        }
-    } else { // KEYBOARD IMPLEMENTATION
-        if (keyPressedUp) {
-            currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1: currentChoiceIndex - 1;
-            keyPressedUp = false;
-        } else if (keyPressedDown) {
-            currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
-            keyPressedDown = false;
-        }
-    }
-
-    // If the pause button is hit again then unpause the game
-    if (pauseButtonPressed) {
-        printf("Pause button was pressed!\n");
-        pauseButtonPressed = false;
-        enterPressed = true;
-        currentPauseMenuState = PAUSEMAIN;
-        currentChoiceIndex = 0;
-    }
-
-    if (enterPressed) {
-        enterPressed = false;
-        switch (currentPauseMenuState) {
-        case PAUSEMAIN:
-            if (currentChoiceIndex == 0) {
-                // UNPAUSE
-                properties.isPaused = false;
-                properties.isIngameMenuInitialized = false;
-
-                // Now I need to erase the popup menu
-                for (int i = 0; i < currentImageUiIds.size(); ++i) {
-                    renderEngine->ui->removeImage(currentImageUiIds[i]);
-                }
-                currentImageUiIds.clear();
-                for (int i = 0; i < currentTextUiIds.size(); ++i) {
-                    renderEngine->ui->removeText(currentTextUiIds[i]);
-                }
-                currentTextUiIds.clear();
-                for (int i = 0; i < constantImageUI.size(); ++i) {
-                    renderEngine->ui->removeImage(constantImageUI[i]);
-                }
-                constantImageUI.clear();
-                for (int i = 0; i < constantTextUI.size(); ++i) {
-                    renderEngine->ui->removeText(constantTextUI[i]);
-                }
-                constantTextUI.clear();
-
-                // Set the time so funky stuff doesn't happen
-                realtimeSinceStartup = glfwGetTime();
-                physicsTime = realtimeSinceStartup;
-
-            } else if (currentChoiceIndex == 1) {
-                nextPauseMenuState = PAUSEOPTIONS;
-            } else if (currentChoiceIndex == 2) {
-                properties.isPaused = false;
-                properties.isIngameMenuInitialized = false;
-                properties.inMainMenu = true;
-            }
-            break;
-        case PAUSEOPTIONS:
-            if (currentChoiceIndex == 0) {
-                nextPauseMenuState = PAUSEMAIN;
-            }
-            break;
-        default:
-            nextPauseMenuState = PAUSEMAIN;
-            break;
-        }
-        currentChoiceIndex = 0;
-    }
-
-    // Make the current selection green
-    for (int i = 0; i < currentTextUiIds.size(); ++i) {
-        if (i == currentChoiceIndex) {
-            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(0,1,0), nullptr);
-        } else {
-            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(1,1,0), nullptr);
-        }
-    }
-}
-
-void Core::runEndGameMenu() {
-    
-    if (replayUIInitialized == false) {
-        
-        currentImageUiIds.clear();
-        currentTextUiIds.clear();
-
-        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 400));
-        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 700));
-        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 150, 300));
-
-        currentTextUiIds.push_back(renderEngine->ui->addText("Replay", 240, 430, 1, glm::vec3(0, 1, 0), 1));
-        currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 240, 730, 1, glm::vec3(1, 1, 0), 1));
-
-        currentChoiceIndex = 0;
-        maxChoiceIndex = 2;
-        replayUIInitialized = true;
-    }
-
-    int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
-    if (present) {
-        int buttonCount;
-        const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-        if (buttons[GAMEPAD_DPAD_DOWN]) {
-            if (!previouslyPressed) {
-                currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
-            }
-            previouslyPressed = true;
-        } else if (buttons[GAMEPAD_DPAD_UP]) {
-            if (!previouslyPressed) {
-                currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1: currentChoiceIndex - 1;
-            }
-            previouslyPressed = true;
-        } else if (buttons[GAMEPAD_X]) {
-            if (!previouslyPressed) {
-                enterPressed = true;
-            }
-            previouslyPressed = true;
-        } else {
-            previouslyPressed = false;
-        }
-    } else { // KEYBOARD IMPLEMENTATION
-        if (keyPressedUp) {
-            currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1: currentChoiceIndex - 1;
-            keyPressedUp = false;
-        } else if (keyPressedDown) {
-            currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
-            keyPressedDown = false;
-        }
-    }
-
-    if (enterPressed) {
-        enterPressed = false;
-        switch (currentChoiceIndex) {
-            case 0:
-                // Replay
-                replayUIInitialized = false;
-                replayUIShown = false;
-                properties.isGameInitialized = false;
-            break;
-            default:
-                // Default is to go back to the main menu.
-                replayUIInitialized = false;
-                replayUIShown = false;
-                properties.inMainMenu = true;
-            break;
-        }
-    }
-
-    // Make the current selection green
-    for (int i = 0; i < currentTextUiIds.size(); ++i) {
-        if (i == currentChoiceIndex) {
-            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(0,1,0), nullptr);
-        } else {
-            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(1,1,0), nullptr);
-        }
-    }
-
 }

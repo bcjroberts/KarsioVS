@@ -54,6 +54,8 @@
     <ClCompile Include="src\Engine\renderengine\RenderWorld.cpp" />
     <ClCompile Include="src\Engine\AudioEvent.cpp" />
     <ClCompile Include="src\Engine\NullEvent.cpp" />
+    <ClCompile Include="src\Engine\AudioObservable.cpp" />
+    <ClCompile Include="src\Engine\audiopaths.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\fmod\fmod.h" />
@@ -123,6 +125,8 @@
     <ClInclude Include="src\Engine\renderengine\RenderWorld.h" />
     <ClInclude Include="src\Engine\AudioEvent.h" />
     <ClInclude Include="src\Engine\NullEvent.h" />
+    <ClInclude Include="src\Engine\AudioObservable.h" />
+    <ClInclude Include="src\Engine\audiopaths.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="deps\libs\fmod64_vc.lib" />
@@ -140,6 +144,9 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="data\sound\bgm1.mp3" />
+    <Media Include="data\sound\engine-idle.mp3" />
+    <Media Include="data\sound\engine-rev.mp3" />
+    <Media Include="data\sound\rifle-close.mp3" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\fmodL.dll" />

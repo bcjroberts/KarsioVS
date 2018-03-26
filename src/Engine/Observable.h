@@ -8,9 +8,8 @@ public:
     Observable();
     void addObserver(Observer* anObserver);
     void remObserver(Observer* anObserver);
-    void notifyObservers(Event anEvent);
+    virtual void notifyObservers(Event anEvent);
     ~Observable();
-private:
     std::vector<Observer*> observerList;
 };
 

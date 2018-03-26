@@ -130,6 +130,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Engine\AudioObservable.cpp" />
+    <ClCompile Include="src\Engine\audiopaths.cpp" />
     <ClCompile Include="src\Engine\NullEvent.cpp" />
     <ClCompile Include="src\Engine\AudioEvent.cpp" />
     <ClCompile Include="src\Engine\renderengine\RenderWorld.cpp" />
@@ -185,6 +187,8 @@
     <ClCompile Include="src\Game\Components\StaticLightComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Engine\AudioObservable.h" />
+    <ClInclude Include="src\Engine\audiopaths.h" />
     <ClInclude Include="deps\include\fmod\fmod.h" />
     <ClInclude Include="deps\include\fmod\fmod.hpp" />
     <ClInclude Include="deps\include\fmod\fmod_codec.h" />
@@ -285,6 +289,9 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="data\sound\bgm1.mp3" />
+    <Media Include="data\sound\engine-idle.mp3" />
+    <Media Include="data\sound\engine-rev.mp3" />
+    <Media Include="data\sound\rifle-close.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

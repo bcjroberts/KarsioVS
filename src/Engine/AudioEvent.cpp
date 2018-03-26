@@ -2,9 +2,9 @@
 
 
 
-AudioEvent::AudioEvent(int newID, std::string newSound) : Event (PLAYSOUND)
+AudioEvent::AudioEvent(glm::vec3 newPos, std::string newSound) : Event (PLAYSOUND)
 {
-    eID = newID;
+    position = newPos;
     soundfile = newSound;
 }
 

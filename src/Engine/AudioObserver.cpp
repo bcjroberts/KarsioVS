@@ -2,21 +2,27 @@
 
 void AudioObserver::onNotify(Event anEvent) {
     if (anEvent.getEventType() == PLAYSOUND) {
+        //
+    }
+}
+
+void AudioObserver::onNotify(AudioEvent anEvent) {
+    if (anEvent.getEventType() == PLAYSOUND) {
         audioQueue.push(anEvent); // push event if it is a sound event
     }
     // ignore otherwise
 }
 
-Event AudioObserver::nextAudioEvent() {
-    if (AudioObserver::audioQueue.empty()) {
-        NullEvent TestEvent = NullEvent();
-        return TestEvent; // fire null event if queue is empty.
+AudioEvent AudioObserver::nextAudioEvent() {
+    if (!AudioObserver::audioQueue.empty()) {
+        AudioEvent nextEvent = AudioObserver::audioQueue.front();
+        audioQueue.pop();
+        return nextEvent;
     }
     else{
-        Event tempEvent = AudioObserver::audioQueue.front();
-        audioQueue.pop();
-        return tempEvent;
-    }
+        AudioEvent blankEvent = AudioEvent(glm::vec3(0,0,0), "");
+        return blankEvent;
+    }        
 }
 
 bool AudioObserver::isEmpty() {
@@ -25,6 +31,8 @@ bool AudioObserver::isEmpty() {
 
 AudioObserver::AudioObserver() {
 }
+
+
 AudioObserver::~AudioObserver() = default;
 
 

@@ -45,6 +45,7 @@ struct Implementation {
 };
 
 class AudioEngine {
+    static AudioEngine* globalInstance;
 public:
     static void init();
     static void update();
@@ -54,8 +55,12 @@ public:
     float soundVol = 1.0f;
     int musicChannel = -1;
 
+    glm::vec3 listenerPos = glm::vec3(0, 0, 0);
+
     AudioObserver* audioObserver = new AudioObserver();
 
+    void bindObserver(AudioObserver* anObserver);
+    void updateListenerPos(glm::vec3 newPos);
     void loadBank(const std::string& strBankName, FMOD_STUDIO_LOAD_BANK_FLAGS flags);
     void loadEvent(const std::string& strEventName);
     void loadSound(const std::string& strSoundName, bool b3d = true, bool bLooping = false, bool bStream = false);

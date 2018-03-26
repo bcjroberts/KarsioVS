@@ -41,13 +41,25 @@ void Implementation::update() {
 }
 
 Implementation* sgpImplementation = nullptr;
-
+AudioEngine* AudioEngine::globalInstance = nullptr;
 void AudioEngine::init() {
+    if (!globalInstance) {
+        globalInstance = new AudioEngine();
+    }
     sgpImplementation = new Implementation;
 }
 
 void AudioEngine::update() {
+    if (!globalInstance->audioObserver->isEmpty()){
+        AudioEvent nextAudio = globalInstance->audioObserver->nextAudioEvent();
+        globalInstance->playSounds(nextAudio.soundfile, nextAudio.position, globalInstance->soundVol);
+        // play event
+    }
     sgpImplementation->update();
+}
+
+void AudioEngine::bindObserver(AudioObserver* anObserver) {
+    AudioEngine::audioObserver = anObserver;
 }
 
 void AudioEngine::loadSound(const std::string& strSoundName, bool b3d, bool bLooping, bool bStream)
@@ -78,6 +90,7 @@ void AudioEngine::loadMusic(const std::string& strMusicName) {
     auto tFoundIt = sgpImplementation->mSounds.find(strMusicName);
     FMOD::Channel* pChannel = nullptr;
     AudioEngine::ErrorCheck(sgpImplementation->mpSystem->playSound(tFoundIt->second, nullptr, true, &pChannel));
+    pChannel->setChannelGroup(sgpImplementation->musicChannels);
 }
 
 void AudioEngine::unloadSound(const std::string& strSoundName)
@@ -261,6 +274,10 @@ int AudioEngine::ErrorCheck(FMOD_RESULT result) {
     }
     // cout << "FMOD all good" << endl;
     return 0;
+}
+
+void AudioEngine::updateListenerPos(glm::vec3 newPos) {
+    AudioEngine::listenerPos = newPos;
 }
 
 void AudioEngine::shutdown() {

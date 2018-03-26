@@ -7,6 +7,7 @@
 #include "../../Engine/Core.h"
 #include <random>
 #include <chrono>
+#include "../../Engine/AudioPaths.h"
 
 Logic::Logic(){
 };
@@ -58,6 +59,8 @@ void Logic::playerMovement(Entity* targetEnt) {
 
     if (temp->getShooting()) {
         static_cast<WeaponComponent*>(targetEnt->getComponent(WEAPON))->fireWeapon();
+        AudioEvent * fireEvent = new AudioEvent(targetEnt->getPosition(), AudioPaths::rifleShot);
+        audioEvents->notifyObservers(*fireEvent);
     }
 
     UpgradeComponent* uc = static_cast<UpgradeComponent*>(targetEnt->getComponent(UPGRADE));
@@ -648,7 +651,9 @@ void Logic::finiteStateMachine(Entity* entity) {
 	}
 }
 
-
+void Logic::bindAudioObservable(AudioObservable* anAudioEventList) {
+    audioEvents = anAudioEventList;
+}
 
 
 Logic::~Logic() = default;

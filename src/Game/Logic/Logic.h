@@ -10,6 +10,7 @@
 #include "../../Main/initOpenGL/OpenGL_Deps.h"
 #include "../../Main/initOpenGL/OpenGL.h"
 #include "../Camera.h"
+#include "../../Engine/AudioObservable.h"
 
 #include "AStar.h"
 #include "../../Engine/PhysicsEngine/PhysicsEngine.h"
@@ -22,7 +23,7 @@ Movement * moveCamera;
 Entity * player;
 vehicleInput * movePlayer;
 DriveComponent * playerDrive;
-
+AudioObservable * audioEvents;
 private:
 	enum States {
 		DECIDING,
@@ -40,6 +41,7 @@ private:
 	};
 public:        
     Logic();
+    void bindAudioObservable(AudioObservable* audioEventList);
     void cameraMovement(Movement* newMovement);
     void createPlayerUpgradeUI();
 	void playerMovement(Entity* targetEnt);
