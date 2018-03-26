@@ -2,24 +2,28 @@
 #include <string>
 class AudioPaths
 {
+private:
+    static AudioPaths* globalInstance;
 public:
-    static std::string bgm1;
-    static std::string engineIdle;
-    static std::string engineRev;
-    static std::string rifleShot;
+    std::string bgm1;
+    std::string engineIdle;
+    std::string engineRev;
+    std::string rifleShot;
     
-    static std::string pickup1;
-    static std::string pickup2;
-    static std::string pickup3;
+    std::string pickup1;
+    std::string pickup2;
+    std::string pickup3;
 
-    static std::string metalBump1;
-    static std::string metalBump2;
+    std::string metalBump1;
+    std::string metalBump2;
 
-    static std::string crysBump1;
-    static std::string crysBump2;
-    static std::string crysBreak1;
-    static std::string crysBreak2;
-    static std::string crysBreak3;
+    std::string crysBump1;
+    std::string crysBump2;
+    std::string crysBreak1;
+    std::string crysBreak2;
+    std::string crysBreak3;
+    
+    static AudioPaths* getInstance();
 
     AudioPaths();
     ~AudioPaths();

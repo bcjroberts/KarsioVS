@@ -131,19 +131,19 @@ void Core::coreLoop() {
     audioObserver = new AudioObserver();
     audioEngine->init();
     audioEngine->bindObserver(audioObserver);
-    audioEngine->loadSound(AudioPaths::bgm1, false, true, true); // load music
+    audioEngine->loadSound(AudioPaths::getInstance()->bgm1, false, true, true); // load music
     audioEngine->setSoundVol(0.5);
     audioEvents = new AudioObservable();
     audioEvents->addAudioObserver(audioObserver);
     EntityManager::getInstance()->bindAudioObservable(audioEvents);
     // load common sounds
-    audioEngine->loadSound(AudioPaths::engineIdle, true, false, false);
-    audioEngine->loadSound(AudioPaths::engineRev, true, false, false);
-    audioEngine->loadSound(AudioPaths::rifleShot, true, false, false);
+    audioEngine->loadSound(AudioPaths::getInstance()->engineIdle, true, false, false);
+    audioEngine->loadSound(AudioPaths::getInstance()->engineRev, true, false, false);
+    audioEngine->loadSound(AudioPaths::getInstance()->rifleShot, true, false, false);
 
     // play music
     int musicChannel = audioEngine->playSounds(Core::dataPath + "sound/bgm1.mp3", glm::vec3(0, 0, 0), 1);
-    audioEngine->setChannelVolume(musicChannel, -45.f);
+    audioEngine->setChannelVolume(musicChannel, -25.f);
     // end audio init
 
     PhysicsEngine::getInstance()->initPhysics();

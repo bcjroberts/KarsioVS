@@ -123,7 +123,7 @@ Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat
     RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, ModelManager::getModel("projectile"), glm::vec3(0), glm::quat(), glm::vec3(1, 1, 12));
     ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);
 
-    AudioEvent * fireEvent = new AudioEvent(origin, AudioPaths::rifleShot);
+    AudioEvent * fireEvent = new AudioEvent(origin, AudioPaths::getInstance()->rifleShot);
     std::cout << "attempting to create audio event for " + fireEvent->soundfile + " at position (" + std::to_string((fireEvent->position.x)) + ", " + std::to_string((fireEvent->position.y)) + ", " + std::to_string((fireEvent->position.z)) + ")." << std::endl;
     audioEvents->notifyAudioObservers(*fireEvent);
 

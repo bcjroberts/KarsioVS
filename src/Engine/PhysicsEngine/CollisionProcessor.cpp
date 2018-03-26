@@ -146,7 +146,7 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
         // Add the resources of the crystal to the car whichd estroyed it
         const float crystalValue = crystalHealth->getMaxHealth();
         static_cast<UpgradeComponent*>(static_cast<Entity*>(carActor->userData)->getComponent(UPGRADE))->addResources(crystalValue);
-        AudioEvent fireEvent = AudioEvent(carEntity->getPosition(), rand()%2>0 ? AudioPaths::crysBreak1 : AudioPaths::crysBreak2);
+        AudioEvent fireEvent = AudioEvent(carEntity->getPosition(), rand()%2>0 ? AudioPaths::getInstance()->crysBreak1 : AudioPaths::getInstance()->crysBreak2);
         audioEvents->notifyAudioObservers(fireEvent);
 
         // Mark the crystal for destruction
