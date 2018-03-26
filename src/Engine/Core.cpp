@@ -79,9 +79,6 @@ bool forceReplay = false;
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool set = action != GLFW_RELEASE && GLFW_REPEAT;
 	switch (key) {
-	case GLFW_KEY_ESCAPE:
-		glfwSetWindowShouldClose(window, GL_TRUE);
-		break;
 	case GLFW_KEY_UP:
 		movement.forward = set ? 1 : 0;
 		break;
