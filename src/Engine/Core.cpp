@@ -68,6 +68,8 @@ bool keyPressedDown = false;
 bool enterPressed = false;
 bool pauseButtonPressed = false;
 
+bool forceReplay = false;
+
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	bool set = action != GLFW_RELEASE && GLFW_REPEAT;
@@ -103,6 +105,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
     keyPressedDown = (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) && action == GLFW_RELEASE;
     enterPressed = key == GLFW_KEY_ENTER && action == GLFW_RELEASE;
     pauseButtonPressed = key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE;
+    forceReplay = key == GLFW_KEY_Y && action == GLFW_RELEASE;
 }
 
 float timeDiff = 0;
@@ -308,6 +311,12 @@ void Core::runGame() {
         ComponentManager::getInstance()->performPhysicsLogic();
         ComponentManager::getInstance()->performProjectileLogic();
         ComponentManager::getInstance()->performRendering();
+
+        if (forceReplay) {
+            printf("Forcing game reset!\n");
+            forceReplay = false;
+            properties.isGameInitialized = false;
+        }
 
         if (cameraMode == 0)
         {
