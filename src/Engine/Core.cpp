@@ -338,6 +338,8 @@ int maxChoiceIndex = 1;
 #define 	GAMEPAD_DPAD_UP   10
 #define 	GAMEPAD_DPAD_DOWN   12
 
+int menuLightId1;
+int menuLightId2;
 
 bool previouslyPressed = false;
 
@@ -354,6 +356,11 @@ void Core::runMenu() {
         renderEngine->ui->addText("KARSIO", 90, 140, 2, glm::vec3(0.7, 0.7, 0), 1);
         currentChoiceIndex = 0;
         
+        menuLightId1 = renderEngine->world->getNextAvailableLightID();
+        menuLightId2 = renderEngine->world->getNextAvailableLightID();
+
+        renderEngine->world->setLight(menuLightId1, glm::vec3(15, 0, 0), glm::vec3(80,80,100));
+        renderEngine->world->setLight(menuLightId2, glm::vec3(5, 0, 10), glm::vec3(80,80,100));
 
         // Now render the spinning vehicle
         mainMenuEnt = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(5, 0, 0));
@@ -385,7 +392,7 @@ void Core::runMenu() {
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 300));
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Survival", 140, 330, 1, glm::vec3(0, 1, 0), 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 140, 335, 0.7, glm::vec3(0, 1, 0), 1));
             currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, glm::vec3(1, 1, 0), 1));
             maxChoiceIndex = 2;
             break;
@@ -457,6 +464,8 @@ void Core::runMenu() {
             case GAMEMODES:
                 if (currentChoiceIndex == 0) {
                     // Time to launch the actual game
+                    renderEngine->world->freeLightWithID(menuLightId1);
+                    renderEngine->world->freeLightWithID(menuLightId2);
                     properties.inMainMenu = false;
                 } else if (currentChoiceIndex == 1) {
                     nextMainMenuState = MAINMENU;

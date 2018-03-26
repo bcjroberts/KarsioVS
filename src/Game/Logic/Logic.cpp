@@ -47,6 +47,8 @@ void Logic::playerMovement(Entity* targetEnt) {
     if (!hc->isDead()) {
 	    con->getInput();
     	temp->setInputs(con->input);
+    } else {
+        temp->setInputs(0, 0, 0, 0, false, false);
     }
 
     if (temp->getFlip() && canVehicleFlip(targetEnt)) {
