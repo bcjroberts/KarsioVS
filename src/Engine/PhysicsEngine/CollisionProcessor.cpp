@@ -7,7 +7,6 @@
 #include "../../Game/Components/AIComponent.h"
 #include "../../Game/Components/UpgradeComponent.h"
 #include "../../Game/Components/PhysicsComponent.h"
-
 #include "../../Game/Logic/WorldGenerator.h"
 
 CollisionProcessor::CollisionProcessor() {
@@ -15,6 +14,10 @@ CollisionProcessor::CollisionProcessor() {
 
 
 CollisionProcessor::~CollisionProcessor() {
+}
+
+void CollisionProcessor::bindAudioObservable(AudioObservable* anEventList) {
+    audioEvents = anEventList;
 }
 
 // 11: x, 15: y, 19: z

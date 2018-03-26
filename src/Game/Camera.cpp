@@ -91,7 +91,7 @@ vec3 Camera::getPosition() {
 }
 
 vec3 Camera::getForward() {
-    return lookAtPos;
+    return cameraFront;
 }
 
 vec3 Camera::getUp() {

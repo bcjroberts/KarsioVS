@@ -128,7 +128,10 @@ int AudioEngine::playSounds(const std::string& strSoundName, const glm::vec3& vP
         if (currMode & FMOD_3D) {
             FMOD_VECTOR position = vectorToFmod(vPosition);
             std::cout << "Attempting to play sound in 3D." << std::endl;
+            std::cout << "sound position at:" << position.x << ", " << position.y << ", " << position.z << std::endl;
             AudioEngine::ErrorCheck(pChannel->set3DAttributes(&position, nullptr));
+            AudioEngine::ErrorCheck(sgpImplementation->mpSystem->set3DListenerAttributes(0, &AudioEngine::vectorToFmod(AudioEngine::listenerPos), 0, &AudioEngine::vectorToFmod(AudioEngine::forward), 0));
+            std::cout << "Listener position at: " << AudioEngine::listenerPos.x << ", " << AudioEngine::listenerPos.y << ", " << AudioEngine::listenerPos.z << std::endl;
         }
         AudioEngine::ErrorCheck(pChannel->setVolume(dbToVolume(fVolumedB)));
         AudioEngine::ErrorCheck(pChannel->setPaused(false));
@@ -291,7 +294,7 @@ int AudioEngine::ErrorCheck(FMOD_RESULT result) {
 }
 
 void AudioEngine::updateListenerPos(glm::vec3 newPos, glm::vec3 newfwd, glm::vec3 newUp, double frametime) {
-    AudioEngine::vel = glm::vec3((newPos.x - lastPos.x)/frametime, (newPos.y - AudioEngine::lastPos.y)/frametime, (newPos.z - AudioEngine::lastPos.z)/frametime);
+    AudioEngine::vel = glm::vec3((newPos.x - lastPos.x) * frametime, (newPos.y - AudioEngine::lastPos.y) * frametime, (newPos.z - AudioEngine::lastPos.z) * frametime);
     AudioEngine::lastPos = AudioEngine::listenerPos;
     AudioEngine::listenerPos = newPos;
     AudioEngine::forward = newfwd;
@@ -299,7 +302,8 @@ void AudioEngine::updateListenerPos(glm::vec3 newPos, glm::vec3 newfwd, glm::vec
 }
 
 void AudioEngine::update3dListener() {
-    sgpImplementation->mpSystem->set3DListenerAttributes(0, &AudioEngine::vectorToFmod(AudioEngine::listenerPos), &AudioEngine::vectorToFmod(AudioEngine::vel), &AudioEngine::vectorToFmod(AudioEngine::forward), &AudioEngine::vectorToFmod(AudioEngine::up));
+    //sgpImplementation->mpSystem->set3DListenerAttributes(0, &AudioEngine::vectorToFmod(AudioEngine::listenerPos), &AudioEngine::vectorToFmod(AudioEngine::vel), &AudioEngine::vectorToFmod(AudioEngine::forward), &AudioEngine::vectorToFmod(AudioEngine::up));
+    sgpImplementation->mpSystem->set3DListenerAttributes(0, &AudioEngine::vectorToFmod(AudioEngine::listenerPos), 0, &AudioEngine::vectorToFmod(AudioEngine::forward), 0);
 }
 
 void AudioEngine::shutdown() {

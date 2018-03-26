@@ -3,6 +3,7 @@
 #include "AudioEvent.h"
 #include "Observable.h"
 #include "AudioObserver.h"
+#include "audiopaths.h"
 class AudioObservable : public Observable
 {
 

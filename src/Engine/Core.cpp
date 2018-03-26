@@ -144,7 +144,7 @@ void Core::coreLoop() {
     // end audio init
 
     PhysicsEngine::getInstance()->initPhysics();
-
+    PhysicsEngine::getInstance()->bindAudioObservable(audioEvents);
     Camera camera(properties.screenWidth,properties.screenHeight);
 	cameras.push_back(&camera);
 
@@ -170,7 +170,8 @@ void Core::coreLoop() {
         }
 
         // messy audio update function begins here
-        audioEngine->updateListenerPos(camera.getPosition(), camera.getForward(), camera.getUp(), mainfpsCounter);
+        audioEngine->updateListenerPos(camera.getPosition(), camera.getForward(), camera.getUp(), timeDiff);
+        audioEngine->update3dListener();
         if (!audioEngine->audioObserver->isEmpty()) {
             AudioEvent nextAudio = audioEngine->audioObserver->nextAudioEvent();
             audioEngine->playSounds(nextAudio.soundfile, nextAudio.position, audioEngine->soundVol);

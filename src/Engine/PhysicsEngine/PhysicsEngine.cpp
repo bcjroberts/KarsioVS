@@ -100,6 +100,11 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 
 CollisionProcessor colproc;
 
+void PhysicsEngine::bindAudioObservable(AudioObservable* anEventList) {
+    audioEvents = anEventList;
+    colproc.bindAudioObservable(anEventList);
+}
+
 void PhysicsEngine::initPhysics()
 {
     gFoundation = PxCreateFoundation(PX_FOUNDATION_VERSION, gAllocator, gErrorCallback);

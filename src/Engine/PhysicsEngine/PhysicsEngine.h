@@ -12,6 +12,7 @@
 #include <glm/detail/type_vec3.hpp>
 #include <geometry/PxGeometryQuery.h>
 #include "../../Game/Components/DriveComponent.h"
+#include "../AudioObservable.h"
 
 struct vehicleData {
     bool isInAir = false;
@@ -30,6 +31,7 @@ private:
     static PhysicsEngine* globalInstance;
     std::string chassisType = "";
 public:
+    AudioObservable* audioEvents;
     PhysicsEngine();
     void simulateTimeInSeconds(float timeInSeconds) const;
     void initPhysics(); // This method must be called before anything else physics related happens
@@ -44,6 +46,7 @@ public:
 	static physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from);
     static glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from);
     void modifyVehicleScale(float scale, physx::PxRigidDynamic* rigid, physx::PxVehicleDrive4W* vehicle);
+    void bindAudioObservable(AudioObservable* eventList);
     ~PhysicsEngine();
 };
 

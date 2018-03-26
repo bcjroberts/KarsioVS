@@ -289,8 +289,16 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="data\sound\bgm1.mp3" />
+    <Media Include="data\sound\crystal-collide-1.mp3" />
+    <Media Include="data\sound\crystal-collide-2.mp3" />
+    <Media Include="data\sound\crystal-shatter-major-1.mp3" />
+    <Media Include="data\sound\crystal-shatter-major-2.mp3" />
+    <Media Include="data\sound\crystal-shatter-minor-1.mp3" />
     <Media Include="data\sound\engine-idle.mp3" />
     <Media Include="data\sound\engine-rev.mp3" />
+    <Media Include="data\sound\minor-collide-1.mp3" />
+    <Media Include="data\sound\minor-collide-2.mp3" />
+    <Media Include="data\sound\pickup1.mp3" />
     <Media Include="data\sound\rifle-close.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
