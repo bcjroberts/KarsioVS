@@ -68,7 +68,6 @@ void EntityManager::destroyAllEntities() {
     vehicleEntities.clear();
     for (uint32_t i = 0; i < entities.size(); ++i) {
         Entity* e = entities[i];
-        entities.erase(entities.begin() + i);
         ComponentManager::getInstance()->cleanupComponents(e);
         delete e;
     }
@@ -112,7 +111,6 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
     wc->updateGunValues(uc->getCurrentGunROF(), uc->getCurrentGunDamage(), uc->getCurrentProjSpeed());
 
 	vehicleEntities.push_back(entity);
-    entities.push_back(entity);
     return entity;
 }
 
@@ -121,7 +119,6 @@ Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat
     RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, ModelManager::getModel("projectile"), glm::vec3(0), glm::quat(), glm::vec3(1, 1, 12));
     ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);
 
-    entities.push_back(projectile);
     return projectile;
 }
 
@@ -150,7 +147,6 @@ Entity* EntityManager::createGroundPlane() {
     physx::PxRigidActor* plane = PhysicsEngine::getInstance()->createPhysicsPlane();
     plane->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, plane);
-    entities.push_back(entity);
 	return entity;
 }
 
@@ -161,7 +157,6 @@ Entity* EntityManager::createBox(glm::vec3 startPos, glm::vec3 scale) {
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
-    entities.push_back(entity);
 	return entity;
 }
 
@@ -183,7 +178,6 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), physx::PxVec3(scale.x, scale.y*2.f, scale.z), physx::PxQuat(y, physx::PxVec3(0, 1, 0)));
 	box->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, box);
-	entities.push_back(entity);
 	return entity;
 }
 
@@ -204,7 +198,6 @@ Entity* EntityManager::createWallBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(scale*4.5f));
 	box->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, box);
-	entities.push_back(entity);
 	return entity;
 }
 
@@ -242,7 +235,6 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createCrystalBoxCollider(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(physicsScale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
-    entities.push_back(entity);
     return entity;
 }
 

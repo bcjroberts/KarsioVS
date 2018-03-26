@@ -23,11 +23,13 @@ private:
         bool isPaused;
         bool inMainMenu;
         bool isGameInitialized;
+        bool isIngameMenuInitialized;
     };
     Properties properties;
     const int MAX_PHYSICS_STEPS_PER_FRAME = 3;
     void runGame();
     void runMenu();
+    void runPauseMenu();
 public:
     Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused);
     void coreLoop();
