@@ -23,6 +23,13 @@ void WorldGenerator::generateWorld() {
 	int gridSize = 30;
 	std::vector<glm::vec3> positions;
 	
+    obstacles.clear();
+    crystals.clear();
+    emptyCrystals.clear();
+    if (aStar != nullptr)
+        delete aStar;
+    aStar = new AStar::Generator;
+
 	// for the sake of the id's being nice numbers, vehicles will be generated before anything else
 	createVehicles(&positions, gridSize);
 	Entity* groundPlane = EntityManager::getInstance()->createGroundPlane();
@@ -80,18 +87,18 @@ void WorldGenerator::createVehicles(std::vector<glm::vec3> *positions, int gridS
 }
 
 void WorldGenerator::generateGrid(int gridSize) {
-	aStar.setWorldSize({ gridSize, gridSize });
+	aStar->setWorldSize({ gridSize, gridSize });
 	
 	float x, y;
 	for (unsigned int i = 0; i < obstacles.size() - 1; i++) {
 		x = obstacles[i]->getCoarsePosition().x;
 		y = obstacles[i]->getCoarsePosition().z;
-		aStar.addCollision(vec2(x, y));
+		aStar->addCollision(vec2(x, y));
 	}
 	for (unsigned int i = 0; i < crystals.size() - 1; i++) {
 		x = crystals[i]->getCoarsePosition().x;
 		y = crystals[i]->getCoarsePosition().z;
-		aStar.addCrystal(vec2(x, y));
+		aStar->addCrystal(vec2(x, y));
 	}
 }
 
@@ -181,7 +188,7 @@ void WorldGenerator::createWalls(int gridSize) {
 }
 
 AStar::Generator* WorldGenerator::getGrid() {
-	return &aStar;
+	return aStar;
 }
 
 std::vector<Entity*>* WorldGenerator::getObstacles() {
@@ -197,7 +204,7 @@ void WorldGenerator::removeCrystal(Entity* entity) {
 	if (it != crystals.end()) {
 		crystals.erase(it);
 	}
-	aStar.removeCrystal(glm::vec2(entity->getCoarsePosition().x, entity->getCoarsePosition().z));
+	aStar->removeCrystal(glm::vec2(entity->getCoarsePosition().x, entity->getCoarsePosition().z));
 
 	// mark area for regeneration
 	emptyCrystals.push_back(glm::vec2(entity->getPosition().x, entity->getPosition().z));
@@ -210,7 +217,7 @@ void WorldGenerator::createSingleCrystal(glm::vec2 position) {
 
 	Entity* crystal = EntityManager::getInstance()->createCrystal(glm::vec3(position.x, 2, position.y), resourceAmount);
 	crystals.push_back(crystal);
-	aStar.addCrystal(vec2(crystal->getCoarsePosition().x, crystal->getCoarsePosition().z));
+	aStar->addCrystal(vec2(crystal->getCoarsePosition().x, crystal->getCoarsePosition().z));
 }
 
 void WorldGenerator::regenerateCrystal() {

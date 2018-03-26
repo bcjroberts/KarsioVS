@@ -10,7 +10,7 @@ private:
 	std::vector<Entity*> obstacles;
 	std::vector<Entity*> crystals;
 	std::vector<glm::vec2> emptyCrystals;
-	AStar::Generator aStar;
+	AStar::Generator* aStar = nullptr;
 	float lastRegenTime = 0.f;
 public:
 	AStar::Generator* getGrid();
