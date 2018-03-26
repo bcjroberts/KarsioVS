@@ -52,8 +52,8 @@ public:
     static void update();
     static void shutdown();
     static int ErrorCheck(FMOD_RESULT result);
-    float musicVol = 1.0f;
-    float soundVol = 1.0f;
+    float musicVol = 0.5f;
+    float soundVol = 0.5f;
     int musicChannel = -1;
 
     glm::vec3 listenerPos = glm::vec3(0, 0, 0);

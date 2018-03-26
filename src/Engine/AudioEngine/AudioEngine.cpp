@@ -170,7 +170,7 @@ bool AudioEngine::isPlaying(int nChannelId) const {
         return true;
     }
     else{
-    return false;
+        return false;
     }
 }
 
@@ -276,12 +276,12 @@ float AudioEngine::volumeTodb(float volume)
 
 void AudioEngine::setMusicVol(float newVol)
 {
-    musicVol = std::max(std::min(0.0f, newVol), 1.0f);
+    musicVol = std::min(std::max(0.0f, newVol), 1.0f);
 }
 
 void AudioEngine::setSoundVol(float newVol)
 {
-    soundVol = std::max(std::min(0.0f, newVol), 1.0f);
+    soundVol = std::min(std::max(0.0f, newVol), 1.0f);
 }
 
 int AudioEngine::ErrorCheck(FMOD_RESULT result) {

@@ -130,6 +130,7 @@ void Core::coreLoop() {
     audioEngine->init();
     audioEngine->bindObserver(audioObserver);
     audioEngine->loadSound(AudioPaths::bgm1, false, true, true); // load music
+    audioEngine->setSoundVol(0.5);
     audioEvents = new AudioObservable();
     audioEvents->addAudioObserver(audioObserver);
     EntityManager::getInstance()->bindAudioObservable(audioEvents);
