@@ -92,7 +92,7 @@ void Logic::playerMovement(Entity* targetEnt) {
     glm::vec3 defaultColor(1,1,0);
     std::string empty = "";
     if (uc->canUpgradeType(CHASSIS_UPGRADE)) {
-        std::string chassisUpgrade = "UP: Press 3/DPAD Up";
+        std::string chassisUpgrade = "+ Press 3/DPAD Up +";
         Core::renderEngine->ui->modifyText(playerChassisUpgradeTextId, &chassisUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeChassis) {
             uc->upgradeVehicle(CHASSIS_UPGRADE);
@@ -101,7 +101,7 @@ void Logic::playerMovement(Entity* targetEnt) {
         Core::renderEngine->ui->modifyText(playerChassisUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
     }
     if (uc->canUpgradeType(ARMOR_UPGRADE)) {
-        std::string armorUpgrade = "UP: Press 4/DPAD Right";
+        std::string armorUpgrade = "+ Press 4/DPAD Right +";
         Core::renderEngine->ui->modifyText(playerArmorUpgradeTextId, &armorUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeArmor) {
             uc->upgradeVehicle(ARMOR_UPGRADE);
@@ -110,7 +110,7 @@ void Logic::playerMovement(Entity* targetEnt) {
         Core::renderEngine->ui->modifyText(playerArmorUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
     }
     if (uc->canUpgradeType(GUN_UPGRADE)) {
-        std::string gunUpgrade = "UP: Press 5/DPAD Down";
+        std::string gunUpgrade = "+ Press 5/DPAD Down +";
         Core::renderEngine->ui->modifyText(playerGunUpgradeTextId, &gunUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeGun) {
             uc->upgradeVehicle(GUN_UPGRADE);
@@ -119,7 +119,7 @@ void Logic::playerMovement(Entity* targetEnt) {
         Core::renderEngine->ui->modifyText(playerGunUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
     }
     if (uc->canUpgradeType(RAM_UPGRADE)) {
-        std::string ramUpgrade = "UP: Press 6/DPAD Left";
+        std::string ramUpgrade = "+ Press 6/DPAD Left +";
         Core::renderEngine->ui->modifyText(playerRamUpgradeTextId, &ramUpgrade, nullptr, nullptr, nullptr, nullptr);
         if(con->upInput.upgradeRam) {
             uc->upgradeVehicle(RAM_UPGRADE);
