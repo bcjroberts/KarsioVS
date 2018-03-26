@@ -528,7 +528,7 @@ void Core::runMenu() {
     static_cast<PhysicsComponent*>(mainMenuEnt->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(5, 0, 0),physx::PxQuat(realtimeSinceStartup, physx::PxVec3(0,1,0))));
 
     // Update the physics and rendering aspects of the simulation
-    PhysicsEngine::getInstance()->simulateTimeInSeconds(0.0);
+    PhysicsEngine::getInstance()->simulateTimeInSeconds(0.01f);
     ComponentManager::getInstance()->performPhysicsLogic();
     ComponentManager::getInstance()->performRendering();
 }

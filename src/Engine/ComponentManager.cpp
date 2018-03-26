@@ -203,6 +203,20 @@ void ComponentManager::cleanupComponents(Entity* entity) {
         delete toRemove;
     }
 
+    // Remove the projectile component. Mostly important for replaying.
+    toRemove = entity->getComponent(PROJECTILE);
+    if (toRemove != nullptr) {
+        for (int i = 0; i < projectiles.size(); ++i) {
+            if (projectiles[i]->id == toRemove->id) {
+                projectiles.erase(projectiles.begin() + i);
+                break;
+            }
+        }
+        // Remove the vehicle from the physx list so it is no longer updated
+        entity->removeComponent(toRemove->id);
+        delete toRemove;
+    }
+
     // Now we can just delete the other components without any special treatment
 }
 
