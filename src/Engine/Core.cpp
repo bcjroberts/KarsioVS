@@ -171,6 +171,9 @@ int playerResourceId = -1;
 bool controllerButtonPressed = false;
 #define     GAMEPAD_START	7
 
+bool replayUIShown = false;
+bool replayUIInitialized = false;
+
 void Core::runGame() {
     if (properties.isGameInitialized == false) {
         // We need to clear the menu and all of its buttons and spawn the UI/Game elements for our scene
@@ -197,7 +200,8 @@ void Core::runGame() {
     }
 
     // ***************************************** START OF GAME SPECIFIC CODE *******************************************************
-    const float playerHealth = static_cast<HealthComponent*>(playerVehicle->getComponent(HEALTH))->getCurrentHealth();
+    HealthComponent* playerHealthComp = static_cast<HealthComponent*>(playerVehicle->getComponent(HEALTH));
+    const float playerHealth = playerHealthComp->getCurrentHealth();
 
     // Check to see if the game should pause:
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
@@ -213,17 +217,35 @@ void Core::runGame() {
             controllerButtonPressed = false;
         }
     }
-    // Only set this value to false if the game has yet to be paused. Also used for unpausing.
-    if (pauseButtonPressed && properties.isPaused == false) {
-        pauseButtonPressed = false;
-        properties.isPaused = true;
-    }
 
     std::ostringstream oss;
     oss << "Health: " << round(playerHealth);
     std::string playerHealthStr = oss.str();
 
     renderEngine->ui->modifyText(playerHealthId, &playerHealthStr, nullptr, nullptr, nullptr, nullptr);
+    bool isPlayerDead = playerHealthComp->isDead();
+
+    // Only set this value to false if the game has yet to be paused. Also used for unpausing.
+    if (pauseButtonPressed && properties.isPaused == false) {
+        pauseButtonPressed = false;
+        if (!replayUIShown) { // only allow pausing if the game is not over
+            properties.isPaused = true;
+        }
+    }
+
+    if (replayUIShown == false && isPlayerDead) { // Defeat!
+        renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
+        replayUIShown = true;
+        replayUIInitialized = false;
+    } else if (replayUIShown == false && EntityManager::getInstance()->getVehicleEntities().size() == 1) { // Victory!
+        renderEngine->ui->addText("VICTORY!", 100, 150, 4, glm::vec3(0, 1, 0));
+        replayUIShown = true;
+        replayUIInitialized = false;
+    }
+
+    if (replayUIShown) {
+        runEndGameMenu();
+    }
 
     // Now we need to update the resources collected
     oss.str("");
@@ -666,4 +688,84 @@ void Core::runPauseMenu() {
             renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(1,1,0), nullptr);
         }
     }
+}
+
+void Core::runEndGameMenu() {
+    
+    if (replayUIInitialized == false) {
+        
+        currentImageUiIds.clear();
+        currentTextUiIds.clear();
+
+        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 400));
+        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 700));
+        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 150, 300));
+
+        currentTextUiIds.push_back(renderEngine->ui->addText("Replay", 240, 430, 1, glm::vec3(0, 1, 0), 1));
+        currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 240, 730, 1, glm::vec3(1, 1, 0), 1));
+
+        currentChoiceIndex = 0;
+        maxChoiceIndex = 2;
+        replayUIInitialized = true;
+    }
+
+    int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+    if (present) {
+        int buttonCount;
+        const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+        if (buttons[GAMEPAD_DPAD_DOWN]) {
+            if (!previouslyPressed) {
+                currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
+            }
+            previouslyPressed = true;
+        } else if (buttons[GAMEPAD_DPAD_UP]) {
+            if (!previouslyPressed) {
+                currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1: currentChoiceIndex - 1;
+            }
+            previouslyPressed = true;
+        } else if (buttons[GAMEPAD_X]) {
+            if (!previouslyPressed) {
+                enterPressed = true;
+            }
+            previouslyPressed = true;
+        } else {
+            previouslyPressed = false;
+        }
+    } else { // KEYBOARD IMPLEMENTATION
+        if (keyPressedUp) {
+            currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1: currentChoiceIndex - 1;
+            keyPressedUp = false;
+        } else if (keyPressedDown) {
+            currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
+            keyPressedDown = false;
+        }
+    }
+
+    if (enterPressed) {
+        enterPressed = false;
+        switch (currentChoiceIndex) {
+            case 0:
+                // Replay
+                replayUIInitialized = false;
+                replayUIShown = false;
+                properties.isGameInitialized = false;
+            break;
+            default:
+                // Default is to go back to the main menu.
+                replayUIInitialized = false;
+                replayUIShown = false;
+                properties.inMainMenu = true;
+            break;
+        }
+    }
+
+    // Make the current selection green
+    for (int i = 0; i < currentTextUiIds.size(); ++i) {
+        if (i == currentChoiceIndex) {
+            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(0,1,0), nullptr);
+        } else {
+            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(1,1,0), nullptr);
+        }
+    }
+
 }
