@@ -478,6 +478,9 @@ void Core::runMenu() {
         }
     }
 
+    // Make the camera look at the vehicle
+    cameras[0]->rotateCameraTowardPoint(mainMenuEnt->getPosition(), 5.f * timeDiff);
+    cameras[0]->lerpCameraTowardPoint(glm::vec3(-20,10,0), 5.0f * timeDiff);
 
     // We need to render the UI if this is the case and keep track of where we are/what is selected.
     UpgradeComponent* uc = static_cast<UpgradeComponent*>(mainMenuEnt->getComponent(UPGRADE));

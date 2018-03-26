@@ -21,6 +21,9 @@ void HealthComponent::applyDamage(float damage) {
         return;
     
     health -= damage;
+
+    // Lock health to 0
+    health = health < 0 ? 0 : health;
 }
 
 // simply to check if collision on it detected (but by who?)

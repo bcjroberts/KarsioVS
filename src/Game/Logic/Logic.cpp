@@ -42,9 +42,12 @@ void Logic::createPlayerUpgradeUI() {
 void Logic::playerMovement(Entity* targetEnt) {
 	ControllableComponent* con = static_cast<ControllableComponent*>(targetEnt->getComponent(CONTROLLABLE));
 	DriveComponent* temp = static_cast<DriveComponent*>(targetEnt->getComponent(DRIVE));
+    HealthComponent* hc = static_cast<HealthComponent*>(targetEnt->getComponent(HEALTH));
 	//if (temp) temp->setInputs(*newMovement);
-	con->getInput();
-	temp->setInputs(con->input);
+    if (!hc->isDead()) {
+	    con->getInput();
+    	temp->setInputs(con->input);
+    }
 
     if (temp->getFlip() && canVehicleFlip(targetEnt)) {
         flipVehicle(targetEnt);
