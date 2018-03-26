@@ -69,6 +69,8 @@ public:
     glm::mat4 getView();
     glm::mat4 getProjection();
 	glm::vec3 getPosition();
+    glm::vec3 getForward();
+    glm::vec3 getUp();
 };
 
 

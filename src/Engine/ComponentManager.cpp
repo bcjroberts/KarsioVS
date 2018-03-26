@@ -134,6 +134,10 @@ ComponentManager* ComponentManager::getInstance() {
     return globalInstance;
 }
 
+void ComponentManager::bindAudioObservable(AudioObservable* anEventQueue) {
+    audioEvents = anEventQueue;
+}
+
 void ComponentManager::performRendering() {
     for (auto rc : rendererComponents) {
         if (!rc->isStatic) { // Only update instances that are not static

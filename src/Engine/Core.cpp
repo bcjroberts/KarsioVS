@@ -126,12 +126,13 @@ void Core::coreLoop() {
 	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // initialize audio engine
-    audioObserver = new AudioObserver;
+    audioObserver = new AudioObserver();
     audioEngine->init();
     audioEngine->bindObserver(audioObserver);
     audioEngine->loadSound(AudioPaths::bgm1, false, true, true); // load music
     audioEvents = new AudioObservable();
-    audioEvents->addObserver(audioObserver);
+    audioEvents->addAudioObserver(audioObserver);
+    EntityManager::getInstance()->bindAudioObservable(audioEvents);
     // load common sounds
     audioEngine->loadSound(AudioPaths::engineIdle, true, false, false);
     audioEngine->loadSound(AudioPaths::engineRev, true, false, false);
@@ -166,6 +167,13 @@ void Core::coreLoop() {
             runMenu();
         } else {
             runGame();
+        }
+
+        // messy audio update function begins here
+        audioEngine->updateListenerPos(camera.getPosition(), camera.getForward(), camera.getUp(), mainfpsCounter);
+        if (!audioEngine->audioObserver->isEmpty()) {
+            AudioEvent nextAudio = audioEngine->audioObserver->nextAudioEvent();
+            audioEngine->playSounds(nextAudio.soundfile, nextAudio.position, audioEngine->soundVol);
         }
         audioEngine->update();
         renderEngine->render(cameras);

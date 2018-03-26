@@ -7,11 +7,10 @@
 
 class AudioObserver : public Observer
 {
-private:
-    std::queue<AudioEvent> audioQueue;
 public:
+    std::queue<AudioEvent> audioQueue;
     virtual void onNotify(Event anEvent);
-    void onNotify(AudioEvent anEvent);
+    void onAudioNotify(AudioEvent anEvent);
     AudioEvent nextAudioEvent();
     bool isEmpty();
     AudioObserver();

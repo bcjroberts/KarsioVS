@@ -6,7 +6,6 @@
 //
 
 #include "AudioEngine.h"
-
 Implementation::Implementation() {
     mpStudioSystem = NULL;
     AudioEngine::ErrorCheck(FMOD::Studio::System::create(&mpStudioSystem));
@@ -41,20 +40,19 @@ void Implementation::update() {
 }
 
 Implementation* sgpImplementation = nullptr;
-AudioEngine* AudioEngine::globalInstance = nullptr;
+AudioEngine *AudioEngine::globalInstance = new AudioEngine();
 void AudioEngine::init() {
-    if (!globalInstance) {
-        globalInstance = new AudioEngine();
-    }
     sgpImplementation = new Implementation;
 }
 
-void AudioEngine::update() {
-    if (!globalInstance->audioObserver->isEmpty()){
-        AudioEvent nextAudio = globalInstance->audioObserver->nextAudioEvent();
-        globalInstance->playSounds(nextAudio.soundfile, nextAudio.position, globalInstance->soundVol);
-        // play event
+AudioEngine* AudioEngine::getInstance() {
+    if (!globalInstance) {
+        globalInstance = new AudioEngine();
     }
+    return globalInstance;
+}
+
+void AudioEngine::update() {
     sgpImplementation->update();
 }
 
@@ -105,10 +103,13 @@ void AudioEngine::unloadSound(const std::string& strSoundName)
 
 int AudioEngine::playSounds(const std::string& strSoundName, const glm::vec3& vPosition, float fVolumedB)
 {
+    std::cout << "Attempting to play sound." << std::endl;
     int nChannelId = sgpImplementation->mnNextChannelId++;
+    std::cout << "Assigned to channel: " << nChannelId << std::endl;
     auto tFoundIt = sgpImplementation->mSounds.find(strSoundName);
     if (tFoundIt == sgpImplementation->mSounds.end())
     {
+        std::cout<< "Sound located in soundbank" << std::endl;
         loadSound(strSoundName);
         tFoundIt = sgpImplementation->mSounds.find(strSoundName);
         if (tFoundIt == sgpImplementation->mSounds.end())
@@ -120,10 +121,13 @@ int AudioEngine::playSounds(const std::string& strSoundName, const glm::vec3& vP
     AudioEngine::ErrorCheck(sgpImplementation->mpSystem->playSound(tFoundIt->second, nullptr, true, &pChannel));
     if (pChannel)
     {
+        
         FMOD_MODE currMode;
         tFoundIt->second->getMode(&currMode);
+        
         if (currMode & FMOD_3D) {
             FMOD_VECTOR position = vectorToFmod(vPosition);
+            std::cout << "Attempting to play sound in 3D." << std::endl;
             AudioEngine::ErrorCheck(pChannel->set3DAttributes(&position, nullptr));
         }
         AudioEngine::ErrorCheck(pChannel->setVolume(dbToVolume(fVolumedB)));
@@ -267,6 +271,16 @@ float AudioEngine::volumeTodb(float volume)
     return 20.0f * log10f(volume);
 }
 
+void AudioEngine::setMusicVol(float newVol)
+{
+    musicVol = std::max(std::min(0.0f, newVol), 1.0f);
+}
+
+void AudioEngine::setSoundVol(float newVol)
+{
+    soundVol = std::max(std::min(0.0f, newVol), 1.0f);
+}
+
 int AudioEngine::ErrorCheck(FMOD_RESULT result) {
     if (result != FMOD_OK) {
         std::cout << "FMOD ERROR " << result << std::endl;
@@ -276,8 +290,16 @@ int AudioEngine::ErrorCheck(FMOD_RESULT result) {
     return 0;
 }
 
-void AudioEngine::updateListenerPos(glm::vec3 newPos) {
+void AudioEngine::updateListenerPos(glm::vec3 newPos, glm::vec3 newfwd, glm::vec3 newUp, double frametime) {
+    AudioEngine::vel = glm::vec3((newPos.x - lastPos.x)/frametime, (newPos.y - AudioEngine::lastPos.y)/frametime, (newPos.z - AudioEngine::lastPos.z)/frametime);
+    AudioEngine::lastPos = AudioEngine::listenerPos;
     AudioEngine::listenerPos = newPos;
+    AudioEngine::forward = newfwd;
+    AudioEngine::up = newUp;
+}
+
+void AudioEngine::update3dListener() {
+    sgpImplementation->mpSystem->set3DListenerAttributes(0, &AudioEngine::vectorToFmod(AudioEngine::listenerPos), &AudioEngine::vectorToFmod(AudioEngine::vel), &AudioEngine::vectorToFmod(AudioEngine::forward), &AudioEngine::vectorToFmod(AudioEngine::up));
 }
 
 void AudioEngine::shutdown() {

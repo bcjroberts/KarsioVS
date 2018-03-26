@@ -1,16 +1,15 @@
 #include "AudioObserver.h"
+#include <iostream>
 
 void AudioObserver::onNotify(Event anEvent) {
-    if (anEvent.getEventType() == PLAYSOUND) {
-        //
-    }
+        std::cout << "Did not receive request for " + anEvent.getEventType() << std::endl;
 }
 
-void AudioObserver::onNotify(AudioEvent anEvent) {
-    if (anEvent.getEventType() == PLAYSOUND) {
+void AudioObserver::onAudioNotify(AudioEvent anEvent) {
+        std::cout << "Received request for " + anEvent.soundfile << std::endl;
+        std::cout << "Queue size before push = " << audioQueue.size() << std::endl;
         audioQueue.push(anEvent); // push event if it is a sound event
-    }
-    // ignore otherwise
+        std::cout << "Queue size after push = " << audioQueue.size() << std::endl;
 }
 
 AudioEvent AudioObserver::nextAudioEvent() {
@@ -24,6 +23,7 @@ AudioEvent AudioObserver::nextAudioEvent() {
         return blankEvent;
     }        
 }
+
 
 bool AudioObserver::isEmpty() {
     return AudioObserver::audioQueue.empty();

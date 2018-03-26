@@ -90,6 +90,14 @@ vec3 Camera::getPosition() {
 	return cameraPosition;
 }
 
+vec3 Camera::getForward() {
+    return lookAtPos;
+}
+
+vec3 Camera::getUp() {
+    return cameraUp;
+}
+
 Camera::Camera(int *window_width, int *window_height) {
     this->window_width=window_width;
     this->window_height=window_height;

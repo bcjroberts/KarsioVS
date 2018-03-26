@@ -4,6 +4,7 @@
 #include "Event.h"
 #include <glm/gtc/quaternion.hpp>
 #include "../game/components/RendererComponent.h"
+#include "AudioObservable.h"
 
 class Entity;
 
@@ -13,8 +14,10 @@ private:
 	std::vector<Entity*> vehicleEntities;
 	std::vector<Entity*> entities;
 	static EntityManager* globalInstance;
+    AudioObservable* audioEvents;
 public:
     EntityManager();
+    void bindAudioObservable(AudioObservable* newAudioEvents);
 	void destroyEntity(int id);
     void destroyAllEntities();
 	Entity* createEntity(glm::vec3 position, glm::quat rotation, glm::vec3 scale);

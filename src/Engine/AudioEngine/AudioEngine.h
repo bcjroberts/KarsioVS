@@ -17,6 +17,7 @@
 #include <math.h>
 #include <iostream>
 #include "..\AudioObserver.h"
+#include <algorithm>
 
 struct Implementation {
     Implementation();
@@ -56,18 +57,28 @@ public:
     int musicChannel = -1;
 
     glm::vec3 listenerPos = glm::vec3(0, 0, 0);
+    glm::vec3 lastPos = glm::vec3(0, 0, 0);
+    glm::vec3 vel = glm::vec3(0,0,0);
+    glm::vec3 forward = glm::vec3(0,0,1);
+    glm::vec3 up = glm::vec3(0, 1, 0);
+    
 
     AudioObserver* audioObserver = new AudioObserver();
 
+    AudioEngine* getInstance();
+
+    void setMusicVol(float newVol);
+    void setSoundVol(float newVol);
+
     void bindObserver(AudioObserver* anObserver);
-    void updateListenerPos(glm::vec3 newPos);
+    void updateListenerPos(glm::vec3 newPos, glm::vec3 newfwd, glm::vec3 newUp, double frametime);
     void loadBank(const std::string& strBankName, FMOD_STUDIO_LOAD_BANK_FLAGS flags);
     void loadEvent(const std::string& strEventName);
     void loadSound(const std::string& strSoundName, bool b3d = true, bool bLooping = false, bool bStream = false);
     void loadMusic(const std::string& strMusicName);
     void unloadSound(const std::string& strSoundName);
-    void set3dListenerAndOrientation(const glm::vec3& vPos = glm::vec3{ 0, 0, 0 }, float fVolumedB = 0.0f);
-    int playSounds(const std::string& strSoundName, const glm::vec3& vPos = glm::vec3{0, 0, 0}, float fVolumedB = 0.0f);
+    void update3dListener();
+    int playSounds(const std::string& strSoundName, const glm::vec3& vPos, float fVolumedB);
     void playEvent(const std::string& strEventName);
     void stopChannel(int nChannelId);
     void stopEvent(const std::string& strEventName, bool bImmediate = false);

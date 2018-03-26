@@ -59,8 +59,6 @@ void Logic::playerMovement(Entity* targetEnt) {
 
     if (temp->getShooting()) {
         static_cast<WeaponComponent*>(targetEnt->getComponent(WEAPON))->fireWeapon();
-        AudioEvent * fireEvent = new AudioEvent(targetEnt->getPosition(), AudioPaths::rifleShot);
-        audioEvents->notifyObservers(*fireEvent);
     }
 
     UpgradeComponent* uc = static_cast<UpgradeComponent*>(targetEnt->getComponent(UPGRADE));
