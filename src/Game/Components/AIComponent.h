@@ -7,6 +7,7 @@ class AIComponent : public Component
 {
 private:
 	bool collected = false;
+
 	int minedID = -2;
 	int attackerID = -1;
 	int personality = rand() % NUM_PERSONALITIES;
@@ -21,6 +22,9 @@ public:
 	int notMoving = 0;
 	int orbiting = 0;
 	
+    bool isDestinationInLOS = false; // Is the destination within our line of sight
+    float lastLOSCheckTime = 0.f;
+
     std::vector<glm::vec3> waypoints;
     int currentWaypointIndex;
     AIComponent();

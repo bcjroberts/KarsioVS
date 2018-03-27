@@ -138,15 +138,35 @@ void Logic::aiMovement(Entity* entity) {
         ai->nextWaypoint();
     }	
 	
+    glm::vec3 destination = ai->getCurrentWaypoint();
+
+    // Perform a LOS check every 0.5 seconds
+    if (ai->goal != nullptr) {
+        if (Core::simtimeSinceStartup - ai->lastLOSCheckTime > 0.5f) {
+            ai->isDestinationInLOS = isGoalInLOS(entity, ai->goal);
+            ai->lastLOSCheckTime = Core::simtimeSinceStartup;
+        }
+
+        // If we can see the target or it is really close, just try to go to it.
+        if (ai->isDestinationInLOS || glm::distance(entity->getPosition(), ai->goal->getPosition()) < 15.f) {
+            destination = ai->goal->getPosition();
+
+            // If we can go straight to our target, get the last waypoint in the waypoints array
+            while (ai->currentWaypointIndex < ai->path.size() - 1) {
+                ai->nextWaypoint();
+            }
+        }
+    }
+
     // Now we need to determine where to steer based on where the point is. Currently does not support reverse.
     DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
     float steering = 0.0f;
     float accel = 0.0f;
-    float oangle = glm::orientedAngle(glm::normalize(ai->getCurrentWaypoint() - entity->getCoarsePosition()),entity->getForwardVector(), glm::vec3(0,1,0));
+    float oangle = glm::orientedAngle(glm::normalize(destination - entity->getCoarsePosition()),entity->getForwardVector(), glm::vec3(0,1,0));
 	
 	// if at last waypoint, move directly towards goal
 	if (ai->currentWaypointIndex == ai->path.size() - 1) {
-		oangle = glm::orientedAngle(glm::normalize(ai->getCurrentWaypoint() - entity->getPosition()), entity->getForwardVector(), glm::vec3(0, 1, 0));
+		oangle = glm::orientedAngle(glm::normalize(destination - entity->getPosition()), entity->getForwardVector(), glm::vec3(0, 1, 0));
 	}
 
 	// get speed of vehicle to make it slow down while turning
@@ -496,6 +516,27 @@ void Logic::reactToAttack(Entity* entity) {
 		ai->state = RETALIATE;
 		break;
 	}
+}
+
+const float raycastOffsets[3] = {4.f, 5.f, 7.f};
+
+// Checks to see if our goal is within our LOS. If so, we can just drive towards it and skip the rest of the waypoints.
+bool Logic::isGoalInLOS (Entity* originEnt, Entity* destEnt) {
+    
+    float originOffset = raycastOffsets[static_cast<UpgradeComponent*>(originEnt->getComponent(UPGRADE))->getChassisLevel() - 1];
+
+    physx::PxRaycastBuffer* result = new physx::PxRaycastBuffer();
+    physx::PxVec3 dir = PhysicsEngine::toPxVec3(glm::normalize(destEnt->getPosition() - originEnt->getPosition()));
+    physx::PxVec3 origin =  physx::PxVec3(originEnt->getPosition().x + (dir.x * originOffset), 
+        originEnt->getPosition().y + (dir.y * originOffset), originEnt->getPosition().z + (dir.z * originOffset));
+    if (PhysicsEngine::getInstance()->fireRaycast(result, origin, dir, 75.f)) {
+        // Now we need to check to see if what we hit was infact the target entity
+        if (result->block.actor->userData == destEnt) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void Logic::finiteStateMachine(Entity* entity) {

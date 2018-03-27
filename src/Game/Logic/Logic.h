@@ -61,7 +61,8 @@ public:
 	void upgrade(Entity* entity);
 	void decide(Entity* entity);
 	void reactToAttack(Entity* entity);
-   ~Logic();
+    bool isGoalInLOS(Entity* originEnt, Entity* destEnt);
+    ~Logic();
 };
 
 
