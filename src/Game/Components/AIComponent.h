@@ -11,6 +11,7 @@ private:
 	int minedID = -2;
 	int attackerID = -1;
 	int personality = rand() % NUM_PERSONALITIES;
+
 public:
 	enum personalityTypes { GRINDER, KILL_ONLY, RANDOM, GLASS_CANNON, DEFENSIVE, NUM_PERSONALITIES };
 
@@ -20,10 +21,12 @@ public:
 	int prevstate = -1;
 	glm::vec3 prevPos;
 	int notMoving = 0;
-	int orbiting = 0;
-	
+	float orbitingSimTime = 0.f;
+    float stuckStartSimTime = 0.f;
+
     bool isDestinationInLOS = false; // Is the destination within our line of sight
     float lastLOSCheckTime = 0.f;
+    int successfulLOSChecks = 0;
 
     std::vector<glm::vec3> waypoints;
     int currentWaypointIndex;

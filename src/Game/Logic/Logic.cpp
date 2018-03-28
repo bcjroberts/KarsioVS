@@ -142,8 +142,14 @@ void Logic::aiMovement(Entity* entity) {
 
     // Perform a LOS check every 0.5 seconds
     if (ai->goal != nullptr) {
-        if (Core::simtimeSinceStartup - ai->lastLOSCheckTime > 0.5f) {
-            ai->isDestinationInLOS = isGoalInLOS(entity, ai->goal);
+        if (Core::simtimeSinceStartup - ai->lastLOSCheckTime > 0.1f) {
+            if (isGoalInLOS(entity, ai->goal)) {
+                ai->successfulLOSChecks++;
+                ai->isDestinationInLOS = ai->successfulLOSChecks > 5;
+            } else {
+                ai->successfulLOSChecks = 0;
+                ai->isDestinationInLOS = false;
+            }
             ai->lastLOSCheckTime = Core::simtimeSinceStartup;
         }
 
@@ -152,10 +158,13 @@ void Logic::aiMovement(Entity* entity) {
             destination = ai->goal->getPosition();
 
             // If we can go straight to our target, get the last waypoint in the waypoints array
-            while (ai->currentWaypointIndex < ai->path.size() - 1) {
+            while (!ai->path.empty() && ai->currentWaypointIndex < ai->path.size() - 1) {
                 ai->nextWaypoint();
             }
         }
+    } else {
+        ai->successfulLOSChecks = 0;
+        ai->isDestinationInLOS = false;
     }
 
     // Now we need to determine where to steer based on where the point is. Currently does not support reverse.
@@ -185,7 +194,7 @@ void Logic::aiMovement(Entity* entity) {
 	if (speed > 15 && (steering != 0.0f)) {
 		accel = 0.0f;
 	} else {
-        accel = 1.0f;
+        accel = ai->isDestinationInLOS ? 1.0f : 0.8f;
 	}
 	// accel, reverse, handbrake, steering
     aiDrive->setInputs(accel, 0.0f, 0.0f, steering);
@@ -296,12 +305,9 @@ void Logic::mine(Entity* entity) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
 	
-	// prevent orbiting around the crystal
-	ai->orbiting++;
-	if (ai->orbiting > 200) {
-		// give up and do something else you stupid AI
+	// Give the car 5 seconds to collect the crystal
+	if (Core::simtimeSinceStartup -  ai->orbitingSimTime > 5.0f) {
 		ai->state = DECIDING;
-		ai->orbiting = 0;
 	}
 	if (ai->getMinedID() == ai->goal->id) {
 		// if it hit crystal and didn't break it, probably won't be able to break it anyways
@@ -309,20 +315,7 @@ void Logic::mine(Entity* entity) {
 		ai->setMinedID(-2);
 	}
 	else {
-		float oangle = glm::orientedAngle(glm::normalize(ai->getCurrentWaypoint() - entity->getCoarsePosition()), entity->getForwardVector(), glm::vec3(0, 1, 0));
-		float steering = 0;
-		float accel = 1;
-		if (oangle > .1f) {
-			steering = -1.0f;
-
-		}
-		else if (oangle < -.1f) {
-			steering = 1.0f;
-		}
-		// no slowing doooown
-		// accel, reverse, handbrake, steering
-		aiDrive->setInputs(accel, 0.0f, 0.0f, steering);
-		//aiMovement(entity);
+		aiMovement(entity);
 	}
 }
 
@@ -330,10 +323,10 @@ void Logic::attack(Entity* goal, Entity* entity) {
 	std::vector<Entity*> e = EntityManager::getInstance()->getEntities();
 
 	// check if entity is still alive
-	//if ((std::find(e.begin(), e.end(), static_cast<AIComponent*>(entity->getComponent(AI))->goal) == e.end())) {
-	//	static_cast<AIComponent*>(entity->getComponent(AI))->state = DECIDING;
-	//	return;
-	//}
+	if ((std::find(e.begin(), e.end(), static_cast<AIComponent*>(entity->getComponent(AI))->goal) == e.end())) {
+		static_cast<AIComponent*>(entity->getComponent(AI))->state = DECIDING;
+		return;
+	}
 
     // Determine if we should shoot by seeing if we are almost facing the direction of the player.
     float oangle = glm::orientedAngle(glm::normalize(goal->getPosition() - entity->getPosition()),entity->getForwardVector(), glm::vec3(0,1,0));
@@ -367,6 +360,7 @@ bool Logic::checkStuck(Entity* entity) {
 		}
 		ai->state = STUCK;
 		ai->prevPos = entity->getPosition();
+        ai->stuckStartSimTime = Core::simtimeSinceStartup;
 		return true;
 	} else {
 		return false;
@@ -377,7 +371,8 @@ void Logic::unstuck(Entity* entity, AStar::Generator* generator) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
 	
-	if (glm::distance(ai->prevPos, entity->getPosition()) < 20.0f) {
+    // Drive backwards for 1 second
+	if (Core::simtimeSinceStartup - ai->stuckStartSimTime < 1.0f) {
 		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
@@ -523,17 +518,23 @@ const float raycastOffsets[3] = {4.f, 5.f, 7.f};
 // Checks to see if our goal is within our LOS. If so, we can just drive towards it and skip the rest of the waypoints.
 bool Logic::isGoalInLOS (Entity* originEnt, Entity* destEnt) {
     
-    float originOffset = raycastOffsets[static_cast<UpgradeComponent*>(originEnt->getComponent(UPGRADE))->getChassisLevel() - 1];
+    float dist = glm::distance(originEnt->getPosition(), destEnt->getPosition());
+    // Don't perform the check unless the AI is close enough to the target
+    if (dist > 100.f) return false;
 
+    float originOffset = raycastOffsets[static_cast<UpgradeComponent*>(originEnt->getComponent(UPGRADE))->getChassisLevel() - 1];
     physx::PxRaycastBuffer* result = new physx::PxRaycastBuffer();
     physx::PxVec3 dir = PhysicsEngine::toPxVec3(glm::normalize(destEnt->getPosition() - originEnt->getPosition()));
     physx::PxVec3 origin =  physx::PxVec3(originEnt->getPosition().x + (dir.x * originOffset), 
         originEnt->getPosition().y + (dir.y * originOffset), originEnt->getPosition().z + (dir.z * originOffset));
-    if (PhysicsEngine::getInstance()->fireRaycast(result, origin, dir, 75.f)) {
+    
+    if (PhysicsEngine::getInstance()->fireRaycast(result, origin, dir, dist)) {
         // Now we need to check to see if what we hit was infact the target entity
         if (result->block.actor->userData == destEnt) {
             return true;
         }
+    } else { // We did not hit anything, so we must be able to see our destination.
+        return true;
     }
 
     return false;
@@ -564,6 +565,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 	switch (ai->state) {
 	case DECIDING:
 		//std::cout << entity->id << " deciding" << std::endl;
+        ai->goal = nullptr;
 		decide(entity);
 		break;
 	case FINDING_CRYSTAL:
@@ -585,18 +587,23 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		aiMovement(entity);
 		//std::cout << entity->id << " seeking crystal" << std::endl;
-		if (ai->currentWaypointIndex == ai->path.size() - 1) {
+		if (ai->currentWaypointIndex == ai->path.size() - 1 || ai->isDestinationInLOS) {
 			ai->state = MINING;
+            ai->orbitingSimTime = Core::simtimeSinceStartup;
 		}
 		break;
 	case MINING:
+        if (ai->getAttackerID() != -1) {
+            ai->state = REACT_TO_ATTACK;
+            break;
+        }
 		//std::cout << entity->id << " mining crystal" << std::endl;
 		mine(entity);
 		break;
 	case FINDING_PLAYER:
 		//std::cout << entity->id << " searching for player path" << std::endl;
 		// higher chance of attacking human player
-		if (randomNum(0, 10) < 7) {
+		if (randomNum(0, 10) < 5) {
 			i = 0;
 		}
 		else {
@@ -605,7 +612,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 		if (EntityManager::getInstance()->getVehicleEntities()[i]->id != entity->id) {
 			ai->goal = EntityManager::getInstance()->getVehicleEntities().at(i);
 			findPath(generator, entity, ai->goal->getPosition());
-			if (ai->path.size() > 0) {
+			if (!ai->path.empty()) {
 				ai->state = SEEKING_PLAYER;
 			}
 			else {
@@ -614,33 +621,22 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		break;
 	case SEEKING_PLAYER:
-		if (ai->getAttackerID() != -1) {
-			ai->state = REACT_TO_ATTACK;
-			break;
-		}
+		
 		aiMovement(entity);
-		//std::cout << entity->id << " seeking player" << std::endl;
-		if (ai->currentWaypointIndex == ai->path.size() - 1) {
+		if (ai->currentWaypointIndex == ai->path.size() - 1 || ai->isDestinationInLOS) {
 			ai->state = ATTACKING;
 		}
-		/*if (glm::distance(ai->goal->getPosition(), entity->getPosition()) < 15.0f) {
-			findPath(generator, entity, ai->goal->getPosition());
-			ai->state = ATTACKING;
-		}*/
-		// if goal manages to drive away very fast, give up and do something else
-		/*if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 50.0f) {
-			ai->state = DECIDING;
-		}*/
+
 		break;
 	case ATTACKING:
-		if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 30.0f) {
+		if (!ai->isDestinationInLOS) {
 			findPath(generator, entity, ai->goal->getPosition());
 			if (ai->path.size() > 0) {
 				ai->state = SEEKING_PLAYER;
 			} else { // No path so go back to deciding
                 ai->state = DECIDING;
 			}
-		} else if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 60.f) {
+		} else if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 75.f) { // If the target gets further away than we can detect, stop attacking.
 		    ai->state = DECIDING;
 		}
 		attack(ai->goal, entity);

@@ -55,7 +55,8 @@ void WorldGenerator::createVehicles(std::vector<glm::vec3> *positions, int gridS
 		}
 		else {
 			Entity* aiVehicle = EntityManager::getInstance()->createAIVehicleEntity(glm::vec3(x, 10, z));
-
+            
+            
 			// make this the big scary strong one
 			if (i == 1) {
 				static_cast<UpgradeComponent*>(aiVehicle->getComponent(UPGRADE))->setPreUpgradeLevels(3, 5, 5, 5);
