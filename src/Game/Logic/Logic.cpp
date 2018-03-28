@@ -570,6 +570,10 @@ void Logic::finiteStateMachine(Entity* entity) {
 		break;
 	case FINDING_CRYSTAL:
 		//std::cout << entity->id << " searching for crystal path" << std::endl;
+        if (world->getCrystals()->empty()) {
+            ai->state = FINDING_PLAYER;
+            break;
+        }
 		ai->goal = world->getCrystals()->at(randomNum(0, world->getCrystals()->size()-1));
 		if (ai->goal != nullptr)
 			findPath(generator, entity, ai->goal->getPosition());
