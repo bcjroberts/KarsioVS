@@ -398,9 +398,11 @@ MainMenuState nextMainMenuState = MAINMENU;
 int currentChoiceIndex = 0;
 int maxChoiceIndex = 1;
 
-#define     GAMEPAD_X		2
+#define     GAMEPAD_A		0
 #define 	GAMEPAD_DPAD_UP   10
 #define 	GAMEPAD_DPAD_DOWN   12
+
+#define     GAMEPAD_LEFT_JOYSTICK_Y 1
 
 int menuLightId1;
 int menuLightId2;
@@ -478,19 +480,20 @@ void Core::runMenu() {
     // CONTROLLER IMPLEMENTATION
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
     if (present) {
-        int buttonCount;
+        int buttonCount, axesCount;
+        const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
         const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-        if (buttons[GAMEPAD_DPAD_DOWN]) {
+        if (buttons[GAMEPAD_DPAD_DOWN] || axes[GAMEPAD_LEFT_JOYSTICK_Y] < -0.5f) {
             if (!previouslyPressed) {
                 currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
             }
             previouslyPressed = true;
-        } else if (buttons[GAMEPAD_DPAD_UP]) {
+        } else if (buttons[GAMEPAD_DPAD_UP] || axes[GAMEPAD_LEFT_JOYSTICK_Y] > 0.5f) {
             if (!previouslyPressed) {
                 currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1: currentChoiceIndex - 1;
             }
             previouslyPressed = true;
-        } else if (buttons[GAMEPAD_X]) {
+        } else if (buttons[GAMEPAD_A]) {
             if (!previouslyPressed) {
                 enterPressed = true;
             }
@@ -633,21 +636,22 @@ void Core::runPauseMenu() {
     // CONTROLLER IMPLEMENTATION
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
     if (present) {
-        int buttonCount;
+        int buttonCount, axesCount;
+        const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
         const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-        if (buttons[GAMEPAD_DPAD_DOWN]) {
+        if (buttons[GAMEPAD_DPAD_DOWN] || axes[GAMEPAD_LEFT_JOYSTICK_Y] < -0.5f) {
             if (!previouslyPressed) {
                 currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
             }
             previouslyPressed = true;
         }
-        else if (buttons[GAMEPAD_DPAD_UP]) {
+        else if (buttons[GAMEPAD_DPAD_UP] || axes[GAMEPAD_LEFT_JOYSTICK_Y] > 0.5f) {
             if (!previouslyPressed) {
                 currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1 : currentChoiceIndex - 1;
             }
             previouslyPressed = true;
         }
-        else if (buttons[GAMEPAD_X]) {
+        else if (buttons[GAMEPAD_A]) {
             if (!previouslyPressed) {
                 enterPressed = true;
             }
@@ -762,21 +766,22 @@ void Core::runEndGameMenu() {
 
     int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
     if (present) {
-        int buttonCount;
+        int buttonCount, axesCount;
+        const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
         const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-        if (buttons[GAMEPAD_DPAD_DOWN]) {
+        if (buttons[GAMEPAD_DPAD_DOWN] || axes[GAMEPAD_LEFT_JOYSTICK_Y] < -0.5f) {
             if (!previouslyPressed) {
                 currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
             }
             previouslyPressed = true;
         }
-        else if (buttons[GAMEPAD_DPAD_UP]) {
+        else if (buttons[GAMEPAD_DPAD_UP] || axes[GAMEPAD_LEFT_JOYSTICK_Y] > 0.5f) {
             if (!previouslyPressed) {
                 currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1 : currentChoiceIndex - 1;
             }
             previouslyPressed = true;
         }
-        else if (buttons[GAMEPAD_X]) {
+        else if (buttons[GAMEPAD_A]) {
             if (!previouslyPressed) {
                 enterPressed = true;
             }
