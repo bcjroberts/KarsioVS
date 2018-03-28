@@ -43,7 +43,7 @@ public:
     Logic();
     void bindAudioObservable(AudioObservable* audioEventList);
     void cameraMovement(Movement* newMovement);
-    void createPlayerUpgradeUI();
+	void displayUpgradeUI(UpgradeComponent* upgradeComp);
 	void playerMovement(Entity* targetEnt);
     void aiMovement(Entity* entity);
     bool canVehicleFlip(Entity* vehicle) const;

@@ -115,3 +115,6 @@ void UpgradeComponent::setPreUpgradeLevels(int chassis, int armor, int gun, int 
 	EntityManager::getInstance()->updateRam(owner, ramLevel);
 }
 
+int UpgradeComponent::getNextUpgradeBoundary() {
+	return chassisLevel < 3 ? minUpgradesForChassisUpgrade[chassisLevel - 1] : -1;
+}

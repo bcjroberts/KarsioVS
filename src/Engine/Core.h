@@ -24,6 +24,7 @@ private:
         bool inMainMenu;
         bool isGameInitialized;
         bool isIngameMenuInitialized;
+		bool isInUpgradeMenu;
     };
     Properties properties;
     const int MAX_PHYSICS_STEPS_PER_FRAME = 3;
@@ -31,6 +32,7 @@ private:
     void runMenu();
     void runPauseMenu();
     void runEndGameMenu();
+	void runUpgradeMenu();
 public:
     Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaused);
     void coreLoop();

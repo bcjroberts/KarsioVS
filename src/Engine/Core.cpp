@@ -44,6 +44,7 @@ Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaus
     this->properties.inMainMenu = true;
     this->properties.isGameInitialized = true;
     this->properties.isIngameMenuInitialized = false;
+	this->properties.isInUpgradeMenu = false;
     globalWindow = properties.window;
 
     struct stat info;
@@ -74,6 +75,7 @@ bool keyPressedDown = false;
 bool enterPressed = false;
 bool pauseButtonPressed = false;
 bool forceReplay = false;
+bool upgradeButtonPressed = false;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -111,6 +113,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
     enterPressed = key == GLFW_KEY_ENTER && action == GLFW_RELEASE;
     pauseButtonPressed = key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE;
     forceReplay = key == GLFW_KEY_Y && action == GLFW_RELEASE;
+	upgradeButtonPressed = key == GLFW_KEY_X && action == GLFW_RELEASE;
 }
 
 float timeDiff = 0;
@@ -196,8 +199,10 @@ int physxIterCounterId = -1;
 int mainfpsCounterId = -1;
 int playerHealthId = -1;
 int playerResourceId = -1;
+int enemyCountId = -1;
 
 bool controllerButtonPressed = false;
+#define     GAMEPAD_X	2
 #define     GAMEPAD_START	7
 
 bool replayUIShown = false;
@@ -216,9 +221,7 @@ void Core::runGame() {
         // Health and resource text
         playerHealthId = renderEngine->ui->addText("health", 40, 40, 1, glm::vec3(0.5, 1, 0));
         playerResourceId = renderEngine->ui->addText("resources", 1550, 30, 0.5, glm::vec3(1, 1, 0));
-
-        // Create the upgrade text
-        logic->createPlayerUpgradeUI();
+		enemyCountId = renderEngine->ui->addText("Enemy Count: 9", 1550, 80, 0.5, glm::vec3(1, 0.8, 0));
 
         WorldGenerator::getInstance()->generateWorld();
         playerVehicle = EntityManager::getInstance()->getVehicleEntities().at(0);
@@ -243,7 +246,12 @@ void Core::runGame() {
                 pauseButtonPressed = true;
             }
             controllerButtonPressed = true;
-        }
+		} else if (buttons[GAMEPAD_X]) {
+			if (!controllerButtonPressed) {
+				upgradeButtonPressed = true;
+			}
+			controllerButtonPressed = true;
+		}
         else {
             controllerButtonPressed = false;
         }
@@ -256,13 +264,21 @@ void Core::runGame() {
     renderEngine->ui->modifyText(playerHealthId, &playerHealthStr, nullptr, nullptr, nullptr, nullptr);
     bool isPlayerDead = playerHealthComp->isDead();
 
+	UpgradeComponent* playerUC = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE));
+
     // Only set this value to false if the game has yet to be paused. Also used for unpausing.
     if (pauseButtonPressed && properties.isPaused == false) {
-        pauseButtonPressed = false;
         if (!replayUIShown) { // only allow pausing if the game is not over
             properties.isPaused = true;
         }
-    }
+	} else if (upgradeButtonPressed && properties.isInUpgradeMenu == false && playerUC->isUpgradeAvailable()) {
+		if (!replayUIShown) {
+			properties.isInUpgradeMenu = true;
+			properties.isPaused = true;
+		}
+	}
+	upgradeButtonPressed = false;
+	pauseButtonPressed = false;
 
     if (replayUIShown == false && isPlayerDead) { // Defeat!
         renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
@@ -281,10 +297,15 @@ void Core::runGame() {
     // Now we need to update the resources collected
     oss.str("");
     oss.clear();
-    UpgradeComponent* playerUC = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE));
     oss << "Resources: " << roundf(playerUC->getCurrentResources()) << "/" << roundf(playerUC->getMaxResources());
     std::string playerResources = oss.str();
     renderEngine->ui->modifyText(playerResourceId, &playerResources, nullptr, nullptr, nullptr, nullptr);
+
+	oss.str("");
+	oss.clear();
+	oss << "Enemy Count: " << EntityManager::getInstance()->getVehicleEntities().size() - 1;
+	std::string enemyCount = oss.str();
+	renderEngine->ui->modifyText(enemyCountId, &enemyCount, nullptr, nullptr, nullptr, nullptr);
 
     timeSinceLastfpsPrint += timeDiff;
     if (timeSinceLastfpsPrint > 0.2f) {
@@ -307,8 +328,12 @@ void Core::runGame() {
     //We could make a pause game feature by just rendering stuff and disabling all
     // the other stuff... although feel free to change this if you think some other
     // approach is better
-    if(properties.isPaused){
-        runPauseMenu();
+	if (properties.isPaused) {
+		if (properties.isInUpgradeMenu) {
+			runUpgradeMenu();
+		} else {
+			runPauseMenu();
+		}
     }else{
 
         float fixedStepTimediff = 0.0f;
@@ -425,8 +450,8 @@ void Core::runMenu() {
         menuLightId1 = renderEngine->world->getNextAvailableLightID();
         menuLightId2 = renderEngine->world->getNextAvailableLightID();
 
-        renderEngine->world->setLight(menuLightId1, glm::vec3(15, 0, 0), glm::vec3(80, 80, 100));
-        renderEngine->world->setLight(menuLightId2, glm::vec3(5, 0, 10), glm::vec3(80, 80, 100));
+        renderEngine->world->setLight(menuLightId1, glm::vec3(15, 0, 0), glm::vec3(240, 240, 300));
+        renderEngine->world->setLight(menuLightId2, glm::vec3(5, 0, 10), glm::vec3(240, 240, 300));
 
 
         // Now render the spinning vehicle
@@ -557,7 +582,7 @@ void Core::runMenu() {
 
     // Make the camera look at the vehicle
     cameras[0]->rotateCameraTowardPoint(mainMenuEnt->getPosition(), 5.f * timeDiff);
-    cameras[0]->lerpCameraTowardPoint(glm::vec3(-20, 10, 0), 5.0f * timeDiff);
+    cameras[0]->lerpCameraTowardPoint(glm::vec3(-20, 5, 0), 5.0f * timeDiff);
 
     // We need to render the UI if this is the case and keep track of where we are/what is selected.
     UpgradeComponent* uc = static_cast<UpgradeComponent*>(mainMenuEnt->getComponent(UPGRADE));
@@ -756,7 +781,7 @@ void Core::runEndGameMenu() {
         currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 700));
         currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 150, 300));
 
-        currentTextUiIds.push_back(renderEngine->ui->addText("Replay", 240, 430, 1, glm::vec3(0, 1, 0), 1));
+        currentTextUiIds.push_back(renderEngine->ui->addText("Play Again", 240, 430, 1, glm::vec3(0, 1, 0), 1));
         currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 240, 730, 1, glm::vec3(1, 1, 0), 1));
 
         currentChoiceIndex = 0;
@@ -830,5 +855,201 @@ void Core::runEndGameMenu() {
         }
     }
 
+}
+
+bool upgradeMenuInitialized = false;
+std::vector<UpgradeType> upgrades;
+float selectPanelX = 1000;
+float statPanelX = 600;
+
+void Core::runUpgradeMenu() {
+
+	// Grab the player upgrade component first
+	UpgradeComponent* uc = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE));
+
+	if (upgradeMenuInitialized == false) {
+
+		currentImageUiIds.clear();
+		currentTextUiIds.clear();
+
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 275));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 400));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 525));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 650));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), selectPanelX, 250));
+
+		maxChoiceIndex = 0;
+		upgrades.clear();
+
+		// Check if chassis should be active
+		if (uc->canUpgradeType(CHASSIS_UPGRADE)) {
+			upgrades.push_back(CHASSIS_UPGRADE);
+			currentTextUiIds.push_back(renderEngine->ui->addText("Chassis", selectPanelX + 90, 305, 1, glm::vec3(0, 1, 0), 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 345, 0.5, glm::vec3(0, 1, 0), 1));
+		} else {
+			constantTextUI.push_back(renderEngine->ui->addText("Chassis", selectPanelX + 90, 305, 1, glm::vec3(.6, .6, 0), 1));
+			if (uc->getChassisLevel() < 3) {
+				std::ostringstream oss;
+				oss << "Total lvl " << (uc->getNextUpgradeBoundary() + 4) << " Required";
+				std::string requiredTotalLevel = oss.str();
+				constantTextUI.push_back(Core::renderEngine->ui->addText(requiredTotalLevel, statPanelX + 50, 345, 0.5, glm::vec3(1, 1, 0), 1));
+				oss.str("");
+				oss.clear();
+			} else {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 345, 0.5, glm::vec3(1, 1, 0), 1));
+			}
+		}
+
+		// Check if gun should be active
+		if (uc->canUpgradeType(GUN_UPGRADE)) {
+			upgrades.push_back(GUN_UPGRADE);
+			currentTextUiIds.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 430, 1, glm::vec3(1, 1, 0), 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 470, 0.5, glm::vec3(0, 1, 0), 1));
+		} else {
+			constantTextUI.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 430, 1, glm::vec3(.6, .6, 0), 1));
+			if (uc->getGunLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 470, 0.5, glm::vec3(1, 1, 0), 1));
+			} else {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 470, 0.5, glm::vec3(1, 1, 0), 1));
+			}
+		}
+
+		// Check if armor should be active
+		if (uc->canUpgradeType(ARMOR_UPGRADE)) {
+			upgrades.push_back(ARMOR_UPGRADE);
+			currentTextUiIds.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 555, 1, glm::vec3(1, 1, 0), 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 595, 0.5, glm::vec3(0, 1, 0), 1));
+		} else {
+			constantTextUI.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 555, 1, glm::vec3(.6, .6, 0), 1));
+			if (uc->getArmorLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 595, 0.5, glm::vec3(1, 1, 0), 1));
+			} else {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 595, 0.5, glm::vec3(1, 1, 0), 1));
+			}
+		}
+
+		// Check if ram should be active
+		if (uc->canUpgradeType(RAM_UPGRADE)) {
+			upgrades.push_back(RAM_UPGRADE);
+			currentTextUiIds.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 680, 1, glm::vec3(1, 1, 0), 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 720, 0.5, glm::vec3(0, 1, 0), 1));
+		} else {
+			constantTextUI.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 680, 1, glm::vec3(.6, .6, 0), 1));
+			if (uc->getRamLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 720, 0.5, glm::vec3(1, 1, 0), 1));
+			} else {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 720, 0.5, glm::vec3(1, 1, 0), 1));
+			}
+		}
+
+		maxChoiceIndex = upgrades.size();
+		currentChoiceIndex = 0;
+
+		// Render any final stat panel stuff
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), statPanelX, 250));
+
+		std::ostringstream oss;
+		oss << "Chassis lvl: " << uc->getChassisLevel();
+		std::string chassisLevel = oss.str();
+		constantTextUI.push_back(Core::renderEngine->ui->addText(chassisLevel, statPanelX + 50, 315, 0.5, glm::vec3(1, 1, 0), 1));
+		oss.str("");
+		oss.clear();
+
+		oss << "Gun lvl: " << uc->getGunLevel();
+		std::string gunLevel = oss.str();
+		constantTextUI.push_back(Core::renderEngine->ui->addText(gunLevel, statPanelX + 50, 445, 0.5, glm::vec3(1, 1, 0), 1));
+		oss.str("");
+		oss.clear();
+
+		oss << "Armor lvl: " << uc->getArmorLevel();
+		std::string armorLevel = oss.str();
+		constantTextUI.push_back(Core::renderEngine->ui->addText(armorLevel, statPanelX + 50, 570, 0.5, glm::vec3(1, 1, 0), 1));
+		oss.str("");
+		oss.clear();
+
+		oss << "Ram lvl: " << uc->getRamLevel();
+		std::string ramLevel = oss.str();
+		constantTextUI.push_back(Core::renderEngine->ui->addText(ramLevel, statPanelX + 50, 695, 0.5, glm::vec3(1, 1, 0), 1));
+		oss.str("");
+		oss.clear();
+
+		oss << "Total lvl: " << (uc->getRamLevel() + uc->getArmorLevel() + uc->getChassisLevel() + uc->getGunLevel());
+		std::string totalLevel = oss.str();
+		constantTextUI.push_back(renderEngine->ui->addText(totalLevel, statPanelX + 50, 280, 0.5, glm::vec3(1, 1, 0), 1));
+		oss.str("");
+		oss.clear();
+
+		upgradeMenuInitialized = true;
+	}
+
+	int present = glfwJoystickPresent(GLFW_JOYSTICK_1);
+	if (present) {
+		int buttonCount, axesCount;
+		const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+		const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
+		if (buttons[GAMEPAD_DPAD_DOWN] || axes[GAMEPAD_LEFT_JOYSTICK_Y] < -0.5f) {
+			if (!previouslyPressed) {
+				currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
+			}
+			previouslyPressed = true;
+		}
+		else if (buttons[GAMEPAD_DPAD_UP] || axes[GAMEPAD_LEFT_JOYSTICK_Y] > 0.5f) {
+			if (!previouslyPressed) {
+				currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1 : currentChoiceIndex - 1;
+			}
+			previouslyPressed = true;
+		}
+		else if (buttons[GAMEPAD_A]) {
+			if (!previouslyPressed) {
+				enterPressed = true;
+			}
+			previouslyPressed = true;
+		}
+		else {
+			previouslyPressed = false;
+		}
+	}
+	else { // KEYBOARD IMPLEMENTATION
+		if (keyPressedUp) {
+			currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1 : currentChoiceIndex - 1;
+			keyPressedUp = false;
+		}
+		else if (keyPressedDown) {
+			currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
+			keyPressedDown = false;
+		}
+	}
+
+	if (enterPressed) {
+		enterPressed = false;
+		if (uc->canUpgradeType(upgrades[currentChoiceIndex]))
+			uc->upgradeVehicle(upgrades[currentChoiceIndex]);
+		properties.isPaused = false;
+		properties.isInUpgradeMenu = false;
+		upgradeMenuInitialized = false;
+
+		for (int i = 0; i < currentImageUiIds.size(); ++i) {
+			renderEngine->ui->removeImage(currentImageUiIds[i]);
+		}
+		currentImageUiIds.clear();
+		for (int i = 0; i < currentTextUiIds.size(); ++i) {
+			renderEngine->ui->removeText(currentTextUiIds[i]);
+		}
+		currentTextUiIds.clear();
+		for (int i = 0; i < constantTextUI.size(); ++i) {
+			renderEngine->ui->removeText(constantTextUI[i]);
+		}
+		constantTextUI.clear();
+	}
+
+	// Make the current selection green
+	for (int i = 0; i < currentTextUiIds.size(); ++i) {
+		if (i == currentChoiceIndex) {
+			renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(0, 1, 0), nullptr);
+		}
+		else {
+			renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(1, 1, 0), nullptr);
+		}
+	}
 }
 

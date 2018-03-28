@@ -15,118 +15,48 @@ void Logic::cameraMovement(Movement* newMovement) {
     moveCamera = newMovement;
 }
 
+int upgradeText = -1;
 
+void Logic::displayUpgradeUI(UpgradeComponent* upgradeComp) {
 
-int playerChassisLevelTextId = -1;
-int playerArmorLevelTextId = -1;
-int playerGunLevelTextId = -1;
-int playerRamLevelTextId = -1;
-
-int playerChassisUpgradeTextId = -1;
-int playerArmorUpgradeTextId = -1;
-int playerGunUpgradeTextId = -1;
-int playerRamUpgradeTextId = -1;
-
-void Logic::createPlayerUpgradeUI() {
-    playerChassisLevelTextId = Core::renderEngine->ui->addText("Chassis Lvl: 1", 350, 30, 0.5, glm::vec3(1, 1, 0));
-    playerArmorLevelTextId = Core::renderEngine->ui->addText("Armor Lvl: 1", 650, 30, 0.5, glm::vec3(1, 1, 0));
-    playerGunLevelTextId = Core::renderEngine->ui->addText("Gun Lvl: 1", 950, 30, 0.5, glm::vec3(1, 1, 0));
-    playerRamLevelTextId = Core::renderEngine->ui->addText("Ram Lvl: 1", 1250, 30, 0.5, glm::vec3(1, 1, 0));
-
-    // This holds the text for when upgrades are available
-    playerChassisUpgradeTextId = Core::renderEngine->ui->addText("", 350, 50, 0.5, glm::vec3(1, 1, 0));
-    playerArmorUpgradeTextId = Core::renderEngine->ui->addText("", 650, 50, 0.5, glm::vec3(1, 1, 0));
-    playerGunUpgradeTextId = Core::renderEngine->ui->addText("", 950, 50, 0.5, glm::vec3(1, 1, 0));
-    playerRamUpgradeTextId = Core::renderEngine->ui->addText("", 1250, 50, 0.5, glm::vec3(1, 1, 0));
+	// If an upgrade is available, display the upgrade text along the top.
+	// Otherwise return
+	if (!upgradeComp->isUpgradeAvailable()) {
+		if (upgradeText != -1) {
+			Core::renderEngine->ui->removeText(upgradeText);
+			upgradeText = -1;
+		}
+		return;
+	} else if (upgradeText == -1) {
+		upgradeText = Core::renderEngine->ui->addText("Upgrade Available: Press X to Choose", 350, 20, 1.4f, glm::vec3(1, 1, 0));
+	}
 }
+
 //void Logic::playerMovement(vehicleInput *newMovement, Entity* targetEnt) {
 void Logic::playerMovement(Entity* targetEnt) {
 	ControllableComponent* con = static_cast<ControllableComponent*>(targetEnt->getComponent(CONTROLLABLE));
-	DriveComponent* temp = static_cast<DriveComponent*>(targetEnt->getComponent(DRIVE));
+	DriveComponent* playerDrive = static_cast<DriveComponent*>(targetEnt->getComponent(DRIVE));
     HealthComponent* hc = static_cast<HealthComponent*>(targetEnt->getComponent(HEALTH));
 	//if (temp) temp->setInputs(*newMovement);
     if (!hc->isDead()) {
 	    con->getInput();
-    	temp->setInputs(con->input);
+    	playerDrive->setInputs(con->input);
     } else {
-        temp->setInputs(0, 0, 0, 0, false, false);
+        playerDrive->setInputs(0, 0, 0, 0, false, false);
         return;
     }
 
-    if (temp->getFlip() && canVehicleFlip(targetEnt)) {
+    if (playerDrive->getFlip() && canVehicleFlip(targetEnt)) {
         flipVehicle(targetEnt);
     }
 
-    if (temp->getShooting()) {
+    if (playerDrive->getShooting()) {
         static_cast<WeaponComponent*>(targetEnt->getComponent(WEAPON))->fireWeapon();
     }
 
+
     UpgradeComponent* uc = static_cast<UpgradeComponent*>(targetEnt->getComponent(UPGRADE));
-    std::ostringstream oss;
-    oss << "Chassis lvl: " << uc->getChassisLevel();
-    std::string chassisLevel = oss.str();
-    Core::renderEngine->ui->modifyText(playerChassisLevelTextId, &chassisLevel, nullptr, nullptr, nullptr, nullptr);
-    oss.str("");
-    oss.clear();
-
-    oss << "Armor lvl: " << uc->getArmorLevel();
-    std::string armorLevel = oss.str();
-    Core::renderEngine->ui->modifyText(playerArmorLevelTextId, &armorLevel, nullptr, nullptr, nullptr, nullptr);
-    oss.str("");
-    oss.clear();
-
-    oss << "Gun lvl: " << uc->getGunLevel();
-    std::string gunLevel = oss.str();
-    Core::renderEngine->ui->modifyText(playerGunLevelTextId, &gunLevel, nullptr, nullptr, nullptr, nullptr);
-    oss.str("");
-    oss.clear();
-
-    oss << "Ram lvl: " << uc->getRamLevel();
-    std::string ramLevel = oss.str();
-    Core::renderEngine->ui->modifyText(playerRamLevelTextId, &ramLevel, nullptr, nullptr, nullptr, nullptr);
-    oss.str("");
-    oss.clear();
-
-    // Now check for upgrades
-    glm::vec3 upgradeColor(0,1,0);
-    glm::vec3 defaultColor(1,1,0);
-    std::string empty = "";
-    if (uc->canUpgradeType(CHASSIS_UPGRADE)) {
-        std::string chassisUpgrade = "+ Press 3/DPAD Up +";
-        Core::renderEngine->ui->modifyText(playerChassisUpgradeTextId, &chassisUpgrade, nullptr, nullptr, nullptr, nullptr);
-        if(con->upInput.upgradeChassis) {
-            uc->upgradeVehicle(CHASSIS_UPGRADE);
-        }
-    } else {
-        Core::renderEngine->ui->modifyText(playerChassisUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
-    }
-    if (uc->canUpgradeType(ARMOR_UPGRADE)) {
-        std::string armorUpgrade = "+ Press 4/DPAD Right +";
-        Core::renderEngine->ui->modifyText(playerArmorUpgradeTextId, &armorUpgrade, nullptr, nullptr, nullptr, nullptr);
-        if(con->upInput.upgradeArmor) {
-            uc->upgradeVehicle(ARMOR_UPGRADE);
-        }
-    } else {
-        Core::renderEngine->ui->modifyText(playerArmorUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
-    }
-    if (uc->canUpgradeType(GUN_UPGRADE)) {
-        std::string gunUpgrade = "+ Press 5/DPAD Down +";
-        Core::renderEngine->ui->modifyText(playerGunUpgradeTextId, &gunUpgrade, nullptr, nullptr, nullptr, nullptr);
-        if(con->upInput.upgradeGun) {
-            uc->upgradeVehicle(GUN_UPGRADE);
-        }
-    } else {
-        Core::renderEngine->ui->modifyText(playerGunUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
-    }
-    if (uc->canUpgradeType(RAM_UPGRADE)) {
-        std::string ramUpgrade = "+ Press 6/DPAD Left +";
-        Core::renderEngine->ui->modifyText(playerRamUpgradeTextId, &ramUpgrade, nullptr, nullptr, nullptr, nullptr);
-        if(con->upInput.upgradeRam) {
-            uc->upgradeVehicle(RAM_UPGRADE);
-        }
-    } else {
-        Core::renderEngine->ui->modifyText(playerRamUpgradeTextId, &empty, nullptr, nullptr, nullptr, nullptr);
-    }
+	displayUpgradeUI(uc);
 }
 
 void Logic::aiMovement(Entity* entity) {
@@ -348,7 +278,7 @@ bool Logic::checkStuck(Entity* entity) {
         flipVehicle(entity);
     }
 
-	if (abs(magnitude) < 0.5f) {
+	if (abs(magnitude) < 1.f) {
 		ai->notMoving++;
 	} else {
 		ai->notMoving = 0;
@@ -376,10 +306,14 @@ void Logic::unstuck(Entity* entity, AStar::Generator* generator) {
 		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
-		findPath(generator, entity, ai->goal->getPosition());
-		if (ai->path.size() > 0) {
-			ai->state = ai->prevstate;
-			ai->notMoving = 0;
+		if (ai->goal != nullptr) {
+			findPath(generator, entity, ai->goal->getPosition());
+			if (ai->path.size() > 0) {
+				ai->state = ai->prevstate;
+				ai->notMoving = 0;
+			}
+		} else {
+			ai->state = DECIDING;
 		}
 	}
 }
