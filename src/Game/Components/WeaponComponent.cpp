@@ -2,6 +2,7 @@
 #include "../../Engine/Core.h"
 #include "../../Engine/EntityManager.h"
 #include "../../Engine/Entity.h"
+#include <glm/gtc/quaternion.hpp>
 
 WeaponComponent::WeaponComponent() : Component(WEAPON) {
     setROF(1.0f);
@@ -19,7 +20,11 @@ void WeaponComponent::fireWeapon() {
         // If we can fire, update the time value
         lastTimeFired = Core::simtimeSinceStartup;
         // Now spawn the projectile with the correct weapon stats
-        EntityManager::getInstance()->createProjectile(owner->id, owner->getPosition(), owner->getRotation(), projectileSpeed, gunDamage);
+		float xvalue = float((rand() % 2000) - 1000) / 30000.f;
+		float yvalue = float((rand() % 2000) - 1000) / 30000.f;
+		float zvalue = float((rand() % 2000) - 1000) / 30000.f;
+		glm::quat projRot = glm::quat(glm::eulerAngles(owner->getRotation()) + glm::vec3(xvalue, yvalue, zvalue));
+        EntityManager::getInstance()->createProjectile(owner->id, owner->getPosition(), projRot, projectileSpeed, gunDamage);
     }
 }
 
