@@ -10,9 +10,9 @@
 #include "ShaderUniforms.h"
 
 
-UserInterface::UserInterface(int *screenWidth, int *screenHeight) {
-	windowWidth = *screenWidth;
-	windowHeight = *screenHeight;
+UserInterface::UserInterface(int *uiWidth, int *uiHeight) {
+	this->uiWidth = *uiWidth;
+	this->uiHeight = *uiHeight;
 	//TODO: maybe add a feature to keep the hud the same aspect ratio as the window
 
 	//	std::cout << width << ":" << height << std::endl;
@@ -27,24 +27,12 @@ void UserInterface::createSquare() {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
-//	float vertices[] = {
-//		1.0f,  1.0f, 1.0f, 1.0f,  // top right
-//		1.0f, -1.0f, 1.0f, 0.0f,  // bottom right
-//		-1.0f, -1.0f, 0.0f, 0.0f,  // bottom left
-//		-1.0f,  1.0f, 0.0f, 1.0f   // top left 
-//	};
 	float vertices[] = {
 		1.0f,  0.0f, 1.0f, 1.0f,  // top right
 		1.0f,  1.0f, 1.0f, 0.0f,  // bottom right
 		0.0f,  1.0f, 0.0f, 0.0f,  // bottom left
 		0.0f, 0.0f, 0.0f, 1.0f   // top left 
 	};	
-//	float vertices[] = {
-//		0.5f,  0.5f, 1.0f, 1.0f,  // top right
-//		0.5f, -0.5f, 1.0f, 0.0f,  // bottom right
-//		-0.5f, -0.5f, 0.0f, 0.0f,  // bottom left
-//		-0.5f,  0.5f, 0.0f, 1.0f   // top left 
-//	};
 	unsigned int indices[] = {  // note that we start from 0!
 		0, 3, 1,  // first Triangle
 		1, 3, 2   // second Triangle
@@ -79,8 +67,12 @@ void UserInterface::createSquare() {
 int nextTextId = 0;
 
 int UserInterface::addText(std::string text, GLfloat x, GLfloat y, GLfloat scale, glm::vec3 color, GLfloat z) {
-	Text tempText(text, color, x, y, z, scale);
-    tempText.myId = nextTextId++;
+	return addTextDiffSize(text, x, y, scale, scale, color, z);
+}
+
+int UserInterface::addTextDiffSize(std::string text, GLfloat x, GLfloat y, GLfloat xScale, GLfloat yScale, glm::vec3 color, GLfloat z) {
+	Text tempText(text, color, x, y, z, xScale, yScale);
+	tempText.myId = nextTextId++;
 	textArray.push_back(tempText);
 	return tempText.myId;
 }
@@ -95,14 +87,18 @@ void UserInterface::removeText(int textId) {
 }
 
 void UserInterface::modifyText(int textId, std::string* contents, GLfloat* xpos, GLfloat* ypos, GLfloat* scale, glm::vec3* color, GLfloat* zLevel) {
-    int index = -1;
-    for (int i = 0; i < textArray.size(); ++i) {
-        if (textArray[i].myId == textId) {
-            index = i;
-            break;
-        }
-    }
-    if (index == -1) return;
+	modifyTextDiffSize(textId, contents, xpos, ypos, scale, scale, color, zLevel);
+}
+
+void UserInterface::modifyTextDiffSize(int textId, std::string* contents, GLfloat* xpos, GLfloat* ypos, GLfloat* xScale, GLfloat* yScale, glm::vec3* color, GLfloat* zLevel) {
+	int index = -1;
+	for (int i = 0; i < textArray.size(); ++i) {
+		if (textArray[i].myId == textId) {
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
 	//Check if not null and then replace that value
 	if (contents != nullptr) {
 		textArray[index].contents = *contents;
@@ -116,8 +112,11 @@ void UserInterface::modifyText(int textId, std::string* contents, GLfloat* xpos,
 	if (zLevel != nullptr) {
 		textArray[index].zLevel = *zLevel;
 	}
-	if (scale != nullptr) {
-		textArray[index].scale = *scale;
+	if (xScale != nullptr) {
+		textArray[index].xScale = *xScale;
+	}
+	if (yScale != nullptr) {
+		textArray[index].yScale = *yScale;
 	}
 	if (color != nullptr) {
 		textArray[index].color = *color;
@@ -140,11 +139,11 @@ void UserInterface::renderUI() {
 
 void UserInterface::renderImage(Image image) {
 	glUseProgram(imageShaderID);
-	ShaderUniforms::setMat4(imageShaderID, "projection", glm::ortho(0.0f, static_cast<GLfloat>(windowWidth), static_cast<GLfloat>(windowHeight), 0.0f));
+	ShaderUniforms::setMat4(imageShaderID, "projection", glm::ortho(0.0f, static_cast<GLfloat>(uiWidth), static_cast<GLfloat>(uiHeight), 0.0f));
 
 	glm::mat4 transform;
 	transform = glm::translate(transform, glm::vec3(image.xPos, image.yPos, 0.5f));
-	transform = glm::scale(transform, glm::vec3(image.scale * image.width, image.scale * image.height, 1.0f));
+	transform = glm::scale(transform, glm::vec3(image.xScale * image.width, image.yScale * image.height, 1.0f));
 
 	ShaderUniforms::setMat4(imageShaderID, "transformation", transform);
 	glActiveTexture(GL_TEXTURE0);
@@ -160,7 +159,7 @@ void UserInterface::renderImage(Image image) {
 void UserInterface::renderText(Text text) {
 
 	glUseProgram(fontShaderID);
-	ShaderUniforms::setMat4(fontShaderID, "projection", glm::ortho(0.0f, static_cast<GLfloat>(windowWidth), static_cast<GLfloat>(windowHeight), 0.0f));
+	ShaderUniforms::setMat4(fontShaderID, "projection", glm::ortho(0.0f, static_cast<GLfloat>(uiWidth), static_cast<GLfloat>(uiHeight), 0.0f));
 	ShaderUniforms::setInt(fontShaderID, "glyph", 0);
 	ShaderUniforms::setVec3(fontShaderID, "textColor", text.color);
 
@@ -170,11 +169,11 @@ void UserInterface::renderText(Text text) {
 
 		Character character = characters[static_cast<int>(letter)];
 
-		GLfloat xpos = text.xPos + character.bearing.x * text.scale;
-		GLfloat ypos = text.yPos + (this->characters['H'].bearing.y - character.bearing.y) * text.scale;
+		GLfloat xpos = text.xPos + character.bearing.x * text.xScale;
+		GLfloat ypos = text.yPos + (this->characters['H'].bearing.y - character.bearing.y) * text.yScale;
 
-		GLfloat w = ((character.size.x) * text.scale);
-		GLfloat h = ((character.size.y) * text.scale);
+		GLfloat w = ((character.size.x) * text.xScale);
+		GLfloat h = ((character.size.y) * text.yScale);
 
 
 		glm::mat4 transform;
@@ -188,7 +187,7 @@ void UserInterface::renderText(Text text) {
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		text.xPos += (character.advance >> 6) * text.scale;
+		text.xPos += (character.advance >> 6) * text.xScale;
 	}
 }
 
@@ -261,8 +260,12 @@ void UserInterface::clearAllUI() {
 int nextImageId = 0;
 
 int UserInterface::addImage(TextureData image, GLfloat x, GLfloat y, GLfloat scale, GLfloat z) {
-	Image tempImage(image, x, y, z, scale);
-    tempImage.myId = nextImageId++;
+	return addImageDiffSize(image, x, y, scale, scale, z);
+}
+
+int UserInterface::addImageDiffSize(TextureData image, GLfloat x, GLfloat y, GLfloat xScale, GLfloat yScale, GLfloat z) {
+	Image tempImage(image, x, y, z, xScale, yScale);
+	tempImage.myId = nextImageId++;
 	imageArray.push_back(tempImage);
 	return tempImage.myId;
 }
@@ -277,14 +280,18 @@ void UserInterface::removeImage(int imageId) {
 }
 
 void UserInterface::modifyImage(int imageId, GLfloat* xPos, GLfloat* yPos, GLfloat* scale, GLfloat* zLevel) {
-    int index = -1;
-    for (int i = 0; i < imageArray.size(); ++i) {
-        if (imageArray[i].myId == imageId) {
-            index = i;
-            break;
-        }
-    }
-    if (index == -1) return;
+	modifyImageDiffSize(imageId, xPos, yPos, scale, scale, zLevel);
+}
+
+void UserInterface::modifyImageDiffSize(int imageId, GLfloat* xPos, GLfloat* yPos, GLfloat* xScale, GLfloat* yScale, GLfloat* zLevel) {
+	int index = -1;
+	for (int i = 0; i < imageArray.size(); ++i) {
+		if (imageArray[i].myId == imageId) {
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
 
 	//Check if not null and then replace that value
 	if (xPos != nullptr) {
@@ -293,8 +300,11 @@ void UserInterface::modifyImage(int imageId, GLfloat* xPos, GLfloat* yPos, GLflo
 	if (yPos != nullptr) {
 		imageArray[index].yPos = *yPos;
 	}
-	if (scale != nullptr) {
-		imageArray[index].scale = *scale;
+	if (xScale != nullptr) {
+		imageArray[index].xScale = *xScale;
+	}	
+	if (yScale != nullptr) {
+		imageArray[index].yScale = *yScale;
 	}
 	if (zLevel != nullptr) {
 		imageArray[index].zLevel = *zLevel;

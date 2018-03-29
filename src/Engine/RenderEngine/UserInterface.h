@@ -14,13 +14,15 @@ private:
 		GLfloat xPos;
 		GLfloat yPos;
 		GLfloat zLevel;
-		GLfloat scale;
+		GLfloat xScale;
+		GLfloat yScale;
 
-		Element(GLfloat x, GLfloat y, GLfloat z, GLfloat scale) {
+		Element(GLfloat x, GLfloat y, GLfloat z, GLfloat xScale, GLfloat yScale) {
 			xPos = x;
 			yPos = y;
 			zLevel = z;
-			this->scale = scale;
+			this->xScale = xScale;
+			this->yScale = yScale;
 		}
 	};
 
@@ -30,7 +32,7 @@ private:
 		int height;
         int myId;
 
-		Image(TextureData image, GLfloat x, GLfloat y, GLfloat z, GLfloat scale) : Element(x, y, z, scale) {
+		Image(TextureData image, GLfloat x, GLfloat y, GLfloat z, GLfloat xScale, GLfloat yScale) : Element(x, y, z, xScale, yScale) {
 			this->imageID = image.textureID;
 			this->width = image.imageWidth;
 			this->height = image.imageHeight;
@@ -44,7 +46,7 @@ private:
 		glm::vec3 color;
 	    int myId;
 
-	    Text(std::string contents, glm::vec3 color, GLfloat x, GLfloat y, GLfloat z, GLfloat scale) : Element(x, y, z, scale) {
+	    Text(std::string contents, glm::vec3 color, GLfloat x, GLfloat y, GLfloat z, GLfloat xScale, GLfloat yScale) : Element(x, y, z, xScale, yScale) {
 			this->contents = contents;
 			this->color = color;
 		}
@@ -60,8 +62,8 @@ private:
 		GLuint advance; // Horizontal offset to advance to next glyph
 	};
 
-	int windowWidth;
-	int windowHeight;
+	int uiWidth;
+	int uiHeight;
 	// Holds a list of pre-compiled Characters
 	std::map<GLchar, Character> characters;
 
@@ -79,16 +81,19 @@ private:
 	void renderText(Text text);
 
 public:
-	UserInterface(int* width, int* height);
+	UserInterface(int* uiWidth, int* uiHeight);
 
 	int addText(std::string text, GLfloat x, GLfloat y, GLfloat scale = 1.0f, glm::vec3 color = glm::vec3(1.0f), GLfloat z = 1.0f);
+	int addTextDiffSize(std::string text, GLfloat x, GLfloat y, GLfloat xScale = 1.0f, GLfloat yScale = 1.0f, glm::vec3 color = glm::vec3(1.0f), GLfloat z = 1.0f);
 	void removeText(int textId);
-	void modifyText(int textId, std::string* contents = nullptr, GLfloat* xpos = nullptr, GLfloat* ypos = nullptr,
-		GLfloat* scale = nullptr, glm::vec3* color = nullptr, GLfloat* zLevel = nullptr);
+	void modifyText(int textId, std::string* contents = nullptr, GLfloat* xpos = nullptr, GLfloat* ypos = nullptr, GLfloat* scale = nullptr, glm::vec3* color = nullptr, GLfloat* zLevel = nullptr);
+	void modifyTextDiffSize(int textId, std::string* contents = nullptr, GLfloat* xpos = nullptr, GLfloat* ypos = nullptr, GLfloat* xScale = nullptr, GLfloat* yScale = nullptr, glm::vec3* color = nullptr, GLfloat* zLevel = nullptr);
 
 	int addImage(TextureData image, GLfloat x, GLfloat y, GLfloat scale = 1.0f, GLfloat z = 0.5f);
+	int addImageDiffSize(TextureData image, GLfloat x, GLfloat y, GLfloat xScale = 1.0f, GLfloat yScale = 1.0f, GLfloat z = 0.5f);
 	void removeImage(int imageId);
 	void modifyImage(int imageId, GLfloat* xPos = nullptr, GLfloat* yPos = nullptr, GLfloat* scale = nullptr, GLfloat* zLevel = nullptr);
+	void modifyImageDiffSize(int imageId, GLfloat* xPos = nullptr, GLfloat* yPos = nullptr, GLfloat* xScale = nullptr, GLfloat* yScale = nullptr, GLfloat* zLevel = nullptr);
 
 	void renderUI();
 
