@@ -1,5 +1,6 @@
 //
-// Created by Sebastian on 12/23/2017.
+// main render engine that has pointers to all the other 
+// rendering related stuff like ui and render world
 //
 
 #include <iostream>
@@ -21,23 +22,6 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screenWidth, int *screenHeig
 
 	//Maybe load the font from somewhere else?
 	ui -> loadFont(Core::dataPath + "assets/fonts/duralith/DURALITH.ttf", 48);
-	//==========================================================
-	//replace all of this with stuff that isn't in the render engine 
-	// then remove it from the project before submission
-	//==========================================================
-
-	// Adding the following example code since _nobody_ noticed that you 
-	//  can get the index of the label upon it's creation and it'd be nice to get
-	//  ride of the magic numbers in the core...
-	//  
-	// Also please move this out of the render engine and into something more approperate, 
-	//  I'm not too familar with how all of this is being used so I don't want to break things 
-	//  or clutter the core. Ideally there'll be a seperate class for all the strings which will 
-	//  be easily accessible.
-
-	//==========================================================
-	//\End of temp section
-	//==========================================================
 }
 
 RenderEngine::~RenderEngine() {
@@ -47,11 +31,13 @@ RenderEngine::~RenderEngine() {
 void RenderEngine::render(std::vector<Camera*> cameras) {
 
     // clear screen to a dark grey colour
-    glClearColor(10.f/255.f, 18.f/255.f, 30.f/255.f, 1.0f);
+//    glClearColor(10.f/255.f, 18.f/255.f, 30.f/255.f, 1.0f);
+    glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (int i = 0; i < cameras.size(); ++i) {
 		world->updateCamera(cameras[i]->getView(), cameras[i]->getProjection(), cameras[i]->getPosition());
+		world->renderCubemap();
 		world->renderElements();
 
 		ui->renderUI();

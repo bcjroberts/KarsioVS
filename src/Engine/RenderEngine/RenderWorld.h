@@ -18,6 +18,7 @@ public:
 	~RenderWorld();
 	//Need the model that is being used and the instance that will be added to that model
 	void renderElements();
+	void renderCubemap();
 	void updateCamera(glm::mat4& view, glm::mat4& projection, glm::vec3& location);
 	void setLight(int index, glm::vec3 position, glm::vec3 color);
 	int getNextAvailableLightID();
@@ -75,16 +76,23 @@ private:
 	}; 
 	std::vector<Light> lights;
 
+	struct Cubemap {
+		GLuint shaderID;
+		GLuint textureID;
+		Geometry model;
+	};
+	Cubemap cubemap;
+
 //	GLFWwindow *window;
 //	int *screenWidth;
 //	int *screenHeight;
 
 	void passLights(GLuint shaderID);
-	
 	void passCamera(GLuint shaderID);
 
 	void passTextures(GLuint shaderID);
-
 	void activateTextures(RendererModel sModel);
+
+	void loadCubemap();
 
 };

@@ -1,5 +1,8 @@
 ﻿#include "RenderWorld.h"
 #include "ShaderUniforms.h"
+#include "../Importer/Managers/TextureDataManager.h"
+#include "../Importer/Managers/ShaderDataManager.h"
+#include "../Importer/Managers/ModelDataManager.h"
 
 using namespace glm;
 
@@ -16,6 +19,9 @@ RenderWorld::RenderWorld() {
 	setLight(2, vec3(-100.0, 100.0, 100.0), vec3(20000.0, 20000.0, 20000.0));
 	setLight(3, vec3(-100.0, 100.0, -100.0), vec3(20000.0, 20000.0, 20000.0));
 	lightsInUse[0] = lightsInUse[1] = lightsInUse[2] = lightsInUse[3] = true;
+
+	//load the skybox
+	loadCubemap();
 }
 
 RenderWorld::~RenderWorld() {
@@ -49,6 +55,26 @@ void RenderWorld::renderElements() {
 		}
 	}
 	//std::cout<<"rendering"<<std::endl;
+}
+
+void RenderWorld::renderCubemap() {
+	glDepthFunc(GL_LEQUAL);
+	glDisable(GL_CULL_FACE);
+	glUseProgram(cubemap.shaderID);
+	ShaderUniforms::setMat4(cubemap.shaderID, "view", mat4(mat3(cameraDetails.view)));
+	ShaderUniforms::setMat4(cubemap.shaderID, "projection", cameraDetails.projection);
+//	passCamera(cubemap.shaderID);
+	//	view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+	//	skyboxShader.setMat4("view", view);
+	//	skyboxShader.setMat4("projection", projection);
+	// skybox cube
+	glBindVertexArray(cubemap.model.VAO);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap.textureID);
+	glDrawElements(GL_TRIANGLES, cubemap.model.trisCount, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+	glEnable(GL_CULL_FACE);
+	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
 void RenderWorld::updateCamera(glm::mat4& view, glm::mat4& projection, glm::vec3& location) {
@@ -172,4 +198,29 @@ void RenderWorld::activateTextures(RendererModel sModel) {
 	glBindTexture(GL_TEXTURE_2D, sModel.texture.normal);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, sModel.texture.emission);
+}
+
+//TODO fix this method, shaders are probably broken
+void RenderWorld::loadCubemap() {
+	glGenTextures(1, &cubemap.textureID);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap.textureID);
+
+	std::vector<std::string> names; 
+	names = {
+		"stars_right1.png",
+		"stars_left2.png",
+		"stars_top3.png",
+		"stars_bottom4.png",
+		"stars_front5.png",
+		"stars_back6.png" };
+	std::string folder = "cubemap";
+	cubemap.textureID = TextureDataManager::getCubemapData(folder, names)->textureID;
+
+	cubemap.shaderID = ShaderDataManager::getShaderData("cubemap")->shaderID;
+
+	ModelData *tempModelData = ModelDataManager::getModelData("cube.obj");
+	
+	cubemap.model.VAO = tempModelData->meshes[0].VAO;
+	cubemap.model.trisCount = tempModelData->meshes[0].indices.size();
 }

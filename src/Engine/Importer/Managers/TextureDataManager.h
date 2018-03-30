@@ -18,6 +18,7 @@ public:
 	~TextureDataManager() = default;
 	static TextureData* getTextureData(std::string textureName);
 	static TextureData* getImageData(std::string imageName);
+	static TextureData* getCubemapData(std::string folder, std::vector<std::string> faces);
 	static GLuint defaultAlbedo();
 	static GLuint defaultRoughness();
 	static GLuint defaultMetalness();

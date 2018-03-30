@@ -1,5 +1,5 @@
 //
-// Created by Sebastian on 12/23/2017.
+// The main game loop that (hopefully) refreshes at least 60 times a second
 //
 
 #include "Core.h"
@@ -54,7 +54,7 @@ Core::Core(int *screenWidth,int *screenHeight, GLFWwindow *window, bool gamePaus
         printf( "No data found in current dir, looking up one folder...\n");
         dataPath = "../data/";
     } else {
-        printf("Data found!");
+        printf("Data found!\n");
     }
 }
 

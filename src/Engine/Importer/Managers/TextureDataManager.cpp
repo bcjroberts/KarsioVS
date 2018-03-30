@@ -30,6 +30,21 @@ TextureData* TextureDataManager::getImageData(std::string imageName) {
 	return result;
 }
 
+TextureData* TextureDataManager::getCubemapData(std::string folder, std::vector<std::string> faces) {
+	TextureData* result = textureDataMap[folder];
+	if (!result) {
+		result = new TextureData();
+		//Fix the faces list to contain the full path to the resource
+		for (int i = 0; i < faces.size(); ++i) {
+			faces[i] = Core::dataPath + "assets/textures/" + folder + "/" + faces[i];
+		}
+		result->loadCubemap(faces); //load/make a cubemap
+		textureDataMap.insert_or_assign(folder, result);
+	}
+	//	std::cout << shaderName << std::endl;
+	return result;
+}
+
 GLuint TextureDataManager::texAlbedo;
 GLuint TextureDataManager::texRoughness;
 GLuint TextureDataManager::texMetalness;
