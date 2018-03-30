@@ -415,37 +415,6 @@ void Logic::decide(Entity* entity) {
 	}
 }
 
-void Logic::reactToAttack(Entity* entity) {
-	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
-
-	switch (ai->getPersonality()) {
-	case AIComponent::RANDOM:
-		ai->state = randomNum(0, 1) ? FINDING_SAFETY : RETALIATE;
-		break;
-	case AIComponent::GRINDER:
-		if (static_cast<UpgradeComponent*>(entity->getComponent(UPGRADE))->fullyUpgraded()) {
-			ai->state = RETALIATE;
-		}
-		else {
-			ai->state = FINDING_SAFETY;
-		}
-		break;
-	case AIComponent::GLASS_CANNON:
-		if (ai->state == SEEKING_CRYSTAL) {
-			ai->state = FINDING_SAFETY;
-		}
-		else {
-			ai->state = RETALIATE;
-		}
-		break;
-	case AIComponent::KILL_ONLY:
-		ai->state = RETALIATE;
-		break;
-	case AIComponent::DEFENSIVE:
-		ai->state = RETALIATE;
-		break;
-	}
-}
 
 const float raycastOffsets[3] = {4.f, 5.f, 7.f};
 
@@ -493,22 +462,20 @@ void Logic::finiteStateMachine(Entity* entity) {
 		upgrade(entity);
 	}
 
-	// TODO: find closest crystals
-
 	int i;
 	switch (ai->state) {
 	case DECIDING:
 		//std::cout << entity->id << " deciding" << std::endl;
-        ai->goal = nullptr;
+		ai->goal = nullptr;
 		decide(entity);
 		break;
 	case FINDING_CRYSTAL:
 		//std::cout << entity->id << " searching for crystal path" << std::endl;
-        if (world->getCrystals()->empty()) {
-            ai->state = FINDING_PLAYER;
-            break;
-        }
-		ai->goal = world->getCrystals()->at(randomNum(0, world->getCrystals()->size()-1));
+		if (world->getCrystals()->empty()) {
+			ai->state = FINDING_PLAYER;
+			break;
+		}
+		ai->goal = world->getCrystals()->at(randomNum(0, world->getCrystals()->size() - 1));
 		if (ai->goal != nullptr)
 			findPath(generator, entity, ai->goal->getPosition());
 		if (ai->path.size() > 0) {
@@ -520,21 +487,21 @@ void Logic::finiteStateMachine(Entity* entity) {
 		break;
 	case SEEKING_CRYSTAL:
 		if (ai->getAttackerID() != -1) {
-			ai->state = REACT_TO_ATTACK;
+			ai->state = RETALIATE;
 			break;
 		}
 		aiMovement(entity);
 		//std::cout << entity->id << " seeking crystal" << std::endl;
 		if (ai->currentWaypointIndex == ai->path.size() - 1 || ai->isDestinationInLOS) {
 			ai->state = MINING;
-            ai->orbitingSimTime = Core::simtimeSinceStartup;
+			ai->orbitingSimTime = Core::simtimeSinceStartup;
 		}
 		break;
 	case MINING:
-        if (ai->getAttackerID() != -1) {
-            ai->state = REACT_TO_ATTACK;
-            break;
-        }
+		if (ai->getAttackerID() != -1) {
+			ai->state = RETALIATE;
+			break;
+		}
 		//std::cout << entity->id << " mining crystal" << std::endl;
 		mine(entity);
 		break;
@@ -559,7 +526,10 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		break;
 	case SEEKING_PLAYER:
-		
+		if (ai->getAttackerID() != -1) {
+			ai->state = RETALIATE;
+			break;
+		}
 		aiMovement(entity);
 		if (ai->currentWaypointIndex == ai->path.size() - 1 || ai->isDestinationInLOS) {
 			ai->state = ATTACKING;
@@ -571,28 +541,27 @@ void Logic::finiteStateMachine(Entity* entity) {
 			findPath(generator, entity, ai->goal->getPosition());
 			if (ai->path.size() > 0) {
 				ai->state = SEEKING_PLAYER;
-			} else { // No path so go back to deciding
-                ai->state = DECIDING;
 			}
-		} else if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 75.f) { // If the target gets further away than we can detect, stop attacking.
-		    ai->state = DECIDING;
+			else { // No path so go back to deciding
+				ai->state = DECIDING;
+			}
+		}
+		else if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 75.f) { // If the target gets further away than we can detect, stop attacking.
+			ai->state = DECIDING;
 		}
 		attack(ai->goal, entity);
 		break;
 	case STUCK:
 		unstuck(entity, generator);
 		break;
-	case REACT_TO_ATTACK:
-		reactToAttack(entity);
-		break;
 	case RETALIATE:
 		//std::cout << entity->id << " retaliating against " << ai->getAttackerID() << std::endl;
 		ai->goal = EntityManager::getInstance()->getVehicleEntityWithID(ai->getAttackerID());
-        if (ai->goal == nullptr) {
-            ai->state = DECIDING;
-            ai->setAttackerID(-1);
-            break;
-        }
+		if (ai->goal == nullptr) {
+			ai->state = DECIDING;
+			ai->setAttackerID(-1);
+			break;
+		}
 		findPath(generator, entity, ai->goal->getPosition());
 		if (ai->path.size() > 0) {
 			ai->state = SEEKING_PLAYER;
@@ -600,27 +569,6 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		aiMovement(entity);
 		break;
-	case FINDING_SAFETY:
-		// just go to its opposite position wahahahahaaaa
-		ai->goal = EntityManager::getInstance()->getVehicleEntityWithID(ai->getAttackerID());
-        if (ai->goal == nullptr) {
-            ai->state = DECIDING;
-            ai->setAttackerID(-1);
-            break;
-        }
-		findPath(generator, entity, ai->goal->getPosition() * -1.0f);
-		//std::cout << entity->id << " fleeing to " << ai->goal->getPosition().x * -1.f << ", " << ai->goal->getPosition().z * -1.f << std::endl;
-		if (ai->path.size() > 0) {
-			ai->state = FLEEING;
-			ai->setAttackerID(-1);
-		}
-		break;
-	case FLEEING:
-		if (ai->currentWaypointIndex == ai->path.size() - 1) {
-			ai->state = DECIDING;
-		}
-		aiMovement(entity);
-        break;
 	}
 }
 
