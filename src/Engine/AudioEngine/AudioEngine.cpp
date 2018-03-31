@@ -103,13 +103,13 @@ void AudioEngine::unloadSound(const std::string& strSoundName)
 
 int AudioEngine::playSounds(const std::string& strSoundName, const glm::vec3& vPosition, float fVolumedB)
 {
-    std::cout << "Attempting to play sound." << std::endl;
+    //std::cout << "Attempting to play sound." << std::endl;
     int nChannelId = sgpImplementation->mnNextChannelId++;
-    std::cout << "Assigned to channel: " << nChannelId << std::endl;
+    //std::cout << "Assigned to channel: " << nChannelId << std::endl;
     auto tFoundIt = sgpImplementation->mSounds.find(strSoundName);
     if (tFoundIt == sgpImplementation->mSounds.end())
     {
-        std::cout<< "Sound located in soundbank" << std::endl;
+        //std::cout<< "Sound located in soundbank" << std::endl;
         loadSound(strSoundName);
         tFoundIt = sgpImplementation->mSounds.find(strSoundName);
         if (tFoundIt == sgpImplementation->mSounds.end())
@@ -127,11 +127,11 @@ int AudioEngine::playSounds(const std::string& strSoundName, const glm::vec3& vP
         
         if (currMode & FMOD_3D) {
             FMOD_VECTOR position = vectorToFmod(vPosition);
-            std::cout << "Attempting to play sound in 3D." << std::endl;
-            std::cout << "sound position at:" << position.x << ", " << position.y << ", " << position.z << std::endl;
+            //std::cout << "Attempting to play sound in 3D." << std::endl;
+            //std::cout << "sound position at:" << position.x << ", " << position.y << ", " << position.z << std::endl;
             AudioEngine::ErrorCheck(pChannel->set3DAttributes(&position, nullptr));
             AudioEngine::ErrorCheck(sgpImplementation->mpSystem->set3DListenerAttributes(0, &AudioEngine::vectorToFmod(AudioEngine::listenerPos), 0, &AudioEngine::vectorToFmod(AudioEngine::forward), 0));
-            std::cout << "Listener position at: " << AudioEngine::listenerPos.x << ", " << AudioEngine::listenerPos.y << ", " << AudioEngine::listenerPos.z << std::endl;
+            //std::cout << "Listener position at: " << AudioEngine::listenerPos.x << ", " << AudioEngine::listenerPos.y << ", " << AudioEngine::listenerPos.z << std::endl;
         }
         AudioEngine::ErrorCheck(pChannel->setVolume(dbToVolume(fVolumedB)));
         AudioEngine::ErrorCheck(pChannel->setPaused(false));

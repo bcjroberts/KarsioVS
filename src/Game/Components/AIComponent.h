@@ -13,7 +13,7 @@ private:
 	int personality = rand() % NUM_PERSONALITIES;
 
 public:
-	enum personalityTypes { GRINDER, KILL_ONLY, RANDOM, GLASS_CANNON, DEFENSIVE, NUM_PERSONALITIES };
+	enum personalityTypes { KILL_ONLY, RANDOM, GLASS_CANNON, DEFENSIVE, NUM_PERSONALITIES };
 
 	std::vector<glm::vec3> path;
 	Entity * goal = nullptr;

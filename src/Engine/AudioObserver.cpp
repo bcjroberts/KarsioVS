@@ -6,10 +6,10 @@ void AudioObserver::onNotify(Event anEvent) {
 }
 
 void AudioObserver::onAudioNotify(AudioEvent anEvent) {
-        std::cout << "Received request for " + anEvent.soundfile << std::endl;
-        std::cout << "Queue size before push = " << audioQueue.size() << std::endl;
+        //std::cout << "Received request for " + anEvent.soundfile << std::endl;
+        //std::cout << "Queue size before push = " << audioQueue.size() << std::endl;
         audioQueue.push(anEvent); // push event if it is a sound event
-        std::cout << "Queue size after push = " << audioQueue.size() << std::endl;
+        //std::cout << "Queue size after push = " << audioQueue.size() << std::endl;
 }
 
 AudioEvent AudioObserver::nextAudioEvent() {

@@ -338,13 +338,6 @@ void Logic::upgrade(Entity* entity) {
 		}
 		uc->upgradeVehicle(type);
 		break;
-	case AIComponent::GRINDER:
-		type = UpgradeType(randomNum(0, 3));
-		while (!uc->canUpgradeType(type)) {
-			type = UpgradeType(randomNum(0, 3));
-		}
-		uc->upgradeVehicle(type);
-		break;
 	case AIComponent::GLASS_CANNON:
 		if (uc->canUpgradeType(UpgradeType::GUN_UPGRADE)) {
 			uc->upgradeVehicle(UpgradeType::GUN_UPGRADE);
@@ -385,14 +378,6 @@ void Logic::decide(Entity* entity) {
 			ai->state = FINDING_PLAYER;
 		}
 		break;
-	case AIComponent::GRINDER:
-		if (static_cast<UpgradeComponent*>(entity->getComponent(UPGRADE))->fullyUpgraded()) {
-			ai->state = FINDING_PLAYER;
-		}
-		else {
-			ai->state = FINDING_CRYSTAL;
-		}
-		break;
 	case AIComponent::GLASS_CANNON:
 		if (static_cast<UpgradeComponent*>(entity->getComponent(UPGRADE))->getGunLevel() < 5) {
 			ai->state = randomNum(0, 1) ? FINDING_CRYSTAL : FINDING_PLAYER;
@@ -406,7 +391,7 @@ void Logic::decide(Entity* entity) {
 		break;
 	case AIComponent::DEFENSIVE:
 		if (static_cast<UpgradeComponent*>(entity->getComponent(UPGRADE))->getArmorLevel() < 5) {
-			ai->state = FINDING_CRYSTAL;
+			ai->state = randomNum(0, 1) ? FINDING_CRYSTAL : FINDING_PLAYER;
 		}
 		else {
 			ai->state = FINDING_PLAYER;
@@ -486,7 +471,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		break;
 	case SEEKING_CRYSTAL:
-		if (ai->getAttackerID() != -1) {
+		if (ai->getAttackerID() == 0) {
 			ai->state = RETALIATE;
 			break;
 		}
@@ -498,17 +483,13 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		break;
 	case MINING:
-		if (ai->getAttackerID() != -1) {
-			ai->state = RETALIATE;
-			break;
-		}
 		//std::cout << entity->id << " mining crystal" << std::endl;
 		mine(entity);
 		break;
 	case FINDING_PLAYER:
 		//std::cout << entity->id << " searching for player path" << std::endl;
 		// higher chance of attacking human player
-		if (randomNum(0, 10) < 5) {
+		if (randomNum(0, 10) < 7) {
 			i = 0;
 		}
 		else {
@@ -526,7 +507,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		break;
 	case SEEKING_PLAYER:
-		if (ai->getAttackerID() != -1) {
+		if (ai->getAttackerID() == 0) {
 			ai->state = RETALIATE;
 			break;
 		}
@@ -546,7 +527,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 				ai->state = DECIDING;
 			}
 		}
-		else if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 75.f) { // If the target gets further away than we can detect, stop attacking.
+		else if (glm::distance(ai->goal->getPosition(), entity->getPosition()) > 175.f) { // If the target gets further away than we can detect, stop attacking.
 			ai->state = DECIDING;
 		}
 		attack(ai->goal, entity);
