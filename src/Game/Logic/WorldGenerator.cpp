@@ -142,7 +142,7 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions, int gridS
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
 
 	// create crystals of variable sizes
-	for (int i = 0; i < 45; i++) {
+	for (int i = 0; i < 25; i++) {
 		std::uniform_real_distribution<float> urd{ 0.5, 2.5 };
 		float resourceAmount = urd(dre);
 
