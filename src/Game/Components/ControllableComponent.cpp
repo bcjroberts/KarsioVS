@@ -48,7 +48,7 @@ void ControllableComponent::getInput() {
         input.steering = -boundInput(axes[GAMEPAD_LEFT_JOYSTICK_X], -1.f, 1.f);
         input.handbrake = buttons[GAMEPAD_B] ? 1.f : 0.f;
 		input.flip = buttons[GAMEPAD_Y];
-        input.shoot = buttons[GAMEPAD_RB];
+        input.shoot = buttons[GAMEPAD_LB] || buttons[GAMEPAD_A];
 
         upInput.upgradeChassis = buttons[GAMEPAD_DPAD_UP];
         upInput.upgradeArmor = buttons[GAMEPAD_DPAD_RIGHT];
