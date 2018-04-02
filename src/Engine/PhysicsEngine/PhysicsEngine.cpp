@@ -160,7 +160,7 @@ snippetvehicle::VehicleDesc initVehicleDesc()
     //The moment of inertia is just the moment of inertia of a cuboid but modified for easier steering.
     //Center of mass offset is 0.65m above the base of the chassis and 0.25m towards the front.
     const physx::PxF32 chassisMass = 1500.0f;
-    const physx::PxVec3 chassisDims(3.0f, 2.0f, 5.0f);
+    const physx::PxVec3 chassisDims(3.0f, 2.5f, 5.0f);
     const physx::PxVec3 chassisMOI
         ((chassisDims.y*chassisDims.y + chassisDims.z*chassisDims.z)*chassisMass / 12.0f,
             (chassisDims.x*chassisDims.x + chassisDims.z*chassisDims.z)*0.8f*chassisMass / 12.0f,
@@ -334,39 +334,21 @@ PhysicsEngine* PhysicsEngine::getInstance()
     return globalInstance;
 }
 
-// When using a digital controller, how quickly the value reaches 1.
-physx::PxVehicleKeySmoothingData gKeySmoothingData =
-{
-    {
-        6.0f,	//rise rate eANALOG_INPUT_ACCEL
-        6.0f,	//rise rate eANALOG_INPUT_BRAKE		
-        6.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-        2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
-        2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
-    },
-    {
-        10.0f,	//fall rate eANALOG_INPUT_ACCEL
-        10.0f,	//fall rate eANALOG_INPUT_BRAKE		
-        10.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-        5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT
-        5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT
-    }
-};
 physx::PxVehiclePadSmoothingData gPadSmoothingData =
 {
     {
         12.0f,	//rise rate eANALOG_INPUT_ACCEL
         12.0f,	//rise rate eANALOG_INPUT_BRAKE		
         12.0f,	//rise rate eANALOG_INPUT_HANDBRAKE	
-        5.f,	//rise rate eANALOG_INPUT_STEER_LEFT
-        5.f,	//rise rate eANALOG_INPUT_STEER_RIGHT
+        2.5f,	//rise rate eANALOG_INPUT_STEER_LEFT
+        2.5f,	//rise rate eANALOG_INPUT_STEER_RIGHT
     },
     {
         20.0f,	//fall rate eANALOG_INPUT_ACCEL
         20.0f,	//fall rate eANALOG_INPUT_BRAKE		
         20.0f,	//fall rate eANALOG_INPUT_HANDBRAKE	
-        10.0f,	//fall rate eANALOG_INPUT_STEER_LEFT
-        10.0f	//fall rate eANALOG_INPUT_STEER_RIGHT
+        5.0f,	//fall rate eANALOG_INPUT_STEER_LEFT
+        5.0f	//fall rate eANALOG_INPUT_STEER_RIGHT
     }
 };
 physx::PxF32 gSteerVsForwardSpeedData[2 * 8] =
@@ -407,7 +389,6 @@ void PhysicsEngine::simulateTimeInSeconds(float timeInSeconds) const {
 		}
 
 		// Set the vehicle moving
-		//PxVehicleDrive4WSmoothDigitalRawInputsAndSetAnalogInputs(gKeySmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myPxInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
 		PxVehicleDrive4WSmoothAnalogRawInputsAndSetAnalogInputs(gPadSmoothingData, gSteerVsForwardSpeedTable, allVehicleData[i]->myPxInput, timeInSeconds, allVehicleData[i]->isInAir, *allVehicleData[i]->myVehicle);
 
 		vehicles[i] = allVehicleData[i]->myVehicle;

@@ -78,9 +78,6 @@ void setupWheelsSimulationData
 		wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxHandBrakeTorque=10000.0f;
 		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=10000.0f;
 
-        // Steer testing
-        wheels[PxVehicleDrive4WWheelOrder::eREAR_LEFT].mMaxSteer=PxPi*0.025f;
-        wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxSteer=PxPi*0.025f;
 		//Enable steering for the front wheels only.
 		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.15f;
 		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.15f;
