@@ -406,10 +406,12 @@ void Core::runGame() {
             // get the velocity of the vehicle
             glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(playerVehicle->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
             glm::vec3 offset = playerVehicle->getForwardVector();
+			offset =  glm::vec3(offset.x, 0, offset.z); // Prevent the camera from doing weird stuff
 
             float dotProd = glm::dot(velocity, playerVehicle->getForwardVector());
 
             // Makes the cmaera look behind the car at certain speeds.
+			// TODO: Make right bumper be look backward (Also middle mouse button?)
             /*if (dotProd < -30.0f && static_cast<DriveComponent*>(playerVehicle->getComponent(DRIVE))->getBrake()) {
             movingForward = false;
             } else if (dotProd > 5.f) {
