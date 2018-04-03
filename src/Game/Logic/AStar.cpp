@@ -133,7 +133,7 @@ std::vector<glm::vec3> AStar::Generator::findPath(glm::vec2 source, glm::vec2 ta
 			// get coordinates of each possible direction
 			glm::vec2 newCoordinates(current->coordinates + direction[i]);
 			// don't consider coordinate if is collision or already on list
-			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates) || (detectCrystal(newCoordinates) && newCoordinates != target)) {
+			if (detectCollision(newCoordinates) || findNodeOnList(closedSet, newCoordinates) /*|| (detectCrystal(newCoordinates) && newCoordinates != target)*/) {
 				continue;
 			}
 
