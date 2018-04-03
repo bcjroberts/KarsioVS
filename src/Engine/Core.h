@@ -38,6 +38,7 @@ public:
     void coreLoop();
     ~Core();
     static GLFWwindow* globalWindow;
+	static int upgradeLizardId;
     static float simtimeSinceStartup;
     static float realtimeSinceStartup;
     static RenderEngine* renderEngine;

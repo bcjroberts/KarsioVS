@@ -26,8 +26,9 @@ bool TextureData::openTexture(unsigned char* &image, int &imageLayers, std::stri
 			useFormat = GL_RGB;
 		}
 		else {
+			image = stbi_load(filename.c_str(), &imageWidth, &imageHeight, &imageLayers, STBI_rgb_alpha);
 			openFormat = GL_RGBA;
-			useFormat = GL_RGB;
+			useFormat = GL_RGBA;
 		}
 		return true;
 	}

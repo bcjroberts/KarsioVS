@@ -8,6 +8,7 @@
 #include <random>
 #include <chrono>
 #include "../../Engine/AudioPaths.h"
+#include "../../Engine/Importer/Managers/TextureDataManager.h"
 
 Logic::Logic(){
 };
@@ -25,10 +26,18 @@ void Logic::displayUpgradeUI(UpgradeComponent* upgradeComp) {
 		if (upgradeText != -1) {
 			Core::renderEngine->ui->removeText(upgradeText);
 			upgradeText = -1;
+			//Core::renderEngine->ui->removeImage(currentImageUiIds[0]);
+			//currentImageUiIds.clear();
+			float scale = 0;
+			Core::renderEngine->ui->modifyImage(Core::upgradeLizardId, nullptr, nullptr, &scale);
 		}
 		return;
 	} else if (upgradeText == -1) {
-		upgradeText = Core::renderEngine->ui->addText("Upgrade Available: Press X to Choose", 350, 20, 1.4f, glm::vec3(1, 1, 0));
+		float scale = 1;
+		Core::renderEngine->ui->modifyImage(Core::upgradeLizardId, nullptr, nullptr, &scale);
+		upgradeText = Core::renderEngine->ui->addText("Upgrade Available", 1610, 557, 0.40f, glm::vec3(0.8, 1, 1));
+
+		//upgradeText = Core::renderEngine->ui->addText("Upgrade Available: Press X to Choose", 350, 20, 1.4f, glm::vec3(1, 1, 0));
 	}
 }
 

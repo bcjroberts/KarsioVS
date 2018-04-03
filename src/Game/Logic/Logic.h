@@ -25,6 +25,7 @@ vehicleInput * movePlayer;
 DriveComponent * playerDrive;
 AudioObservable * audioEvents;
 private:
+	std::vector<int> currentImageUiIds;
 	enum States {
 		DECIDING,
 		FINDING_CRYSTAL,
@@ -34,10 +35,7 @@ private:
 		MINING,
 		ATTACKING,
 		STUCK,
-		REACT_TO_ATTACK,
-		RETALIATE,
-		FINDING_SAFETY,
-		FLEEING
+		RETALIATE
 	};
 public:        
     Logic();
@@ -50,8 +48,6 @@ public:
     void flipVehicle(Entity* vehicle) const;
     void bindCamera(Camera* aCamera);
 	void findPath(AStar::Generator* generator, Entity* entity, glm::vec3 goal);
-	//void findPath(AStar::Generator* generator, glm::vec3 start, glm::vec3 goal);
-	//void finiteStateMachine(Entity* entity, AStar::Generator* generator, WorldGenerator* world);
 	void finiteStateMachine(Entity* entity);
 	void mine(Entity* entity);
 	void attack(Entity* goal, Entity* entity);
@@ -60,7 +56,6 @@ public:
 	int randomNum(int min, int max);
 	void upgrade(Entity* entity);
 	void decide(Entity* entity);
-	void reactToAttack(Entity* entity);
     bool isGoalInLOS(Entity* originEnt, Entity* destEnt);
     ~Logic();
 };
