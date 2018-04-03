@@ -7,7 +7,6 @@
 
 
 UpgradeComponent::UpgradeComponent() : Component(UPGRADE) {
-    timeSinceLastUpgrade = Core::realtimeSinceStartup;
 }
 
 
@@ -22,7 +21,7 @@ float UpgradeComponent::getCurrentRamMultiplier() {
 }
 
 bool UpgradeComponent::isUpgradeAvailable() const {
-    return (resources >= resourcesForNextLevel && Core::realtimeSinceStartup - timeSinceLastUpgrade > 1.0f) &&
+    return (resources >= resourcesForNextLevel) &&
     (chassisLevel < 3 || gunLevel < 5 || ramLevel < 5 || armorLevel < 5); // Can't upgrade if we are fully upgraded
 }
 
@@ -49,7 +48,6 @@ bool UpgradeComponent::upgradeVehicle(UpgradeType type) {
     resources -= resourcesForNextLevel;
     resourcesForNextLevel *= increasedResourceAmountModifier;
     numberOfUpgrades++;
-    timeSinceLastUpgrade = Core::realtimeSinceStartup;
 
     if (type == CHASSIS_UPGRADE) {
         chassisLevel++;

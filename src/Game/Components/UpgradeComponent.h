@@ -27,9 +27,8 @@ private:
     // The gun changes are a bit more drastic.
     float gunROFChange[5] = {3.f, 5.f, 7.f, 9.0f, 12.0f}; // Per second
     float gunDamageChange[5] = {3.f, 4.f, 5.f, 6.f, 7.f};
-    float projectileSpeedChange[5] = {250.f, 275.f, 300.f, 325.f, 350.f};
+    float projectileSpeedChange[5] = {275.f, 275.f, 275.f, 275.f, 275.f};
 
-    float timeSinceLastUpgrade = 0.0f;
 public:
     UpgradeComponent();
     ~UpgradeComponent();

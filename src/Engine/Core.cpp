@@ -25,6 +25,8 @@ RenderEngine* Core::renderEngine = nullptr;
 std::string Core::dataPath = "data/";
 std::vector<Camera*> Core::cameras;
 
+glm::vec3 Core::menuBaseTextColor(0,0,0);
+glm::vec3 Core::menuSelectedTextColor(0,1,0);
 // string names rather than paths
 
 
@@ -271,14 +273,14 @@ void Core::runGame() {
         if (!replayUIShown) { // only allow pausing if the game is not over
             properties.isPaused = true;
         }
-	} else if (upgradeButtonPressed && properties.isInUpgradeMenu == false && playerUC->isUpgradeAvailable()) {
+        pauseButtonPressed = false;
+	} else if (upgradeButtonPressed && properties.isInUpgradeMenu == false) {
 		if (!replayUIShown) {
 			properties.isInUpgradeMenu = true;
 			properties.isPaused = true;
 		}
+        upgradeButtonPressed = false;
 	}
-	upgradeButtonPressed = false;
-	pauseButtonPressed = false;
 
     if (replayUIShown == false && isPlayerDead) { // Defeat!
         renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
@@ -476,16 +478,16 @@ void Core::runMenu() {
         case OPTIONS:
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
             
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, glm::vec3(1, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 100, 400, 1, glm::vec3(1, 1, 0), 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 100, 400, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 1;
             break;
         case GAMEMODES:
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 300));
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 140, 335, 0.7, glm::vec3(0, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, glm::vec3(1, 1, 0), 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 140, 335, 0.7,menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 2;
             break;
         default: // Default is the MAINMENU
@@ -493,9 +495,9 @@ void Core::runMenu() {
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 450));
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Play Game", 140, 330, 1, glm::vec3(0, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 140, 480, 1, glm::vec3(1, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 140, 630, 1, glm::vec3(1, 1, 0), 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Play Game", 140, 330, 1, menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 140, 480, 1, menuBaseTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 140, 630, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 3;
             break;
         }
@@ -574,9 +576,9 @@ void Core::runMenu() {
     // Make the current selection green
     for (int i = 0; i < currentTextUiIds.size(); ++i) {
         if (i == currentChoiceIndex) {
-            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(0,1,0), nullptr);
+            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &menuSelectedTextColor, nullptr);
         } else {
-            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &glm::vec3(1,1,0), nullptr);
+            renderEngine->ui->modifyText(currentTextUiIds[i],nullptr, nullptr, nullptr, nullptr, &menuBaseTextColor, nullptr);
         }
     }
 
@@ -639,8 +641,8 @@ void Core::runPauseMenu() {
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, glm::vec3(1, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 75, 400, 1, glm::vec3(1, 1, 0), 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 75, 400, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 1;
             break;
         default: // Default is the PAUSEMENU
@@ -649,9 +651,9 @@ void Core::runPauseMenu() {
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
             currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Resume", 140, 330, 1, glm::vec3(0, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 140, 480, 1, glm::vec3(1, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 140, 630, 1, glm::vec3(1, 1, 0), 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Resume", 140, 330, 1, menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 140, 480, 1, menuBaseTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 140, 630, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 3;
             break;
         }
@@ -762,10 +764,10 @@ void Core::runPauseMenu() {
     // Make the current selection green
     for (int i = 0; i < currentTextUiIds.size(); ++i) {
         if (i == currentChoiceIndex) {
-            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(0, 1, 0), nullptr);
+            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &menuSelectedTextColor, nullptr);
         }
         else {
-            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(1, 1, 0), nullptr);
+            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &menuBaseTextColor, nullptr);
         }
     }
 }
@@ -781,8 +783,8 @@ void Core::runEndGameMenu() {
         currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 700));
         currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 150, 300));
 
-        currentTextUiIds.push_back(renderEngine->ui->addText("Play Again", 240, 430, 1, glm::vec3(0, 1, 0), 1));
-        currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 240, 730, 1, glm::vec3(1, 1, 0), 1));
+        currentTextUiIds.push_back(renderEngine->ui->addText("Play Again", 240, 430, 1, menuSelectedTextColor, 1));
+        currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 240, 730, 1, menuBaseTextColor, 1));
 
         currentChoiceIndex = 0;
         maxChoiceIndex = 2;
@@ -848,10 +850,10 @@ void Core::runEndGameMenu() {
     // Make the current selection green
     for (int i = 0; i < currentTextUiIds.size(); ++i) {
         if (i == currentChoiceIndex) {
-            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(0, 1, 0), nullptr);
+            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &menuSelectedTextColor, nullptr);
         }
         else {
-            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(1, 1, 0), nullptr);
+            renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &menuBaseTextColor, nullptr);
         }
     }
 
@@ -871,6 +873,11 @@ void Core::runUpgradeMenu() {
 
 		currentImageUiIds.clear();
 		currentTextUiIds.clear();
+
+        if (!uc->isUpgradeAvailable()) {
+            currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("button1Small.jpg"), 610, 175, 2.6, 1));
+            constantTextUI.push_back(Core::renderEngine->ui->addText("You need to Collect More Crystals!", 635, 200, 1, glm::vec3(0.95, 0.5, 0.15), 1));
+        }
 
 		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 275));
 		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 400));
@@ -987,45 +994,49 @@ void Core::runUpgradeMenu() {
 		int buttonCount, axesCount;
 		const float *axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
 		const unsigned char *buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
-		if (buttons[GAMEPAD_DPAD_DOWN] || axes[GAMEPAD_LEFT_JOYSTICK_Y] < -0.5f) {
+		if ((buttons[GAMEPAD_DPAD_DOWN] || axes[GAMEPAD_LEFT_JOYSTICK_Y] < -0.5f) && uc->isUpgradeAvailable()) {
 			if (!previouslyPressed) {
 				currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
 			}
 			previouslyPressed = true;
 		}
-		else if (buttons[GAMEPAD_DPAD_UP] || axes[GAMEPAD_LEFT_JOYSTICK_Y] > 0.5f) {
+		else if ((buttons[GAMEPAD_DPAD_UP] || axes[GAMEPAD_LEFT_JOYSTICK_Y] > 0.5f) && uc->isUpgradeAvailable()) {
 			if (!previouslyPressed) {
 				currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1 : currentChoiceIndex - 1;
 			}
 			previouslyPressed = true;
 		}
-		else if (buttons[GAMEPAD_A]) {
+		else if (buttons[GAMEPAD_A] && uc->isUpgradeAvailable()) {
 			if (!previouslyPressed) {
 				enterPressed = true;
 			}
 			previouslyPressed = true;
 		}
+        else if (buttons[GAMEPAD_X]) {
+            if (!previouslyPressed) {
+                pauseButtonPressed = true;
+            }
+            previouslyPressed = true;
+        }
 		else {
 			previouslyPressed = false;
 		}
 	}
 	else { // KEYBOARD IMPLEMENTATION
-		if (keyPressedUp) {
+		if (keyPressedUp && uc->isUpgradeAvailable()) {
 			currentChoiceIndex = currentChoiceIndex == 0 ? maxChoiceIndex - 1 : currentChoiceIndex - 1;
 			keyPressedUp = false;
 		}
-		else if (keyPressedDown) {
+		else if (keyPressedDown && uc->isUpgradeAvailable()) {
 			currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
 			keyPressedDown = false;
 		}
 	}
 
-	if (enterPressed) {
+	if (enterPressed && uc->isUpgradeAvailable()) {
 		enterPressed = false;
 		if (uc->canUpgradeType(upgrades[currentChoiceIndex]))
 			uc->upgradeVehicle(upgrades[currentChoiceIndex]);
-		properties.isPaused = false;
-		properties.isInUpgradeMenu = false;
 		upgradeMenuInitialized = false;
 
 		for (int i = 0; i < currentImageUiIds.size(); ++i) {
@@ -1040,15 +1051,39 @@ void Core::runUpgradeMenu() {
 			renderEngine->ui->removeText(constantTextUI[i]);
 		}
 		constantTextUI.clear();
+	} else {
+	    enterPressed = false;
 	}
+
+    if (pauseButtonPressed || upgradeButtonPressed) {
+        upgradeMenuInitialized = false;
+        pauseButtonPressed = false;
+        upgradeButtonPressed = false;
+        properties.isInUpgradeMenu = false;
+        properties.isPaused = false;
+        upgradeMenuInitialized = false;
+
+        for (int i = 0; i < currentImageUiIds.size(); ++i) {
+            renderEngine->ui->removeImage(currentImageUiIds[i]);
+        }
+        currentImageUiIds.clear();
+        for (int i = 0; i < currentTextUiIds.size(); ++i) {
+            renderEngine->ui->removeText(currentTextUiIds[i]);
+        }
+        currentTextUiIds.clear();
+        for (int i = 0; i < constantTextUI.size(); ++i) {
+            renderEngine->ui->removeText(constantTextUI[i]);
+        }
+        constantTextUI.clear();
+    }
 
 	// Make the current selection green
 	for (int i = 0; i < currentTextUiIds.size(); ++i) {
 		if (i == currentChoiceIndex) {
-			renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(0, 1, 0), nullptr);
+			renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &menuSelectedTextColor, nullptr);
 		}
 		else {
-			renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &glm::vec3(1, 1, 0), nullptr);
+			renderEngine->ui->modifyText(currentTextUiIds[i], nullptr, nullptr, nullptr, nullptr, &menuBaseTextColor, nullptr);
 		}
 	}
 }

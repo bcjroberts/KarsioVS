@@ -44,6 +44,8 @@ public:
     static std::string dataPath;
     static std::vector<Camera*> cameras;
     static bool loadOnlyBoxes;
+    static glm::vec3 menuBaseTextColor;
+    static glm::vec3 menuSelectedTextColor;
 };
 
 
