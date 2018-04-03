@@ -235,7 +235,7 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     rc->isStatic = true;
 
 	float multi = (resourceAmount * resourceAmount + 0.1f);
-	glm::vec3 color(30 * multi, 40 * multi, 80 * multi);
+	glm::vec3 color(30 * multi, 50 * multi, 150 * multi);
     ComponentManager::getInstance()->addStaticLightComponent(entity, entity->getPosition() + glm::vec3(0,1 * resourceAmount,0), color);
 	ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
 
