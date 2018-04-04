@@ -307,12 +307,15 @@ bool Logic::checkStuck(Entity* entity) {
 	}
 }
 
+const float backwardsTime[3] = {0.75f, 1.2f, 2.f};
+
 void Logic::unstuck(Entity* entity, AStar::Generator* generator) {
 	AIComponent* ai = static_cast<AIComponent*>(entity->getComponent(AI));
 	DriveComponent* aiDrive = static_cast<DriveComponent*>(entity->getComponent(DRIVE));
-	
+	UpgradeComponent* uc = static_cast<UpgradeComponent*>(entity->getComponent(UPGRADE));
+
     // Drive backwards for 1 second
-	if (Core::simtimeSinceStartup - ai->stuckStartSimTime < 1.0f) {
+	if (Core::simtimeSinceStartup - ai->stuckStartSimTime < backwardsTime[uc->getChassisLevel() - 1]) {
 		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
