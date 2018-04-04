@@ -120,7 +120,13 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
 
 Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat orientation, float speed, float damage) {
     Entity* projectile = EntityManager::getInstance()->createEntity(origin, orientation, glm::vec3(1));
-    RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, ModelManager::getModel("projectile"), glm::vec3(0), glm::quat(), glm::vec3(1, 1, 12));
+	Model* projectileModel = ModelManager::getModel("projectile");
+	glm::vec3 scale(1,1,12);
+	if (damage > 7.f) {
+		projectileModel = ModelManager::getModel("projectileBig");
+		scale = glm::vec3(2,2,16);
+	}
+    RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, projectileModel, glm::vec3(0), glm::quat(), scale);
     ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);
 
     AudioEvent * fireEvent = new AudioEvent(origin, AudioPaths::getInstance()->rifleShot);
