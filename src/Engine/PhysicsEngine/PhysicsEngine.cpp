@@ -118,7 +118,7 @@ void PhysicsEngine::initPhysics()
     physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = physx::PxVec3(0.0f, -40.f, 0.0f);
 
-    physx::PxU32 numWorkers = 1;
+    physx::PxU32 numWorkers = 2;
     gDispatcher = physx::PxDefaultCpuDispatcherCreate(numWorkers);
     sceneDesc.cpuDispatcher = gDispatcher;
     sceneDesc.filterShader = contactReportFilterShader;
