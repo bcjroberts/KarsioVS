@@ -18,6 +18,7 @@ private:
     glm::vec3 scale;
 public:
     std::vector<Component*> myComponents; // Temporarily moved here
+    std::vector<std::string> myTags;
     int id;
     Entity(glm::vec3 nposition, glm::quat nrotation, glm::vec3 nscale);
     void addComponent(Component* c);

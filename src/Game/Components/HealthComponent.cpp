@@ -49,6 +49,11 @@ bool HealthComponent::isDeathProcessed() {
     return true;
 }
 
+void HealthComponent::addHealth(float x) {
+    health += x;
+    health = health > maxHealth ? maxHealth : health;
+}
+
 int HealthComponent::hitBy() {
 	return hitID;
 }

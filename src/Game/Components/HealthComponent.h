@@ -22,5 +22,6 @@ public:
     void setMaxHealth(float nmaxHealth, bool setHealth = false);
     float getCurrentHealth() {return health; }
     bool isDeathProcessed();
+    void addHealth(float x);
 };
 

@@ -214,12 +214,23 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
         resourceAmount = float(rand() % 2000 + 500) / 1000.0f;
     }
 
+    bool isHealthCrystal = rand() % 100 < 15; // 15% of crystals are health crystals 
+    if (isHealthCrystal) {
+        resourceAmount = 1.25f;
+    }
+
+
     glm::vec3 physicsScale = glm::vec3(1.0f, 4.0f, 1.0f) * resourceAmount;
     glm::vec3 modelScale = glm::vec3(1.0f) * resourceAmount;
     Model* crystalModel = nullptr;
     float heightOffset = 0;
+
     if (resourceAmount <= 1.5f) {
-        crystalModel = ModelManager::getModel("smallCrystal1");
+        if (isHealthCrystal) {
+            crystalModel = ModelManager::getModel("healthCrystal");
+        } else {
+            crystalModel = ModelManager::getModel("smallCrystal1");
+        }
         heightOffset = (physicsScale.y - (modelScale.y + resourceAmount * 0.6f) + 1.5f) / 2.0f;
     } else {
         modelScale *= 0.5f;
@@ -235,7 +246,11 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     rc->isStatic = true;
 
 	float multi = (resourceAmount * resourceAmount + 0.1f);
-	glm::vec3 color(30 * multi, 50 * multi, 150 * multi);
+    glm::vec3 color(30 * multi, 50 * multi, 150 * multi);
+    if (isHealthCrystal) {
+        entity->myTags.emplace_back("HealthCrystal");
+        color = glm::vec3(200 * multi, 40 * multi, 30 * multi);
+    }
     ComponentManager::getInstance()->addStaticLightComponent(entity, entity->getPosition() + glm::vec3(0,1 * resourceAmount,0), color);
 	ComponentManager::getInstance()->addHealthComponent(entity, resourceAmount * 100.f, true);
 

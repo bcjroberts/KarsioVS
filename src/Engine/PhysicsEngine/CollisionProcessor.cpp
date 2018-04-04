@@ -146,7 +146,15 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
     {
         // Add the resources of the crystal to the car whichd estroyed it
         const float crystalValue = crystalHealth->getMaxHealth();
-        static_cast<UpgradeComponent*>(static_cast<Entity*>(carActor->userData)->getComponent(UPGRADE))->addResources(crystalValue);
+
+        if (std::find(crystalEntity->myTags.begin(), crystalEntity->myTags.end(), "HealthCrystal") != crystalEntity->myTags.end()) {
+            // This is a health crystal
+            static_cast<HealthComponent*>(static_cast<Entity*>(carActor->userData)->getComponent(HEALTH))->addHealth(crystalValue / 2.f);
+        } else {
+            static_cast<UpgradeComponent*>(static_cast<Entity*>(carActor->userData)->getComponent(UPGRADE))->addResources(crystalValue);
+        }
+
+        
         AudioEvent fireEvent = AudioEvent(carEntity->getPosition(), rand()%2>0 ? AudioPaths::getInstance()->crysBreak1 : AudioPaths::getInstance()->crysBreak2);
         audioEvents->notifyAudioObservers(fireEvent);
 
