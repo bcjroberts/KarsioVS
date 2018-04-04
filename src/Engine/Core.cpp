@@ -462,7 +462,7 @@ void Core::runMenu() {
         currentMainMenuState = NONE;
         nextMainMenuState = MAINMENU;
 
-       // renderEngine->ui->addText("KARSIO", 90, 140, 2, glm::vec3(0.7, 0.7, 0), 1);
+        //renderEngine->ui->addText("KARSIO", 155, 200, 2, glm::vec3(0.7, 0.7, 0), 1);
         currentChoiceIndex = 0;
 
         menuLightId1 = renderEngine->world->getNextAvailableLightID();
@@ -492,63 +492,68 @@ void Core::runMenu() {
         currentChoiceIndex = 0;
 
 		// for button placement
-		int buttonTop = 100;
-		int buttonTopHeight = 75;
+		int buttonTop = 10;
+		int buttonTopHeight = 73;
 		int buttonHeight = 169;
+		int titleHeight = 250;
 
         switch (currentMainMenuState) {
         case OPTIONS:
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("pauseMenu.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
-			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 200 + buttonHeight * 3, 1, glm::vec3(1, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 155, 190 + buttonHeight, 1, menuBaseTextColor, 1));
 
 			maxChoiceIndex = 1;
 			break;
 		case CONTROLS:
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.jpg"), 500, 200, 0.5));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.png"), 650, 250, 1));
 			
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
-			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 200 + buttonHeight * 3, 1, glm::vec3(1, 1, 0), 1));
-
+			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
+			
             maxChoiceIndex = 1;
             break;
         case GAMEMODES:
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLong.png"), 0, buttonTop + buttonTopHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLong.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 155, 200, 1, menuSelectedTextColor, 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 200 + buttonHeight * 3, 1, menuBaseTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 155, 190 + buttonHeight, 1, menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 2;
             break;
         default: // Default is the MAINMENU			
 			
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button2.png"), 0, buttonTop + buttonTopHeight +buttonHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight*2));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight*3));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight*2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight*3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 			   
-			currentTextUiIds.push_back(renderEngine->ui->addText("Play Game", 155, 200, 1, glm::vec3(0, 1, 0), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Options", 155, 200 + buttonHeight, 1, glm::vec3(1, 1, 0), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Controls", 155, 200 + buttonHeight*2, 1, glm::vec3(1, 1, 0), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 155, 200 + buttonHeight*3, 1, glm::vec3(1, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Play Game", 155, 190 + buttonHeight, 1, glm::vec3(0, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Options", 155, 190 + buttonHeight*2, 1, glm::vec3(1, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Controls", 155, 190 + buttonHeight*3, 1, glm::vec3(1, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 155, 190 + buttonHeight*4, 1, glm::vec3(1, 1, 0), 1));
 
             maxChoiceIndex = 4;
             break;
@@ -678,7 +683,7 @@ void Core::runPauseMenu() {
         nextPauseMenuState = PAUSEMAIN;
         currentChoiceIndex = 0;
 
-        constantTextUI.push_back(renderEngine->ui->addText("Game Paused", 75, 225, 1.25, glm::vec3(1, 1, 0), 1));
+        //constantTextUI.push_back(renderEngine->ui->addText("Game Paused", 155, 300, 1.25, glm::vec3(1, 1, 0), 1));
         properties.isIngameMenuInitialized = true;
     }
 
@@ -695,24 +700,44 @@ void Core::runPauseMenu() {
         }
         currentTextUiIds.clear();
         currentChoiceIndex = 0;
+
+		// for button placement
+		int buttonTop = 200;
+		int buttonTopHeight = 75;
+		int buttonHeight = 169;
+
         switch (currentPauseMenuState) {
         case PAUSEOPTIONS:
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
+            //currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
+            //currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, menuSelectedTextColor, 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 75, 400, 1, menuBaseTextColor, 1));
+            
+
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongPauseSign.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("pauseMenu.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+
+			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 300 + buttonHeight * 3, 1, menuSelectedTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 155, 300 + buttonHeight, 1, menuBaseTextColor, 1));
+
             maxChoiceIndex = 1;
             break;
         default: // Default is the PAUSEMENU
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 300));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 450));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
+            
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongPauseSign.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Resume", 140, 330, 1, menuSelectedTextColor, 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 140, 480, 1, menuBaseTextColor, 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 140, 630, 1, menuBaseTextColor, 1));
+
+            currentTextUiIds.push_back(renderEngine->ui->addText("Resume", 155, 300 + buttonHeight, 1, menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 155, 300 + buttonHeight * 2, 1, menuBaseTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 155, 300 + buttonHeight * 3, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 3;
             break;
         }
@@ -920,17 +945,19 @@ void Core::runEndGameMenu() {
 
 bool upgradeMenuInitialized = false;
 std::vector<UpgradeType> upgrades;
-float selectPanelX = 1000;
-float statPanelX = 600;
+float selectPanelX = 1075;
+float selectPanelY = 115;
+float statPanelX = 660;
+float statPanelY = 112;
 
 void Core::runUpgradeMenu() {
 	
-	glm::vec3 selectionDisabledColour = glm::vec3(0.13, 0.35, 0.53);
-	glm::vec3 selectionColour = glm::vec3(0.26, 0.18, 0.56);
+	glm::vec3 selectionDisabledColour = glm::vec3(0.25, 0.2, 0.22);
+	glm::vec3 selectionColour = glm::vec3(0.26, 0.18, 0.28);
 
-	glm::vec3 generalTextColour = glm::vec3(0.64, 0.79, 0.91);
-	glm::vec3 unavailableTextColour = glm::vec3(0.8, 0.57, 0.56);
-	glm::vec3 availableTextColour = glm::vec3(0.54, 0.75, 0.44);
+	glm::vec3 generalTextColour = glm::vec3(0.16, 0.13, 0.33);
+	glm::vec3 unavailableTextColour = glm::vec3(0.29, 0.04, 0.04);
+	glm::vec3 availableTextColour = glm::vec3(0.04, 0.25, 0.11);
 
 	// Grab the player upgrade component first
 	UpgradeComponent* uc = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE));
@@ -941,77 +968,75 @@ void Core::runUpgradeMenu() {
 		currentTextUiIds.clear();
 
         if (!uc->isUpgradeAvailable()) {
-            currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("button1Small.jpg"), 610, 175, 2.6, 1));
-            constantTextUI.push_back(Core::renderEngine->ui->addText("You need to Collect More Crystals!", 635, 200, 1, glm::vec3(0.95, 0.5, 0.15), 1));
+            currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeMenuNotEnough.png"), 600, 0));
         }
-
-		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 275));
-		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 400));
-		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 525));
-		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), selectPanelX + 50, 650));
-		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), selectPanelX, 250));
+		else {
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("upgradeMenu.png"), 600, 0));
+		}
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("upgradePreview.png"), 0, 20));
 
 		maxChoiceIndex = 0;
 		upgrades.clear();
-
+		// TODO: DISABLE PAUSE WHEN UPGRADING
+		// TODO: DISABLE UPDRADE WHEN PAUSING
 		// Check if chassis should be active
 		if (uc->canUpgradeType(CHASSIS_UPGRADE)) {
 			upgrades.push_back(CHASSIS_UPGRADE);
-			currentTextUiIds.push_back(renderEngine->ui->addText("Chassis", selectPanelX + 90, 305, 1, generalTextColour, 1));
-			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 345, 0.5, availableTextColour, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Chassis", selectPanelX + 90, 300, 1, generalTextColour, 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340, 0.5, availableTextColour, 1));
 		} else {
-			constantTextUI.push_back(renderEngine->ui->addText("Chassis", selectPanelX + 90, 305, 1, selectionDisabledColour, 1));
+			constantTextUI.push_back(renderEngine->ui->addText("Chassis", selectPanelX + 90, 300, 1, selectionDisabledColour, 1));
 			if (uc->getChassisLevel() < 3) {
 				std::ostringstream oss;
 				oss << "Total lvl " << (uc->getNextUpgradeBoundary() + 4) << " Required";
 				std::string requiredTotalLevel = oss.str();
-				constantTextUI.push_back(Core::renderEngine->ui->addText(requiredTotalLevel, statPanelX + 50, 345, 0.5, unavailableTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText(requiredTotalLevel, statPanelX + 50, 340, 0.5, unavailableTextColour, 1));
 				oss.str("");
 				oss.clear();
 			} else {
-				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 345, 0.5, generalTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340, 0.5, generalTextColour, 1));
 			}
 		}
 
 		// Check if gun should be active
 		if (uc->canUpgradeType(GUN_UPGRADE)) {
 			upgrades.push_back(GUN_UPGRADE);
-			currentTextUiIds.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 430, 1, generalTextColour, 1));
-			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 470, 0.5, availableTextColour, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 300 + selectPanelY, 1, generalTextColour, 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY, 0.5, availableTextColour, 1));
 		} else {
-			constantTextUI.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 430, 1, selectionDisabledColour, 1));
+			constantTextUI.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 300 + selectPanelY, 1, selectionDisabledColour, 1));
 			if (uc->getGunLevel() < 5) {
-				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 470, 0.5, unavailableTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY, 0.5, unavailableTextColour, 1));
 			} else {
-				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 470, 0.5, generalTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY, 0.5, generalTextColour, 1));
 			}
 		}
 
 		// Check if armor should be active
 		if (uc->canUpgradeType(ARMOR_UPGRADE)) {
 			upgrades.push_back(ARMOR_UPGRADE);
-			currentTextUiIds.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 555, 1, generalTextColour, 1));
-			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 595, 0.5, availableTextColour, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 300 + selectPanelY*2, 1, generalTextColour, 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY*2, 0.5, availableTextColour, 1));
 		} else {
-			constantTextUI.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 555, 1, selectionDisabledColour, 1));
+			constantTextUI.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 300 + selectPanelY*2, 1, selectionDisabledColour, 1));
 			if (uc->getArmorLevel() < 5) {
-				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 595, 0.5, unavailableTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY*2, 0.5, unavailableTextColour, 1));
 			} else {
-				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 595, 0.5, generalTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY*2, 0.5, generalTextColour, 1));
 			}
 		}
 
 		// Check if ram should be active
 		if (uc->canUpgradeType(RAM_UPGRADE)) {
 			upgrades.push_back(RAM_UPGRADE);
-			currentTextUiIds.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 680, 1, generalTextColour, 1));
-			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 720, 0.5, availableTextColour, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 300 + selectPanelY*3, 1, generalTextColour, 1));
+			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY*3, 0.5, availableTextColour, 1));
 		} else {
-			constantTextUI.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 680, 1, selectionDisabledColour, 1));
+			constantTextUI.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 300 + selectPanelY*3, 1, selectionDisabledColour, 1));
 			if (uc->getRamLevel() < 5) {
-				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 720, 0.5, unavailableTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY*3, 0.5, unavailableTextColour, 1));
 			} else {
-				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 720, 0.5, generalTextColour, 1));
+				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY*3, 0.5, generalTextColour, 1));
 			}
 		}
 
@@ -1019,36 +1044,36 @@ void Core::runUpgradeMenu() {
 		currentChoiceIndex = 0;
 
 		// Render any final stat panel stuff
-		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), statPanelX, 250));
+		//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), statPanelX, 250));
 
 		std::ostringstream oss;
 		oss << "Chassis lvl: " << uc->getChassisLevel();
 		std::string chassisLevel = oss.str();
-		constantTextUI.push_back(Core::renderEngine->ui->addText(chassisLevel, statPanelX + 50, 315, 0.5, generalTextColour, 1));
+		constantTextUI.push_back(Core::renderEngine->ui->addText(chassisLevel, statPanelX + 50, 305, 0.65, generalTextColour, 1));
 		oss.str("");
 		oss.clear();
 
 		oss << "Gun lvl: " << uc->getGunLevel();
 		std::string gunLevel = oss.str();
-		constantTextUI.push_back(Core::renderEngine->ui->addText(gunLevel, statPanelX + 50, 445, 0.5, generalTextColour, 1));
+		constantTextUI.push_back(Core::renderEngine->ui->addText(gunLevel, statPanelX + 50, 305 + statPanelY, 0.65, generalTextColour, 1));
 		oss.str("");
 		oss.clear();
 
 		oss << "Armor lvl: " << uc->getArmorLevel();
 		std::string armorLevel = oss.str();
-		constantTextUI.push_back(Core::renderEngine->ui->addText(armorLevel, statPanelX + 50, 570, 0.5, generalTextColour, 1));
+		constantTextUI.push_back(Core::renderEngine->ui->addText(armorLevel, statPanelX + 50, 305 + statPanelY*2, 0.65, generalTextColour, 1));
 		oss.str("");
 		oss.clear();
 
 		oss << "Ram lvl: " << uc->getRamLevel();
 		std::string ramLevel = oss.str();
-		constantTextUI.push_back(Core::renderEngine->ui->addText(ramLevel, statPanelX + 50, 695, 0.5, generalTextColour, 1));
+		constantTextUI.push_back(Core::renderEngine->ui->addText(ramLevel, statPanelX + 50, 305 + statPanelY*3, 0.65, generalTextColour, 1));
 		oss.str("");
 		oss.clear();
 
 		oss << "Total lvl: " << (uc->getRamLevel() + uc->getArmorLevel() + uc->getChassisLevel() + uc->getGunLevel());
 		std::string totalLevel = oss.str();
-		constantTextUI.push_back(renderEngine->ui->addText(totalLevel, statPanelX + 50, 280, 0.5, glm::vec3(1, 1, 0), 1));
+		constantTextUI.push_back(renderEngine->ui->addText(totalLevel, 150, 230, 1, generalTextColour, 1));
 		oss.str("");
 		oss.clear();
 
