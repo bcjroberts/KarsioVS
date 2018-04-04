@@ -214,6 +214,7 @@ bool controllerButtonPressed = false;
 bool replayUIShown = false;
 bool replayUIInitialized = false;
 
+std::vector<int> currentImageUiIds;
 
 void Core::runGame() {
     if (properties.isGameInitialized == false) {
@@ -295,13 +296,21 @@ void Core::runGame() {
         upgradeButtonPressed = false;
 	}
 
+	// for button placement
+	int buttonTop = 200;
+	int buttonTopHeight = 75;
+
     if (replayUIShown == false && isPlayerDead) { // Defeat!
-        renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
+        //renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongDefeatSign.png"), 0, buttonTop + buttonTopHeight));
+
         replayUIShown = true;
         replayUIInitialized = false;
     }
     else if (replayUIShown == false && EntityManager::getInstance()->getVehicleEntities().size() == 1) { // Victory!
-        renderEngine->ui->addText("VICTORY!", 100, 150, 4, glm::vec3(0, 1, 0));
+        //renderEngine->ui->addText("VICTORY!", 100, 150, 4, glm::vec3(0, 1, 0));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongVictorySign.png"), 0, buttonTop + buttonTopHeight));
+
         replayUIShown = true;
         replayUIInitialized = false;
     }
@@ -428,7 +437,7 @@ void Core::runGame() {
 }
 
 // **************************** Variables for menu ********************************
-std::vector<int> currentImageUiIds;
+// i moved up image uiid to line 217 :')
 std::vector<int> currentTextUiIds;
 
 std::vector<int> constantTextUI;
@@ -863,12 +872,19 @@ void Core::runEndGameMenu() {
         currentImageUiIds.clear();
         currentTextUiIds.clear();
 
-        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 400));
-        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 200, 700));
-        currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 150, 300));
+		// for button placement
+		int buttonTop = 200;
+		int buttonTopHeight = 75;
+		int buttonHeight = 169;
 
-        currentTextUiIds.push_back(renderEngine->ui->addText("Play Again", 240, 430, 1, menuSelectedTextColor, 1));
-        currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 240, 730, 1, menuBaseTextColor, 1));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+
+		currentTextUiIds.push_back(renderEngine->ui->addText("Play Again", 155, 300 + buttonHeight, 1, menuSelectedTextColor, 1));
+		currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 155, 300 + buttonHeight * 3, 1, menuBaseTextColor, 1));
 
         currentChoiceIndex = 0;
         maxChoiceIndex = 2;
@@ -977,8 +993,7 @@ void Core::runUpgradeMenu() {
 
 		maxChoiceIndex = 0;
 		upgrades.clear();
-		// TODO: DISABLE PAUSE WHEN UPGRADING
-		// TODO: DISABLE UPDRADE WHEN PAUSING
+
 		// Check if chassis should be active
 		if (uc->canUpgradeType(CHASSIS_UPGRADE)) {
 			upgrades.push_back(CHASSIS_UPGRADE);

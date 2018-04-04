@@ -156,7 +156,7 @@ Entity* EntityManager::createAIVehicleEntity(glm::vec3 startPos) {
 
 Entity* EntityManager::createGroundPlane() {
 	Entity* entity = EntityManager::getInstance()->createEntity(glm::vec3(0.f), glm::quat(), glm::vec3(1.0f));
-	RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("plane"), glm::vec3(0, 0, 0), glm::quat(), glm::vec3(300, 10, 300));
+	RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("plane2"), glm::vec3(0, 0, 0), glm::quat(), glm::vec3(1, 10, 1));
     rc->isStatic = true;
     physx::PxRigidActor* plane = PhysicsEngine::getInstance()->createPhysicsPlane();
     plane->userData = entity;
