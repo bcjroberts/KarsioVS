@@ -224,17 +224,16 @@ void Core::runGame() {
         physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
         mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
 
-		
-		Core::upgradeLizardId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("lizardicon.png"), 1570, 340, 0);
+		Core::upgradeLizardId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeAvailable.png"), float(*properties.screenWidth - 300), 315, 0);
 		healthBarGreenId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthGreen.png"), 118, 77, 1);
 		healthBarRedId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthRed.png"), 115, 73, 1);
-		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopRight.png"), float(*properties.screenWidth-329), 0, 1);
+		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopRight.png"), float(*properties.screenWidth-326), 0, 1);
 		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopLeft.png"), 0, 0, 1);
 
         // Health and resource text
         playerHealthId = renderEngine->ui->addText("health", 40, 40, 1, glm::vec3(0.5, 1, 0));
-        playerResourceId = renderEngine->ui->addText("resources", 1760, 120, 0.5, glm::vec3(0.8, 1, 1));
-		enemyCountId = renderEngine->ui->addText("Enemy Count: 9", 1760, 230, 0.5, glm::vec3(1, 0.8, 0));
+        playerResourceId = renderEngine->ui->addText("resources", float(*properties.screenWidth - 160), 120, 0.5, glm::vec3(0.8, 1, 1));
+		enemyCountId = renderEngine->ui->addText("Enemy Count: 9", float(*properties.screenWidth - 140), 230, 0.5, glm::vec3(1, 0.8, 0));
 
         WorldGenerator::getInstance()->generateWorld();
         playerVehicle = EntityManager::getInstance()->getVehicleEntities().at(0);
@@ -274,9 +273,9 @@ void Core::runGame() {
 	std::ostringstream oss;
     //oss << "Health: " << round(playerHealth);
     std::string playerHealthStr = oss.str();
-	float scale = playerHealth / playerMaxHealth * (playerUC->getChassisLevel() > 1 ? playerUC->getChassisLevel() * 0.75 : 1);
-	float redScale = playerUC->getChassisLevel() > 1 ? playerUC->getChassisLevel() * 0.75 : 1;
-	renderEngine->ui->modifyImageDiffSize(healthBarGreenId, nullptr, nullptr, &scale);
+	float redScale = 0.5 + 1 * (playerUC->getChassisLevel() * 0.25);
+	float greenScale = playerHealth / playerMaxHealth * redScale;
+	renderEngine->ui->modifyImageDiffSize(healthBarGreenId, nullptr, nullptr, &greenScale);
 	renderEngine->ui->modifyImageDiffSize(healthBarRedId, nullptr, nullptr, &redScale);
     renderEngine->ui->modifyText(playerHealthId, &playerHealthStr, nullptr, nullptr, nullptr, nullptr);
     bool isPlayerDead = playerHealthComp->isDead();
@@ -463,7 +462,7 @@ void Core::runMenu() {
         currentMainMenuState = NONE;
         nextMainMenuState = MAINMENU;
 
-        renderEngine->ui->addText("KARSIO", 90, 140, 2, glm::vec3(0.7, 0.7, 0), 1);
+       // renderEngine->ui->addText("KARSIO", 90, 140, 2, glm::vec3(0.7, 0.7, 0), 1);
         currentChoiceIndex = 0;
 
         menuLightId1 = renderEngine->world->getNextAvailableLightID();
@@ -491,55 +490,66 @@ void Core::runMenu() {
         }
         currentTextUiIds.clear();
         currentChoiceIndex = 0;
+
+		// for button placement
+		int buttonTop = 100;
+		int buttonTopHeight = 75;
+		int buttonHeight = 169;
+
         switch (currentMainMenuState) {
         case OPTIONS:
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, menuSelectedTextColor, 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 100, 400, 1, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 200 + buttonHeight * 3, 1, glm::vec3(1, 1, 0), 1));
 
 			maxChoiceIndex = 1;
-
+			break;
 		case CONTROLS:
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.jpg"), 500, 200, 0.5));
 			
-			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, glm::vec3(1, 1, 0), 1));
-			/*
-			currentTextUiIds.push_back(renderEngine->ui->addText("Accelerate", 1300, 250, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Reverse", 600, 250, fontSize, glm::vec3(1, 1, 1), 1));
-			//currentTextUiIds.push_back(renderEngine->ui->addText("Shoot", 1350, 330, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Shoot", 550, 330, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Pause", 1050, 550, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Flip", 1320, 450, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Upgrade", 1200, 520, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("OK/", 1300, 600, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Shoot", 1300, 630, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 1350, 560, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Steer/", 590, 600, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Selection", 590, 630, fontSize, glm::vec3(1, 1, 1), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Selection", 660, 730, fontSize, glm::vec3(1, 1, 1), 1));
-			*/
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+
+			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 200 + buttonHeight * 3, 1, glm::vec3(1, 1, 0), 1));
+
             maxChoiceIndex = 1;
             break;
         case GAMEMODES:
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 300));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLong.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 140, 335, 0.7,menuSelectedTextColor, 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 140, 630, 1, menuBaseTextColor, 1));
+
+            currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 155, 200, 1, menuSelectedTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 200 + buttonHeight * 3, 1, menuBaseTextColor, 1));
             maxChoiceIndex = 2;
             break;
-        default: // Default is the MAINMENU
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 300));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 450));
-            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 750));
+        default: // Default is the MAINMENU			
+			
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button2.png"), 0, buttonTop + buttonTopHeight +buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight*2));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight*3));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCap.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
+			   
+			currentTextUiIds.push_back(renderEngine->ui->addText("Play Game", 155, 200, 1, glm::vec3(0, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Options", 155, 200 + buttonHeight, 1, glm::vec3(1, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Controls", 155, 200 + buttonHeight*2, 1, glm::vec3(1, 1, 0), 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 155, 200 + buttonHeight*3, 1, glm::vec3(1, 1, 0), 1));
 
-            currentTextUiIds.push_back(renderEngine->ui->addText("Play Game", 140, 330, 1, glm::vec3(0, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Options", 140, 480, 1, glm::vec3(1, 1, 0), 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Controls", 140, 630, 1, glm::vec3(1, 1, 0), 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 140, 780, 1, glm::vec3(1, 1, 0), 1));
             maxChoiceIndex = 4;
             break;
         }
