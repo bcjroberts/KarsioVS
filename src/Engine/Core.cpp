@@ -115,7 +115,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 
     keyPressedUp = (key == GLFW_KEY_UP || key == GLFW_KEY_W) && action == GLFW_RELEASE;
     keyPressedDown = (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) && action == GLFW_RELEASE;
-    enterPressed = key == GLFW_KEY_ENTER && action == GLFW_RELEASE;
+    enterPressed = (key == GLFW_KEY_ENTER || key == GLFW_KEY_SPACE) && action == GLFW_RELEASE;
     pauseButtonPressed = key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE;
     forceReplay = key == GLFW_KEY_Y && action == GLFW_RELEASE;
 	upgradeButtonPressed = key == GLFW_KEY_X && action == GLFW_RELEASE;

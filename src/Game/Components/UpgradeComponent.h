@@ -24,7 +24,7 @@ private:
     float ramMultiplierChange[5] = {1.f, 1.5f, 2.f, 2.5f, 3.f};
     
     // The gun changes are a bit more drastic.
-    float gunROFChange[5] = {3.f, 5.f, 7.f, 9.f, 11.f}; // Per second
+    float gunROFChange[5] = {3.f, 5.f, 7.f, 7.f, 9.f}; // Per second
     float gunDamageChange[5] = {3.f, 4.f, 5.f, 8.f, 10.f};
     float projectileSpeedChange[5] = {275.f, 275.f, 275.f, 275.f, 275.f};
 

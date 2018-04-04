@@ -124,7 +124,7 @@ Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat
 	glm::vec3 scale(1,1,12);
 	if (damage > 7.f) {
 		projectileModel = ModelManager::getModel("projectileBig");
-		scale = glm::vec3(2,2,16);
+		scale = glm::vec3(1.5,1.5,16);
 	}
     RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, projectileModel, glm::vec3(0), glm::quat(), scale);
     ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);
