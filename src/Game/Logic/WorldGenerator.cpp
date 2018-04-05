@@ -44,7 +44,7 @@ void WorldGenerator::createVehicles(std::vector<glm::vec3> *positions, int gridS
 	std::uniform_int_distribution<int> uid{ -(gridSize - 5), gridSize - 5 };
 	
 	int x, z;
-	for (unsigned int i = 0; i < 10; i++) {
+	for (unsigned int i = 0; i < 20; i++) {
 		do {
 			x = uid(dre) * 10 + 5;
 			z = uid(dre) * 10 + 5;
@@ -142,7 +142,7 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions, int gridS
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
 
 	// create crystals of variable sizes
-	for (int i = 0; i < 25; i++) {
+	for (int i = 0; i < 40; i++) {
 		std::uniform_real_distribution<float> urd{ 0.5, 2.5 };
 		float resourceAmount = urd(dre);
 
@@ -224,10 +224,12 @@ void WorldGenerator::createSingleCrystal(glm::vec2 position) {
 void WorldGenerator::regenerateCrystal() {
 	if (!emptyCrystals.empty()) {
 		int i = rand() % emptyCrystals.size();
-		if (Core::simtimeSinceStartup - lastRegenTime > 5.f) {
+		if (Core::simtimeSinceStartup - lastRegenTime > 4.f) {
 			createSingleCrystal(emptyCrystals[i]);
 			emptyCrystals.erase(emptyCrystals.begin() + i);
 			lastRegenTime = Core::simtimeSinceStartup;
 		}
+	} else { // This prevents crystals from instantly spawning
+        lastRegenTime = Core::simtimeSinceStartup;
 	}
 }

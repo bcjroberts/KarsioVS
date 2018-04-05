@@ -79,8 +79,8 @@ void setupWheelsSimulationData
 		wheels[PxVehicleDrive4WWheelOrder::eREAR_RIGHT].mMaxHandBrakeTorque=10000.0f;
 
 		//Enable steering for the front wheels only.
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.15f;
-		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.15f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_LEFT].mMaxSteer=PxPi*0.125f;
+		wheels[PxVehicleDrive4WWheelOrder::eFRONT_RIGHT].mMaxSteer=PxPi*0.125f;
 	}
 
 	//Set up the tires.
@@ -184,12 +184,12 @@ void setupWheelsSimulationData
 	PxVehicleAntiRollBarData barFront;
 	barFront.mWheel0 = PxVehicleDrive4WWheelOrder::eFRONT_LEFT;
 	barFront.mWheel1 = PxVehicleDrive4WWheelOrder::eFRONT_RIGHT;
-	barFront.mStiffness = 100000.0f; //0 added
+	barFront.mStiffness = 1000000.0f; //00 added
 	wheelsSimData->addAntiRollBarData(barFront);
 	PxVehicleAntiRollBarData barRear;
 	barRear.mWheel0 = PxVehicleDrive4WWheelOrder::eREAR_LEFT;
 	barRear.mWheel1 = PxVehicleDrive4WWheelOrder::eREAR_RIGHT;
-	barRear.mStiffness = 1000000.0f; //00 added
+	barRear.mStiffness = 100000.0f; //0 added
 	wheelsSimData->addAntiRollBarData(barRear);
 }
 

@@ -118,7 +118,7 @@ void PhysicsEngine::initPhysics()
     physx::PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
     sceneDesc.gravity = physx::PxVec3(0.0f, -40.f, 0.0f);
 
-    physx::PxU32 numWorkers = 2;
+    physx::PxU32 numWorkers = 4;
     gDispatcher = physx::PxDefaultCpuDispatcherCreate(numWorkers);
     sceneDesc.cpuDispatcher = gDispatcher;
     sceneDesc.filterShader = contactReportFilterShader;
@@ -135,7 +135,7 @@ void PhysicsEngine::initPhysics()
     }
     baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.2f);
     vehicleBoxMat = gPhysics->createMaterial(0.f, 0.25f, 0.6f);
-    drillMat = gPhysics->createMaterial(0.f, 0.25f, 0.1f);
+    drillMat = gPhysics->createMaterial(0.f, 0.f, 0.0f);
     boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.2f);
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
