@@ -1,5 +1,5 @@
 #pragma once
-#include "C:\Users\Neb2\Desktop\KarsioVS\src\Engine\Component.h"
+#include "../../Engine/Component.h"
 #include <glm/detail/type_vec3.hpp>
 #include <string>
 
