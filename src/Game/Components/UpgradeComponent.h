@@ -20,7 +20,7 @@ private:
     int maxLevelPerChassis[3] = { 3, 4, 5 };
     
     float chassisHealth[3] =  {200.f, 300.f, 400.f};
-    float armorChange[5] = {0, 1.f, 2.f, 3.f, 4.f};
+    float armorChange[5] = {0, 1.f, 2.f, 4.f, 5.f};
     float ramMultiplierChange[5] = {1.f, 1.5f, 2.f, 2.5f, 3.f};
     
     // The gun changes are a bit more drastic.

@@ -71,6 +71,7 @@ public:
 	glm::vec3 getPosition();
     glm::vec3 getForward();
     glm::vec3 getUp();
+    glm::vec2 worldToScreenPoint(glm::vec3 worldPos);
 };
 
 

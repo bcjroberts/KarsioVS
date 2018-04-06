@@ -32,11 +32,7 @@ bool ProjectileComponent::checkForHit() {
         if (hitEnt != nullptr) {
             HealthComponent* hc = static_cast<HealthComponent*>(hitEnt->getComponent(HEALTH));
 			if (hc != nullptr) {
-				hc->applyDamage(damage);
-				// let AI know who hit it
-				if (hitEnt->getComponent(AI) != nullptr) {
-					static_cast<AIComponent*>(hitEnt->getComponent(AI))->setAttackerID(ownerid);
-				}
+				hc->applyDamage(damage, ownerid);
 			}
         }
         return true;

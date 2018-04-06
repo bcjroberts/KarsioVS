@@ -16,6 +16,7 @@
 #include "../Game/Components/StaticLightComponent.h"
 #include "AudioObservable.h"
 #include "audiopaths.h"
+#include "../Game/Components/FloatingTextComponent.h"
 
 class ComponentManager
 {
@@ -26,6 +27,7 @@ public:
     std::vector<PhysicsComponent*> physicsComponents;
     std::vector<DriveComponent*> driveComponents;
     std::vector<ProjectileComponent*> projectiles;
+    std::vector<FloatingTextComponent*> floatingTextComponents;
     
     // audio queue
     AudioObservable* audioEvents;
@@ -46,10 +48,12 @@ public:
     WeaponComponent* addWeaponComponent(Entity* addTo);
     ProjectileComponent* addProjectileComponent(Entity* entity, int ownerid, float speed, float damage);
     StaticLightComponent* addStaticLightComponent(Entity* entity, glm::vec3 pos, glm::vec3 color);
+    FloatingTextComponent* addFloatingTextComponent(Entity* entity, Entity* relativeEnt, glm::vec3 color, float scale, std::string* text);
 
     RendererComponent* getRenderComponentWithTagFromEntity(Entity* from, RendererTag tag);
     void performRendering();
     void performPhysicsLogic();
+    void performFloatingTextLogic();
     void cleanupComponents(Entity* entity);
     void performProjectileLogic();
     void bindAudioObservable(AudioObservable* anAudioObservable);

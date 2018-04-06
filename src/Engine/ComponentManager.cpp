@@ -127,6 +127,14 @@ RendererComponent* ComponentManager::getRenderComponentWithTagFromEntity(Entity*
     return nullptr;
 }
 
+FloatingTextComponent* ComponentManager::addFloatingTextComponent(Entity* entity, Entity* relativeEnt, glm::vec3 color, float scale, std::string* text) {
+    FloatingTextComponent* ftc = new FloatingTextComponent(relativeEnt, color, scale, text);
+    floatingTextComponents.push_back(ftc);
+    entity->addComponent(ftc);
+    ftc->owner = entity;
+    return ftc;
+}
+
 ComponentManager* ComponentManager::getInstance() {
     if (!globalInstance) {
         globalInstance = new ComponentManager;
@@ -152,6 +160,20 @@ void ComponentManager::performPhysicsLogic() {
         pc->owner->updatePosition(glm::vec3(gp.p.x,gp.p.y,gp.p.z));
         pc->owner->updateRotation(glm::quat(gp.q.w, gp.q.x, gp.q.y, gp.q.z));
     }
+}
+
+float lastSimTime = 0.f;
+
+void ComponentManager::performFloatingTextLogic() {
+    float simTimeDiff = Core::simtimeSinceStartup - lastSimTime;
+    for (int i = floatingTextComponents.size() - 1; i >= 0; i--) {
+        if (Core::simtimeSinceStartup - floatingTextComponents[i]->simCreationTime > 1.5f) {
+            EntityManager::getInstance()->destroyEntity(floatingTextComponents[i]->owner->id);
+        } else {
+            floatingTextComponents[i]->updateTextPosition(simTimeDiff);
+        }
+    }
+    lastSimTime = Core::simtimeSinceStartup;
 }
 
 glm::mat4 hiddenMat4 = glm::translate(glm::mat4(), glm::vec3(0, -25, 0));
@@ -213,6 +235,19 @@ void ComponentManager::cleanupComponents(Entity* entity) {
         for (int i = 0; i < projectiles.size(); ++i) {
             if (projectiles[i]->id == toRemove->id) {
                 projectiles.erase(projectiles.begin() + i);
+                break;
+            }
+        }
+        // Remove the vehicle from the physx list so it is no longer updated
+        entity->removeComponent(toRemove->id);
+        delete toRemove;
+    }
+
+    toRemove = entity->getComponent(FLOATING_TEXT);
+    if (toRemove != nullptr) {
+        for (int i = 0; i < floatingTextComponents.size(); ++i) {
+            if (floatingTextComponents[i]->id == toRemove->id) {
+                floatingTextComponents.erase(floatingTextComponents.begin() + i);
                 break;
             }
         }

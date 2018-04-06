@@ -56,6 +56,7 @@
     <ClCompile Include="src\Engine\NullEvent.cpp" />
     <ClCompile Include="src\Engine\AudioObservable.cpp" />
     <ClCompile Include="src\Engine\audiopaths.cpp" />
+    <ClCompile Include="src\Game\Components\FloatingTextComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\include\fmod\fmod.h" />
@@ -127,6 +128,7 @@
     <ClInclude Include="src\Engine\NullEvent.h" />
     <ClInclude Include="src\Engine\AudioObservable.h" />
     <ClInclude Include="src\Engine\audiopaths.h" />
+    <ClInclude Include="src\Game\Components\FloatingTextComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="deps\libs\fmod64_vc.lib" />

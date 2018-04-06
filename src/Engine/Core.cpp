@@ -115,7 +115,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
 
     keyPressedUp = (key == GLFW_KEY_UP || key == GLFW_KEY_W) && action == GLFW_RELEASE;
     keyPressedDown = (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) && action == GLFW_RELEASE;
-    enterPressed = (key == GLFW_KEY_ENTER || key == GLFW_KEY_SPACE) && action == GLFW_RELEASE;
+    enterPressed = key == GLFW_KEY_ENTER && action == GLFW_RELEASE;
     pauseButtonPressed = key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE;
     forceReplay = key == GLFW_KEY_Y && action == GLFW_RELEASE;
 	upgradeButtonPressed = key == GLFW_KEY_X && action == GLFW_RELEASE;
@@ -198,7 +198,7 @@ const float physicsTimeStep = 1.0f / 60.0f;
 // for yaw/pitch controlled by cursor
 double xpos, ypos;
 bool movingForward = true;
-Entity* playerVehicle = nullptr;
+Entity* Core::playerVehicle = nullptr;
 
 int physxIterCounterId = -1;
 int mainfpsCounterId = -1;
@@ -433,6 +433,7 @@ void Core::runGame() {
             cameras[0]->rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 7.5f * fixedStepTimediff);
             cameras[0]->lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -12.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 0.5f), 0), 7.5f * fixedStepTimediff);
         }
+        ComponentManager::getInstance()->performFloatingTextLogic();
     }
 }
 

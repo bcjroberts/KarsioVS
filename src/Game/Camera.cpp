@@ -86,6 +86,16 @@ mat4 Camera::getProjection(){
     return projection;
 }
 
+vec2 Camera::worldToScreenPoint(vec3 worldPos) {
+    vec4 clipSpacePos = getProjection() * (getView() * vec4(worldPos, 1.0));
+    if (clipSpacePos.w <= 0) {
+        return vec2(-50, -50);
+    }
+    vec3 ndcSpacePos = vec3(clipSpacePos.x, clipSpacePos.y, clipSpacePos.z) / clipSpacePos.w;
+    vec2 screenPoint = vec2(((ndcSpacePos.x + 1.0f) / 2.0f) * *window_width, ((1.f - ndcSpacePos.y) / 2.0f) * *window_height);
+    return screenPoint;
+}
+
 vec3 Camera::getPosition() {
 	return cameraPosition;
 }

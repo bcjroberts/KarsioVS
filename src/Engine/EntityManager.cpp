@@ -11,6 +11,7 @@
 
 #include <random>
 #include <chrono> 
+#include "../Game/Components/FloatingTextComponent.h"
 
 // Initialize the Entity Manager global pointer.
 EntityManager *EntityManager::globalInstance = nullptr;
@@ -266,6 +267,12 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     physx::PxRigidActor* box = PhysicsEngine::getInstance()->createCrystalBoxCollider(PhysicsEngine::toPxVec3(startPos), PhysicsEngine::toPxVec3(physicsScale));
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
+    return entity;
+}
+
+Entity* EntityManager::createFloatingText (Entity* relativeEnt, glm::vec3 color, float scale, std::string* text) {
+    Entity* entity = EntityManager::getInstance()->createEntity(relativeEnt->getPosition(), glm::quat(), glm::vec3(1));
+    FloatingTextComponent* ftc = ComponentManager::getInstance()->addFloatingTextComponent(entity, relativeEnt, color, scale, text);
     return entity;
 }
 

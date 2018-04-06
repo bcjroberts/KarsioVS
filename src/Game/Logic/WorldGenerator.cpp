@@ -42,9 +42,9 @@ void WorldGenerator::generateWorld() {
 void WorldGenerator::createVehicles(std::vector<glm::vec3> *positions, int gridSize) {
 	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());
 	std::uniform_int_distribution<int> uid{ -(gridSize - 5), gridSize - 5 };
-	
+
 	int x, z;
-	for (unsigned int i = 0; i < 20; i++) {
+	for (unsigned int i = 0; i < 15; i++) {
 		do {
 			x = uid(dre) * 10 + 5;
 			z = uid(dre) * 10 + 5;

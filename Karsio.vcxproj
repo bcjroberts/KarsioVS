@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game\Components\FloatingTextComponent.cpp" />
     <ClCompile Include="src\Engine\AudioObservable.cpp" />
     <ClCompile Include="src\Engine\audiopaths.cpp" />
     <ClCompile Include="src\Engine\NullEvent.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="src\Game\Components\StaticLightComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game\Components\FloatingTextComponent.h" />
     <ClInclude Include="src\Engine\AudioObservable.h" />
     <ClInclude Include="src\Engine\audiopaths.h" />
     <ClInclude Include="deps\include\fmod\fmod.h" />

@@ -70,12 +70,12 @@ void CollisionProcessor::onContact(const physx::PxContactPairHeader& pairHeader,
     const char* drillstring = "drill";
     if (name0 != nullptr && std::strcmp(name0, drillstring) == 0) // actor 0 hit with a drill so damage actor 1
     {
-        static_cast<HealthComponent*>(ent1->getComponent(HEALTH))->applyDamage(damage / mass1);
+        static_cast<HealthComponent*>(ent1->getComponent(HEALTH))->applyDamage(damage / mass1, ent0->id);
     }
 
     if (name1 != nullptr && std::strcmp(name1, drillstring) == 0) // actor 1 hit with a drill so damage actor 0
     {
-        static_cast<HealthComponent*>(ent0->getComponent(HEALTH))->applyDamage(damage / mass0);
+        static_cast<HealthComponent*>(ent0->getComponent(HEALTH))->applyDamage(damage / mass0, ent1->id);
     }
 }
 
@@ -134,7 +134,7 @@ void CollisionProcessor::onContactModify(physx::PxContactModifyPair* const pairs
 
     // Apply the ramming damage to the crystal. If the crystal is destroyed, ignore all contacts with it.
     HealthComponent* crystalHealth = static_cast<HealthComponent*>(crystalEntity->getComponent(HEALTH));
-    crystalHealth->applyDamage(damage);
+    crystalHealth->applyDamage(damage, carEntity->id);
 
 	// tell car it hit a crystal
 	AIComponent* carAI = static_cast<AIComponent*>(carEntity->getComponent(AI));

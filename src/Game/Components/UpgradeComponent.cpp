@@ -96,7 +96,6 @@ void UpgradeComponent::setPreUpgradeLevels(int chassis, int armor, int gun, int 
 	for (int i = 1; i < chassis; i++) {
 		static_cast<HealthComponent*>(owner->getComponent(HEALTH))->setMaxHealth(chassisHealth[i - 1], true);
 		EntityManager::getInstance()->updateChassis(owner, 1.5f, i);
-		EntityManager::getInstance()->updateArmor(owner, i, armorLevel);
 	}
 	
 	// armor
