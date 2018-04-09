@@ -18,13 +18,10 @@ glm::mat4 ShapeRendererComponent::getMatrix()
     position.z = loc.p.z;
 
     // copy the rotation from the shape
-    rotation.w = loc.q.w;
-    rotation.x = loc.q.x;
-    rotation.y = loc.q.y;
-    rotation.z = loc.q.z;
+    glm::quat newRot(eulerAngles(rotation) + glm::eulerAngles(glm::quat(loc.q.w, loc.q.x, loc.q.y, loc.q.z)));
 
 	glm::mat4 myMat2;
-    myMat2 = glm::translate(myMat2, position + localPos) * glm::toMat4(rotation) * glm::scale(myMat2, scale);
+    myMat2 = glm::translate(myMat2, position + localPos) * glm::toMat4(newRot) * glm::scale(myMat2, scale);
     return owner->getMatrix() * myMat2;
 }
 
