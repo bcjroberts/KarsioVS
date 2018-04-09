@@ -76,7 +76,8 @@ void Logic::aiMovement(Entity* entity) {
     // Check if the distance is less than some threshold. If so, then we have "arrived at the waypoint", head to the next waypoint.
     if (glm::distance(ai->getCurrentWaypoint(), entity->getCoarsePosition()) < 1.0f) {
         ai->nextWaypoint();
-    }	
+        ai->orbitingSimTime = Core::simtimeSinceStartup;
+    }
 	
     glm::vec3 destination = ai->getCurrentWaypoint();
 
@@ -105,6 +106,11 @@ void Logic::aiMovement(Entity* entity) {
     } else {
         ai->successfulLOSChecks = 0;
         ai->isDestinationInLOS = false;
+    }
+
+    if (Core::simtimeSinceStartup - ai->orbitingSimTime > 5.0f && !ai->isDestinationInLOS) { // We are orbitting the waypoint, go decide what to so
+        ai->state = DECIDING;
+        ai->orbitingSimTime = Core::simtimeSinceStartup;
     }
 
     // Now we need to determine where to steer based on where the point is. Currently does not support reverse.
@@ -151,7 +157,7 @@ bool Logic::canVehicleFlip(Entity* vehicle) const {
     // If less than some threshold, then condition 1 is met.
     if (oangle < 0.9f) {
         // Now we check condition 2. If we havent flipped in 2.5 seconds, allow flipping.
-        if (Core::simtimeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 2.5f) {
+        if (Core::simtimeSinceStartup - static_cast<DriveComponent*>(vehicle->getComponent(DRIVE))->previousFlipTime > 1.75f) {
             return true;
         }
     }
@@ -288,13 +294,11 @@ bool Logic::checkStuck(Entity* entity) {
         flipVehicle(entity);
     }
 
-	if (abs(magnitude) < 1.f) {
-		ai->notMoving++;
-	} else {
-		ai->notMoving = 0;
+	if (abs(magnitude) > 1.f) {
+		ai->notMoving = Core::simtimeSinceStartup;
 	}
 	// speed has to be 0 for a while
-	if (ai->notMoving > 100 && ai->state != STUCK) {
+	if (Core::simtimeSinceStartup - ai->notMoving > 2.0f && ai->state != STUCK) {
 		if (ai->prevstate == -1) {
 			ai->prevstate = ai->state;
 		}
@@ -323,7 +327,7 @@ void Logic::unstuck(Entity* entity, AStar::Generator* generator) {
 			findPath(generator, entity, ai->goal->getPosition());
 			if (ai->path.size() > 0) {
 				ai->state = ai->prevstate;
-				ai->notMoving = 0;
+                ai->notMoving = Core::simtimeSinceStartup;
 			}
 		} else {
 			ai->state = DECIDING;

@@ -133,10 +133,10 @@ void PhysicsEngine::initPhysics()
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
         pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
     }
-    baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.2f);
-    vehicleBoxMat = gPhysics->createMaterial(0.f, 0.25f, 0.6f);
-    drillMat = gPhysics->createMaterial(0.f, 0.f, 0.0f);
-    boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.2f);
+    baseMaterial = gPhysics->createMaterial(0.1f, 0.5f, 0.0f); // used for wheels and ground plane
+    vehicleBoxMat = gPhysics->createMaterial(0.f, 0.25f, 0.6f); // used for the vehicle hitbox
+    drillMat = gPhysics->createMaterial(0.f, 0.f, 0.25f); // used for the drill
+    boxMaterial = gPhysics->createMaterial(0.f, 0.f, 0.0f); // used for rocks
 
     gCooking = PxCreateCooking(PX_PHYSICS_VERSION, *gFoundation, physx::PxCookingParams(physx::PxTolerancesScale()));
 

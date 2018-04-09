@@ -20,7 +20,7 @@ public:
 	int state = 0;
 	int prevstate = -1;
 	glm::vec3 prevPos;
-	int notMoving = 0;
+	float notMoving = 0;
 	float orbitingSimTime = 0.f;
     float stuckStartSimTime = 0.f;
 
