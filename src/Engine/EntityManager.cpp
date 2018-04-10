@@ -187,7 +187,7 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	std::uniform_real_distribution<float> urd{0.f, 3.14f};
 	float y = urd(dre);
 
-    RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("obstacle"+s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
+    RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("obstacle"+s+"-2"), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
 	rc->isStatic = true;
 	// Render the physics hitbox for the boulder
 	//ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("cube"), glm::vec3(0), glm::quat(), vec3(1.5f, 2.f, 1.5f));
@@ -195,6 +195,22 @@ Entity* EntityManager::createBoulder(glm::vec3 startPos, glm::vec3 scale) {
 	physx::PxRigidActor* box = PhysicsEngine::getInstance()->createPhysicsBox(PhysicsEngine::toPxVec3(startPos), physx::PxVec3(scale.x, scale.y*2.f, scale.z), physx::PxQuat(y, physx::PxVec3(0, 1, 0)));
 	box->userData = entity;
 	ComponentManager::getInstance()->addPhysicsComponent(entity, box);
+	return entity;
+}
+
+Entity* EntityManager::createSmallRock(glm::vec3 startPos, glm::vec3 scale) {
+	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), scale);
+
+	// randomly choose obstacle type and rotation
+	std::default_random_engine dre(std::chrono::steady_clock::now().time_since_epoch().count());     // provide seed
+	std::uniform_int_distribution<int> uid{ 1, 3 };
+	std::string s = std::to_string(uid(dre));
+	std::uniform_real_distribution<float> urd{ 0.f, 3.14f };
+	float y = urd(dre);
+
+	RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("smallRock"+s), glm::vec3(0), glm::quat(glm::vec3(0, y, 0)), glm::vec3(1));
+	rc->isStatic = true;
+
 	return entity;
 }
 
@@ -270,6 +286,19 @@ Entity* EntityManager::createCrystal(glm::vec3 startPos, float resourceAmount) {
     box->userData = entity;
     ComponentManager::getInstance()->addPhysicsComponent(entity, box);
     return entity;
+}
+
+Entity* EntityManager::createCrystalProp(glm::vec3 startPos) {
+
+	Entity* entity = EntityManager::getInstance()->createEntity(startPos, glm::quat(), glm::vec3(1));
+	RendererComponent* rc = ComponentManager::getInstance()->addRendererComponent(entity, ModelManager::getModel("crystalProp"), glm::vec3(0), glm::quat(glm::vec3(0)), glm::vec3(1));
+	rc->isStatic = true;
+	float multi = 0.1f;
+	glm::vec3 color(30*multi, 75*multi, 150*multi);
+
+	ComponentManager::getInstance()->addStaticLightComponent(entity, entity->getPosition() + glm::vec3(0, 2, 0), color);
+
+	return entity;
 }
 
 Entity* EntityManager::createFloatingText (Entity* relativeEnt, glm::vec3 color, float scale, std::string* text) {

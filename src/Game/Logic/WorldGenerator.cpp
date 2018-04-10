@@ -36,6 +36,7 @@ void WorldGenerator::generateWorld() {
 	createWalls(gridSize);
 	createObstacles(&positions, gridSize);
 	createCrystals(&positions, gridSize);
+
 	generateGrid(gridSize);
 }
 
@@ -136,6 +137,26 @@ void WorldGenerator::createObstacles(std::vector<glm::vec3> *positions, int grid
 			}
 		}
 	}
+
+
+	std::uniform_int_distribution<int> uid2{ 0, 9 };
+	std::uniform_real_distribution<float> urd{ 1, 2.5 };
+	// make small rocks
+	for (int i = 0; i < 50; i++) {
+		std::uniform_int_distribution<int> uid{ -(gridSize - 2), gridSize - 2 };
+		// make sure they end in 5....
+		int x, z;
+		x = uid(dre) * 10 + 5;
+		z = uid(dre) * 10 + 5;
+
+		if (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) == positions->end()) {
+			x = x - 5 + uid2(dre);
+			z = z - 5 + uid2(dre);
+			Entity* boulder = EntityManager::getInstance()->createSmallRock(glm::vec3(x, 1, z), glm::vec3(urd(dre)));
+			positions->push_back(glm::vec3(x, 2, z));
+		}
+	}
+	
 }
 
 void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions, int gridSize) {
@@ -161,6 +182,23 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions, int gridS
 		Entity* crystal = EntityManager::getInstance()->createCrystal(glm::vec3(x, 2, z), resourceAmount);
 		crystals.push_back(crystal);
 	}
+	std::uniform_int_distribution<int> uid2{ 0, 9 };
+
+	// make small useless crystals
+	for (int i = 0; i < 50; i++) {
+		std::uniform_int_distribution<int> uid{ -(gridSize - 2), gridSize - 2 };
+		// make sure they end in 5....
+		int x, z;
+		x = uid(dre) * 10 + 5;
+		z = uid(dre) * 10 + 5;
+
+		if (std::find(positions->begin(), positions->end(), glm::vec3(x, 2, z)) == positions->end()) {
+			x = x - 5 + uid2(dre);
+			z = z - 5 + uid2(dre);
+			Entity* crystalProp = EntityManager::getInstance()->createCrystalProp(glm::vec3(x, 0, z));
+			positions->push_back(glm::vec3(x, 2, z));
+		}
+	}	
 }
 
 void WorldGenerator::createWalls(int gridSize) {
