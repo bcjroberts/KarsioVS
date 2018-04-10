@@ -463,20 +463,18 @@ void Core::runGame() {
 			} else if (playerTarget != nullptr) { // make sure our vehicle is still alive
 				auto it = EntityManager::getInstance()->getVehicleEntities().begin();
 				bool found = false;
-				while (it != EntityManager::getInstance()->getVehicleEntities().end()) {
-					Entity* temp = (*it);
-					if (playerTarget == temp) {
-						found = true;
-						break;
-					}
-					++it;
+				for (int i = 0; i < EntityManager::getInstance()->getVehicleEntities().size(); i++) {
+				    if (EntityManager::getInstance()->getVehicleEntities().at(i) == playerTarget) {
+				        found = true;
+                        break;
+				    }
 				}
 				if (!found) playerTarget = nullptr;
 			}
 			if (playerTarget != nullptr) {
 				glm::vec2 screenPos = cameras[0]->worldToScreenPoint(playerTarget->getPosition());
 				// adjust the scale accordingly based on the size and the distance to the target
-				float multi = (float(static_cast<UpgradeComponent*>(playerTarget->getComponent(UPGRADE))->getChassisLevel()) / 2.f);
+				float multi = 1.f;
 				float distanceMulti = glm::distance(playerTarget->getPosition(), playerVehicle->getPosition()) / 100.f;
 				if (distanceMulti < 1.f) distanceMulti += (1.f - distanceMulti) / 2.f; // Make the close shape not quite so big
 				multi /= distanceMulti;
