@@ -213,6 +213,7 @@ bool controllerButtonPressed = false;
 
 bool replayUIShown = false;
 bool replayUIInitialized = false;
+bool inPauseMenu = false;
 
 std::vector<int> currentImageUiIds;
 
@@ -286,10 +287,11 @@ void Core::runGame() {
     if (pauseButtonPressed && properties.isPaused == false) {
         if (!replayUIShown) { // only allow pausing if the game is not over
             properties.isPaused = true;
+			inPauseMenu = true;
         }
         pauseButtonPressed = false;
 	} else if (upgradeButtonPressed && properties.isInUpgradeMenu == false) {
-		if (!replayUIShown) {
+		if (!replayUIShown && !inPauseMenu) {
 			properties.isInUpgradeMenu = true;
 			properties.isPaused = true;
 		}
@@ -686,7 +688,6 @@ PauseMenuState nextPauseMenuState = PAUSEMAIN;
 
 void Core::runPauseMenu() {
 
-
     if (!properties.isIngameMenuInitialized) {
 
         currentPauseMenuState = PAUSENONE;
@@ -718,15 +719,10 @@ void Core::runPauseMenu() {
 
         switch (currentPauseMenuState) {
         case PAUSEOPTIONS:
-            //currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button1Small.jpg"), 100, 600));
-            //currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), 50, 200));
-
-            
 
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongPauseSign.png"), 0, buttonTop + buttonTopHeight));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("pauseMenu.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
-			//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
 
@@ -736,7 +732,7 @@ void Core::runPauseMenu() {
             maxChoiceIndex = 1;
             break;
         default: // Default is the PAUSEMENU
-            
+
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongPauseSign.png"), 0, buttonTop + buttonTopHeight));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
@@ -810,6 +806,7 @@ void Core::runPauseMenu() {
                 // UNPAUSE
                 properties.isPaused = false;
                 properties.isIngameMenuInitialized = false;
+				inPauseMenu = false;
 
                 // Now I need to erase the popup menu
                 for (int i = 0; i < currentImageUiIds.size(); ++i) {
@@ -839,6 +836,7 @@ void Core::runPauseMenu() {
             }
             else if (currentChoiceIndex == 2) {
                 properties.isPaused = false;
+				inPauseMenu = false;
                 properties.isIngameMenuInitialized = false;
                 properties.inMainMenu = true;
             }
@@ -984,6 +982,36 @@ void Core::runUpgradeMenu() {
 		currentImageUiIds.clear();
 		currentTextUiIds.clear();
 
+		int x, y;
+		y = 400;
+		x = 160;
+		float vehicleScale = 0.25;
+		// show preview image of player
+		std::string cLevel = std::to_string(uc->getChassisLevel());
+		std::string aLevel = std::to_string(uc->getArmorLevel());
+		std::string rLevel = std::to_string(uc->getRamLevel());
+		std::string gLevel = std::to_string(uc->getGunLevel());
+
+		if (uc->getChassisLevel() == 1) {
+			vehicleScale = 0.25;
+			x = 130;
+			y = 400;
+		}
+		else if (uc->getChassisLevel() == 2) {
+			vehicleScale = 0.29;
+			x = 80;
+			y = 370;
+		}
+		else {
+			vehicleScale = 0.33;
+			x = 50;
+			y = 340;
+		}
+		
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("previewGun" + gLevel + ".png"), x, y, vehicleScale));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("previewRam" + rLevel + ".png"), x, y, vehicleScale));
+		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("previewChassis" + cLevel + "A" + aLevel + ".png"), x, y, vehicleScale));
+
         if (!uc->isUpgradeAvailable()) {
             currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeMenuNotEnough.png"), 600, 0));
         }
@@ -992,6 +1020,7 @@ void Core::runUpgradeMenu() {
 		}
 		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("upgradePreview.png"), 0, 20));
 
+		
 		maxChoiceIndex = 0;
 		upgrades.clear();
 
@@ -1060,8 +1089,6 @@ void Core::runUpgradeMenu() {
 		currentChoiceIndex = 0;
 
 		// Render any final stat panel stuff
-		//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("Panel1Small.jpg"), statPanelX, 250));
-
 		std::ostringstream oss;
 		oss << "Chassis lvl: " << uc->getChassisLevel();
 		std::string chassisLevel = oss.str();
