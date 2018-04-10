@@ -121,11 +121,13 @@ Entity* EntityManager::createBasicVehicleEntity(glm::vec3 startPos) {
 
 Entity* EntityManager::createProjectile(int ownerid, glm::vec3 origin, glm::quat orientation, float speed, float damage) {
     Entity* projectile = EntityManager::getInstance()->createEntity(origin, orientation, glm::vec3(1));
-	Model* projectileModel = ModelManager::getModel("projectile");
+	Model* projectileModel;
 	glm::vec3 scale(1,1,12);
 	if (damage > 7.f) {
 		projectileModel = ModelManager::getModel("projectileBig");
 		scale = glm::vec3(1.5,1.5,16);
+	} else {
+        projectileModel = ModelManager::getModel("projectile");
 	}
     RendererComponent* temp = ComponentManager::getInstance()->addRendererComponent(projectile, projectileModel, glm::vec3(0), glm::quat(), scale);
     ComponentManager::getInstance()->addProjectileComponent(projectile, ownerid, speed, damage);

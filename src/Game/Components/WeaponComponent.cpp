@@ -4,6 +4,7 @@
 #include "../../Engine/Entity.h"
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/vector_angle.inl>
+#include "UpgradeComponent.h"
 
 WeaponComponent::WeaponComponent(ShapeRendererComponent* newWeapon) : Component(WEAPON) {
     setROF(100.0f);
@@ -45,19 +46,23 @@ void WeaponComponent::updateGunValues(float nROF, float newDamaga, float newSpee
 void WeaponComponent::updateTargetting() {
     // Rotate the gun as much as possible to point at the entity
     if (targetEnt != nullptr) {
-        glm::vec3 targetPos = targetEnt->getPosition();
+
+        // Aim higher the higher the level of the enemy
+        float targetLevel = static_cast<UpgradeComponent*>(owner->getComponent(UPGRADE))->getChassisLevel();
+
+        const glm::vec3 targetPos = targetEnt->getPosition() + glm::vec3(0, 3.f * targetLevel, 0);
 
         // Now we need to perform the same oangle calculations that also occur elsewhere
         // And limit the guns rotation to the specified max values
-        glm::vec3 myPos = owner->getPosition();
-        myPos.y = 0;
-        targetPos.y = 0;
+        glm::vec3 myYawPos = owner->getPosition();
+        myYawPos.y = 0;
 
-        float yawAngleToTarget = -glm::orientedAngle(glm::normalize(targetPos - myPos), owner->getForwardVector(), owner->getUpVector());
+        const glm::vec3 yawTargetPos(targetPos.x, 0, targetPos.z);
+        float yawAngleToTarget = -glm::orientedAngle(glm::normalize(yawTargetPos - myYawPos), owner->getForwardVector(), owner->getUpVector());
 
         float pitchAngleToTarget = 0;
         if (abs(yawAngleToTarget) < maxGunYaw) {
-            pitchAngleToTarget = -glm::orientedAngle(glm::normalize((targetPos + glm::vec3(0, 2.f, 0)) - (owner->getPosition() + glm::vec3(0,myWeapon->localPos.y * 0.8f,0))), glm::normalize(targetPos - myPos), owner->getRightVector());
+            pitchAngleToTarget = -glm::orientedAngle(glm::normalize(targetPos - (owner->getPosition() + glm::vec3(0,myWeapon->localPos.y * 0.8f,0))), glm::normalize(targetPos - owner->getPosition()), owner->getRightVector());
 
             pitchAngleToTarget = pitchAngleToTarget > maxGunPitch ? maxGunPitch : pitchAngleToTarget;
             pitchAngleToTarget = pitchAngleToTarget <  -maxGunPitch ? 6.283185f - maxGunPitch : 6.283185f + pitchAngleToTarget;

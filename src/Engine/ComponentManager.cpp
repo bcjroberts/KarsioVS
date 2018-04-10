@@ -278,11 +278,12 @@ void ComponentManager::performProjectileLogic() {
     // Iterates through all of the projectiles and removes them on the fly.
     while (it != projectiles.end()) {
         ProjectileComponent* temp = (*it);
-        if (temp->checkForHit()) {
+        if (temp->hitSomething && temp->shouldDestroyExplosion()) {
             it = projectiles.erase(it);
             EntityManager::getInstance()->destroyEntity(temp->owner->id);
         } else {
-            temp->move();
+            if (!temp->checkForHit())
+                temp->move();
             ++it;
         }
     }

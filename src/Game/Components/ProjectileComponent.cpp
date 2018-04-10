@@ -5,6 +5,8 @@
 #include "HealthComponent.h"
 #include "AIComponent.h"
 #include "../../Engine/Core.h"
+#include "RendererComponent.h"
+#include "../../Engine/Importer/Managers/ModelManager.h"
 
 ProjectileComponent::ProjectileComponent(int nownerid, float nspeed, float ndamage) : Component(PROJECTILE) {
     ownerid = nownerid;
@@ -18,6 +20,7 @@ ProjectileComponent::ProjectileComponent(int nownerid, float nspeed, float ndama
 ProjectileComponent::~ProjectileComponent() = default;
 
 bool ProjectileComponent::checkForHit() {
+    if (hitSomething == true) return false;
 
     // Fires a raycast to see if anything was hit
     physx::PxRaycastBuffer hitBuf;
@@ -35,6 +38,19 @@ bool ProjectileComponent::checkForHit() {
 				hc->applyDamage(damage, ownerid);
 			}
         }
+        previousSimTime = Core::simtimeSinceStartup;
+        owner->updatePosition(PhysicsEngine::toglmVec3(hitBuf.block.position));
+        RendererComponent* rc = static_cast<RendererComponent*>(owner->getComponent(RENDERER));
+        Core::renderEngine->world->removeInstance(*rc->myModel, rc->id);
+        if (damage > 7.f) {
+            rc->myModel = ModelManager::getModel("sphereBig");
+        } else {
+            rc->myModel = ModelManager::getModel("sphereSmall");
+        }
+        rc->scale = glm::vec3(rc->scale.y * 0.65f);
+        Core::renderEngine->world->addInstance(*rc->myModel, rc->id, rc->getMatrix());
+
+        hitSomething = true;
         return true;
     }
 
@@ -42,7 +58,16 @@ bool ProjectileComponent::checkForHit() {
     return false;
 }
 
+bool ProjectileComponent::shouldDestroyExplosion() {
+    if (!hitSomething) return false;
+
+    // destroy the explosion after a set time
+    if (Core::simtimeSinceStartup - previousSimTime > 0.05f) return true;
+    return false;
+}
+
 void ProjectileComponent::move() {
+    if (hitSomething) return;
     glm::vec3 newPos = owner->getPosition() + (owner->getForwardVector() * speed * (Core::simtimeSinceStartup - previousSimTime));
     owner->updatePosition(newPos);
     previousSimTime = Core::simtimeSinceStartup;
