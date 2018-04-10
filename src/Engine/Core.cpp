@@ -18,6 +18,7 @@
 #include "PhysicsEngine/VehicleConfigParser.h"
 #include "Importer/Managers/TextureDataManager.h"
 #include "AudioPaths.h"
+#include <glm/gtx/vector_angle.inl>
 GLFWwindow* Core::globalWindow = nullptr;
 float Core::simtimeSinceStartup = 0.f;
 float Core::realtimeSinceStartup = 0.f;
@@ -81,6 +82,7 @@ bool enterPressed = false;
 bool pauseButtonPressed = false;
 bool forceReplay = false;
 bool upgradeButtonPressed = false;
+bool changeTargetPressed = false;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -119,6 +121,7 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
     pauseButtonPressed = key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE;
     forceReplay = key == GLFW_KEY_Y && action == GLFW_RELEASE;
 	upgradeButtonPressed = key == GLFW_KEY_X && action == GLFW_RELEASE;
+	changeTargetPressed = key == GLFW_KEY_E && action == GLFW_RELEASE;
 }
 
 float timeDiff = 0;
@@ -210,6 +213,7 @@ int enemyCountId = -1;
 int healthBarGreenId = -1;
 int healthBarRedId = -1;
 bool controllerButtonPressed = false;
+#define		GAMEPAD_A	0
 #define     GAMEPAD_X	2
 #define     GAMEPAD_START	7
 
@@ -235,6 +239,7 @@ void Core::runGame() {
 		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopLeft.png"), 0, 0, 1);
 
         playerReticleId = renderEngine->ui->addImage(*TextureDataManager::getImageData("reticle3.png"),0, 0);
+		playerTarget = nullptr;
 
         // Health and resource text
         playerHealthId = renderEngine->ui->addText("health", 40, 40, 1, glm::vec3(0.5, 1, 0));
@@ -269,8 +274,12 @@ void Core::runGame() {
 				upgradeButtonPressed = true;
 			}
 			controllerButtonPressed = true;
-		}
-        else {
+		} else if (buttons[GAMEPAD_A]) {
+			if (!controllerButtonPressed) {
+				changeTargetPressed = true;
+			}
+			controllerButtonPressed = true;
+		} else {
             controllerButtonPressed = false;
         }
     }
@@ -437,12 +446,51 @@ void Core::runGame() {
 
             const float chassisLevel = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->getChassisLevel();
 
-            playerTarget = EntityManager::getInstance()->getVehicleEntities().at(EntityManager::getInstance()->getVehicleEntities().size()-1);
-            static_cast<WeaponComponent*>(playerVehicle->getComponent(WEAPON))->updateTarget(playerTarget);
-            glm::vec2 screenPos = cameras[0]->worldToScreenPoint(playerTarget->getPosition());
-            GLfloat x = screenPos.x - 50.f;
-            GLfloat y = screenPos.y - 50.f;
-            renderEngine->ui->modifyImage(playerReticleId, &(x), &(y));
+			// Check if the player wants to update the target
+			if (changeTargetPressed) { // grab the target that is closest to being in front of the player
+				playerTarget = nullptr;
+				float smallestAngle = 10.f;
+				for (int i = 0; i < EntityManager::getInstance()->getVehicleEntities().size(); i++) {
+					glm::vec3 toTarget = normalize(EntityManager::getInstance()->getVehicleEntities().at(i)->getPosition() - playerVehicle->getPosition());
+					float angle = glm::orientedAngle(toTarget, playerVehicle->getForwardVector(), glm::vec3(0,1,0));
+					if (abs(angle) < smallestAngle) {
+						smallestAngle = abs(angle);
+						playerTarget = EntityManager::getInstance()->getVehicleEntities().at(i);
+					}
+				}
+				changeTargetPressed = false;
+				static_cast<WeaponComponent*>(playerVehicle->getComponent(WEAPON))->updateTarget(playerTarget);
+			} else if (playerTarget != nullptr) { // make sure our vehicle is still alive
+				auto it = EntityManager::getInstance()->getVehicleEntities().begin();
+				bool found = false;
+				while (it != EntityManager::getInstance()->getVehicleEntities().end()) {
+					Entity* temp = (*it);
+					if (playerTarget == temp) {
+						found = true;
+						break;
+					}
+					++it;
+				}
+				if (!found) playerTarget = nullptr;
+			}
+			if (playerTarget != nullptr) {
+				glm::vec2 screenPos = cameras[0]->worldToScreenPoint(playerTarget->getPosition());
+				// adjust the scale accordingly based on the size and the distance to the target
+				float multi = (float(static_cast<UpgradeComponent*>(playerTarget->getComponent(UPGRADE))->getChassisLevel()) / 2.f);
+				float distanceMulti = glm::distance(playerTarget->getPosition(), playerVehicle->getPosition()) / 100.f;
+				if (distanceMulti < 1.f) distanceMulti += (1.f - distanceMulti) / 2.f; // Make the close shape not quite so big
+				multi /= distanceMulti;
+
+				GLfloat x = screenPos.x - (50.f * multi);
+				GLfloat y = screenPos.y - (50.f * multi);
+
+				renderEngine->ui->modifyImageDiffSize(playerReticleId, &x, &y, &multi, &multi);
+			} else { // No target, move reticle offscreen
+				GLfloat x = -200.f;
+				GLfloat y = -200.f;
+				GLfloat m = 1.f;
+				renderEngine->ui->modifyImageDiffSize(playerReticleId, &(x), &(y), &m, &m);
+			}
 
             cameras[0]->rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 7.5f * fixedStepTimediff);
             cameras[0]->lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -12.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 0.5f), 0), 7.5f * fixedStepTimediff);
