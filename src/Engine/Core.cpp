@@ -234,7 +234,7 @@ void Core::runGame() {
 		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopRight.png"), float(*properties.screenWidth-326), 0, 1);
 		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopLeft.png"), 0, 0, 1);
 
-        playerReticleId = renderEngine->ui->addImage(*TextureDataManager::getImageData("reticle2.png"),0, 0);
+        playerReticleId = renderEngine->ui->addImage(*TextureDataManager::getImageData("reticle3.png"),0, 0);
 
         // Health and resource text
         playerHealthId = renderEngine->ui->addText("health", 40, 40, 1, glm::vec3(0.5, 1, 0));
