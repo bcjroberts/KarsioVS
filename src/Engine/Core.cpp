@@ -199,6 +199,8 @@ const float physicsTimeStep = 1.0f / 60.0f;
 double xpos, ypos;
 bool movingForward = true;
 Entity* Core::playerVehicle = nullptr;
+Entity* playerTarget = nullptr;
+int playerReticleId = -1;
 
 int physxIterCounterId = -1;
 int mainfpsCounterId = -1;
@@ -231,6 +233,8 @@ void Core::runGame() {
 		healthBarRedId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthRed.png"), 115, 73, 1);
 		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopRight.png"), float(*properties.screenWidth-326), 0, 1);
 		renderEngine->ui->addImage(*TextureDataManager::getImageData("UITopLeft.png"), 0, 0, 1);
+
+        playerReticleId = renderEngine->ui->addImage(*TextureDataManager::getImageData("reticle1.png"),0, 0);
 
         // Health and resource text
         playerHealthId = renderEngine->ui->addText("health", 40, 40, 1, glm::vec3(0.5, 1, 0));
@@ -432,6 +436,13 @@ void Core::runGame() {
             if (!movingForward) offset = -offset;
 
             const float chassisLevel = static_cast<UpgradeComponent*>(playerVehicle->getComponent(UPGRADE))->getChassisLevel();
+
+            playerTarget = EntityManager::getInstance()->getVehicleEntities().at(EntityManager::getInstance()->getVehicleEntities().size()-1);
+            static_cast<WeaponComponent*>(playerVehicle->getComponent(WEAPON))->updateTarget(playerTarget);
+            glm::vec2 screenPos = cameras[0]->worldToScreenPoint(playerTarget->getPosition());
+            GLfloat x = screenPos.x - 50.f;
+            GLfloat y = screenPos.y - 50.f;
+            renderEngine->ui->modifyImage(playerReticleId, &(x), &(y));
 
             cameras[0]->rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 7.5f * fixedStepTimediff);
             cameras[0]->lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -12.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 0.5f), 0), 7.5f * fixedStepTimediff);
