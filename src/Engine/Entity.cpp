@@ -101,6 +101,12 @@ glm::mat4 Entity::getMatrix() const {
     return myMatrix;
 }
 
+glm::mat4 Entity::getMatrixNoScale() const {
+    glm::mat4 myMatrix;
+    myMatrix = glm::translate(myMatrix, position) * glm::toMat4(rotation) * glm::scale(myMatrix, glm::vec3(1.f));
+    return myMatrix;
+}
+
 Entity::~Entity() {
     // Here we need to delete all of our components. The idea is that all important components have already been removed.
     for (int i = 0; i < myComponents.size(); ++i) {

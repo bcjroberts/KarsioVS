@@ -35,6 +35,7 @@ public:
     glm::vec3 getUpVector() const;
     glm::vec3 getRightVector() const;
     glm::mat4 getMatrix() const;
+    glm::mat4 getMatrixNoScale() const;
     ~Entity();
 };
 

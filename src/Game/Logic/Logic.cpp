@@ -277,7 +277,7 @@ void Logic::attack(Entity* goal, Entity* entity) {
     // Determine if we should shoot by seeing if we are almost facing the direction of the player.
     float oangle = glm::orientedAngle(glm::normalize(goal->getPosition() - entity->getPosition()),entity->getForwardVector(), glm::vec3(0,1,0));
 	// stop driving and attack
-    if (abs(oangle) < 0.5f) {
+    if (abs(oangle) < 1.f) {
         static_cast<WeaponComponent*>(entity->getComponent(WEAPON))->fireWeapon();
     }
 	aiMovement(entity);
@@ -323,7 +323,7 @@ void Logic::unstuck(Entity* entity, AStar::Generator* generator) {
 		aiDrive->setInputs(0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	else {
-		if (ai->goal != nullptr) {
+		if (ai->goal != nullptr && ai->prevstate != STUCK) {
 			findPath(generator, entity, ai->goal->getPosition());
 			if (ai->path.size() > 0) {
 				ai->state = ai->prevstate;
@@ -514,6 +514,7 @@ void Logic::finiteStateMachine(Entity* entity) {
 		}
 		if (EntityManager::getInstance()->getVehicleEntities()[i]->id != entity->id) {
 			ai->goal = EntityManager::getInstance()->getVehicleEntities().at(i);
+            static_cast<WeaponComponent*>(entity->getComponent(WEAPON))->updateTarget(ai->goal);
 			findPath(generator, entity, ai->goal->getPosition());
 			if (!ai->path.empty()) {
 				ai->state = SEEKING_PLAYER;

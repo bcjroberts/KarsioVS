@@ -384,6 +384,7 @@ void Core::runGame() {
 
         logic->playerMovement(playerVehicle);
 
+        ComponentManager::getInstance()->updateWeaponAiming();
         for (unsigned int i = 1; i < EntityManager::getInstance()->getVehicleEntities().size(); i++) {
             logic->finiteStateMachine(EntityManager::getInstance()->getVehicleEntities().at(i));
         }

@@ -11,6 +11,7 @@ public:
 	glm::vec3 localPos;
     ShapeRendererComponent(Model* newModel, physx::PxShape* newShape, RendererTag newTag = RendererTag::NA);
     glm::mat4 getMatrix() override;
+    glm::quat getMatrixNoScale();
     virtual ~ShapeRendererComponent();
     physx::PxShape* getMyShape() { return myShape; }
 };

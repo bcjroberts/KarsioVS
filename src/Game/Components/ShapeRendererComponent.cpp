@@ -25,6 +25,21 @@ glm::mat4 ShapeRendererComponent::getMatrix()
     return owner->getMatrix() * myMat2;
 }
 
+glm::quat ShapeRendererComponent::getMatrixNoScale() {
+    physx::PxTransform loc = myShape->getLocalPose();
+
+    // copy the position of the shape
+    position.x = loc.p.x;
+    position.y = loc.p.y;
+    position.z = loc.p.z;
+
+    // copy the rotation from the shape
+    glm::quat newRot(eulerAngles(rotation) + glm::eulerAngles(glm::quat(loc.q.w, loc.q.x, loc.q.y, loc.q.z)));
+
+    glm::mat4 myMat2;
+    myMat2 = glm::translate(myMat2, position + localPos) * glm::toMat4(newRot) * glm::scale(myMat2, glm::vec3(1.f));
+    return owner->getMatrixNoScale() * myMat2;
+}
 
 
 ShapeRendererComponent::~ShapeRendererComponent() = default;

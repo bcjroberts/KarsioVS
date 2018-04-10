@@ -91,10 +91,11 @@ UpgradeComponent* ComponentManager::addUpgradeComponent(Entity* addTo) {
     return uc;
 }
 
-WeaponComponent* ComponentManager::addWeaponComponent(Entity* addTo) {
-    WeaponComponent* wc = new WeaponComponent();
+WeaponComponent* ComponentManager::addWeaponComponent(Entity* addTo, ShapeRendererComponent* newWeapon) {
+    WeaponComponent* wc = new WeaponComponent(newWeapon);
     addTo->addComponent(wc);
     wc->owner = addTo;
+    weaponComponents.push_back(wc);
     return wc;
 }
 
@@ -256,6 +257,18 @@ void ComponentManager::cleanupComponents(Entity* entity) {
         delete toRemove;
     }
 
+    toRemove = entity->getComponent(WEAPON);
+    if (toRemove != nullptr) {
+        for (int i = 0; i < weaponComponents.size(); ++i) {
+            if (weaponComponents[i]->id == toRemove->id) {
+                weaponComponents.erase(weaponComponents.begin() + i);
+                break;
+            }
+        }
+        // Remove the vehicle from the physx list so it is no longer updated
+        entity->removeComponent(toRemove->id);
+        delete toRemove;
+    }
     // Now we can just delete the other components without any special treatment
 }
 
@@ -272,6 +285,12 @@ void ComponentManager::performProjectileLogic() {
             temp->move();
             ++it;
         }
+    }
+}
+
+void ComponentManager::updateWeaponAiming() {
+    for (WeaponComponent* wc : weaponComponents) {
+        wc->updateTargetting();
     }
 }
 

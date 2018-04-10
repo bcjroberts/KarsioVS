@@ -28,6 +28,7 @@ public:
     std::vector<DriveComponent*> driveComponents;
     std::vector<ProjectileComponent*> projectiles;
     std::vector<FloatingTextComponent*> floatingTextComponents;
+    std::vector<WeaponComponent*> weaponComponents;
     
     // audio queue
     AudioObservable* audioEvents;
@@ -45,7 +46,7 @@ public:
     AIComponent* addAIComponent(Entity* addTo);
 	ControllableComponent* addControllableComponent(Entity* addTo, bool player);
     UpgradeComponent* addUpgradeComponent(Entity* addTo);
-    WeaponComponent* addWeaponComponent(Entity* addTo);
+    WeaponComponent* addWeaponComponent(Entity* addTo, ShapeRendererComponent* newWeapon);
     ProjectileComponent* addProjectileComponent(Entity* entity, int ownerid, float speed, float damage);
     StaticLightComponent* addStaticLightComponent(Entity* entity, glm::vec3 pos, glm::vec3 color);
     FloatingTextComponent* addFloatingTextComponent(Entity* entity, Entity* relativeEnt, glm::vec3 color, float scale, std::string* text);
@@ -56,6 +57,7 @@ public:
     void performFloatingTextLogic();
     void cleanupComponents(Entity* entity);
     void performProjectileLogic();
+    void updateWeaponAiming();
     void bindAudioObservable(AudioObservable* anAudioObservable);
     static ComponentManager* getInstance();
     ~ComponentManager();
