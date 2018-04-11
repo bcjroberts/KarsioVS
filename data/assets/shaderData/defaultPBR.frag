@@ -4,9 +4,16 @@
 out vec4 FragColor;
 
 //in vec3 vertexColor; //this can be used for AO
-in vec3 Normal;
-in vec3 ModelPos;
-in vec2 TexCoords;
+in VertexShader{
+    vec3 modelPos;
+    vec2 uvs;
+    mat3 tangentLight;
+    vec3 tangentView;
+    vec3 tangentPos;
+} vs_output;
+// in vec3 Normal;
+// in vec3 ModelPos;
+// in vec2 TexCoords;
 
 struct Light{
     vec3 position;
@@ -25,7 +32,7 @@ struct Textures{
 const int numLights = 50;
 
 uniform Light lights[numLights];
-uniform vec3 viewPos;
+// uniform vec3 viewPos;
 uniform Textures textureData;
 
 // float distributionGGX(vec3 N, vec3 H, float roughness);
@@ -74,7 +81,7 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
 }
 
 vec3 calculateReflectance(int i, vec3 norm, vec3 viewDir, vec3 albedo, float roughness, float metalness, vec3 fresnel0){
-    vec3 lightMagnitude = lights[i].position - ModelPos;
+    vec3 lightMagnitude = (vs_output.tangentLight * lights[i].position) - vs_output.tangentPos;
 
     // calculate per-light radiance
     vec3 lightDir = normalize(lightMagnitude);
@@ -112,19 +119,20 @@ vec3 calculateReflectance(int i, vec3 norm, vec3 viewDir, vec3 albedo, float rou
 }
 
 vec3 computeColor(){
-    vec3 albedo = pow(texture(textureData.albedo, TexCoords).rgb, vec3(2.2));
-    float metalness = texture(textureData.metalness, TexCoords).r;
-    float roughness = texture(textureData.roughness, TexCoords).r;
+    vec3 albedo = pow(texture(textureData.albedo, vs_output.uvs).rgb, vec3(2.2));
+    float metalness = texture(textureData.metalness, vs_output.uvs).r;
+    float roughness = texture(textureData.roughness, vs_output.uvs).r;
     // float ao = texture(aoMap, TexCoords).r;
+    vec3 norm = texture(textureData.normal, vs_output.uvs).rgb;
+    norm = normalize(norm * 2.0 - 1.0);
 
     // vec3 albedo = vec3(0.9,0.9,0.9);
     // float metalness = 0;
     // float roughness = 0.2;
 
     // vec3 N = getNormalFromMap();
-    vec3 norm = normalize(Normal);
 
-    vec3 viewDir = normalize(viewPos - ModelPos);
+    vec3 viewDir = normalize(vs_output.tangentView - vs_output.tangentPos);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
@@ -151,7 +159,7 @@ vec3 computeColor(){
 // ----------------------------------------------------------------------------
 void main() {
     // vec3 emission = vec3(0);
-    vec3 emission = pow(texture(textureData.emission, TexCoords).rgb, vec3(2.2));
+    vec3 emission = pow(texture(textureData.emission, vs_output.uvs).rgb, vec3(2.2));
     vec3 color = max(computeColor(),emission);
     
     // HDR tonemapping
