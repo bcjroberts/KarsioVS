@@ -209,6 +209,12 @@ glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from) {
     return glm::vec3(from.x, from.y, from.z);
 }
 
+physx::PxShape* PhysicsEngine::getFirstShapeFromActor(physx::PxRigidActor* actor) {
+    physx::PxShape* shapes[1];
+    actor->getShapes(shapes, 1);
+    return shapes[0];
+}
+
 void PhysicsEngine::modifyVehicleScale(float scale, physx::PxRigidDynamic* rigid, physx::PxVehicleDrive4W* vehicle) {
     
     // First update the size of the vehicle
@@ -273,6 +279,26 @@ physx::PxRigidActor* PhysicsEngine::createCrystalBoxCollider(physx::PxVec3 pos, 
 
     physx::PxRigidActor* box = physx::PxCreateStatic(*gPhysics, physx::PxTransform(pos), *boxShape);
     gScene->addActor(*box);
+    return box;
+}
+
+physx::PxRigidActor* PhysicsEngine::createDynamicPhysicsBox(float density, physx::PxVec3 pos, physx::PxVec3 dimensions,
+    physx::PxVec3 velocity, physx::PxQuat rotation) const {
+
+    // Create the shape and then the dynamic actor
+    physx::PxShape* boxShape = gPhysics->createShape(physx::PxBoxGeometry(dimensions), *baseMaterial);
+
+    // Allow these dynamic boxes to be driven on
+    physx::PxFilterData qryFilterData;
+    setupDrivableSurface(qryFilterData);
+    boxShape->setQueryFilterData(qryFilterData);
+
+    //physx::PxRigidActor* box = physx::PxCreateKinematic(*gPhysics, physx::PxTransform(pos, rotation), *boxShape, density);
+    physx::PxRigidDynamic* box = physx::PxCreateDynamic(*gPhysics, physx::PxTransform(pos, rotation), *boxShape, density);
+    gScene->addActor(*box);
+    
+    // set the velocity of the actor to be the same as the velocity passed in
+    //box->setLinearVelocity(velocity);
     return box;
 }
 

@@ -38,13 +38,15 @@ public:
 	physx::PxRigidActor* createPhysicsPlane();
 	physx::PxRigidActor* createPhysicsBox(physx::PxVec3 pos, physx::PxVec3 scale, physx::PxQuat rotation = physx::PxIdentity) const;
     physx::PxRigidActor* createCrystalBoxCollider(physx::PxVec3 pos, physx::PxVec3 scale) const;
+    physx::PxRigidActor* createDynamicPhysicsBox(float density, physx::PxVec3 pos, physx::PxVec3 dimensions, physx::PxVec3 velocity = physx::PxZero, physx::PxQuat rotation = physx::PxIdentity) const;
     vehicleData* createVehicle(physx::PxVec3 startpos);
     bool fireRaycast(physx::PxRaycastBuffer* dataToFill, physx::PxVec3 origin, physx::PxVec3 dir, float distance);
     void removePhysicsActor(physx::PxActor* actor);
     void removeVehicleData(physx::PxVehicleDrive4W* vehicleDrive);
     static PhysicsEngine* getInstance();
-	static physx::PxVec3 PhysicsEngine::toPxVec3(glm::vec3 from);
-    static glm::vec3 PhysicsEngine::toglmVec3(physx::PxVec3 from);
+	static physx::PxVec3 toPxVec3(glm::vec3 from);
+    static glm::vec3 toglmVec3(physx::PxVec3 from);
+    static physx::PxShape* getFirstShapeFromActor(physx::PxRigidActor* actor);
     void modifyVehicleScale(float scale, physx::PxRigidDynamic* rigid, physx::PxVehicleDrive4W* vehicle);
     void bindAudioObservable(AudioObservable* eventList);
     ~PhysicsEngine();

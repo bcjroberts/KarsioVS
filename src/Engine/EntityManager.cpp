@@ -12,6 +12,7 @@
 #include <random>
 #include <chrono> 
 #include "../Game/Components/FloatingTextComponent.h"
+#include <glm/gtx/quaternion.hpp>
 
 // Initialize the Entity Manager global pointer.
 EntityManager *EntityManager::globalInstance = nullptr;
@@ -305,6 +306,129 @@ Entity* EntityManager::createFloatingText (Entity* relativeEnt, glm::vec3 color,
     Entity* entity = EntityManager::getInstance()->createEntity(relativeEnt->getPosition(), glm::quat(), glm::vec3(1));
     FloatingTextComponent* ftc = ComponentManager::getInstance()->addFloatingTextComponent(entity, relativeEnt, color, scale, text);
     return entity;
+}
+
+void EntityManager::spawnBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::quat rot, glm::vec3 scale, glm::vec3 velocity) {
+
+    glm::mat4 globalMat;
+    globalMat = glm::translate(globalMat, pos) * glm::toMat4(rot) * glm::scale(globalMat, scale);
+
+    // Add the body
+    Entity* bodyEnt = createEntity(pos, rot, scale);
+    glm::quat bodyRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(0.6f,0,0))));
+    physx::PxRigidActor* bodyActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(100.f, PhysicsEngine::toPxVec3(pos + glm::vec3(0,0.5f,0)), 
+        PhysicsEngine::toPxVec3(glm::vec3(1.3f,0.5f,2.5f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(bodyRot.x, bodyRot.y, bodyRot.z, bodyRot.w));
+    ComponentManager::getInstance()->addPhysicsComponent(bodyEnt, bodyActor);
+    ComponentManager::getInstance()->addShapeRendererComponent(bodyEnt, ModelManager::getModel("blownUpPieces-Chassis2"), PhysicsEngine::getFirstShapeFromActor(bodyActor), glm::vec3(0.7f));
+
+    // Add the thing that holds the gun mount
+    Entity* holderEnt = createEntity(pos, rot, scale);
+    glm::vec3 holderOffset = glm::vec3(globalMat * glm::vec4(0, 1.6f, -0.4f, 0.0));
+    glm::quat holderRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(0.65f,0,0))));
+    physx::PxRigidActor* holderActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(40.f, PhysicsEngine::toPxVec3(pos + holderOffset), 
+        PhysicsEngine::toPxVec3(glm::vec3(0.3f, 0.3f, 0.8f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(holderRot.x, holderRot.y, holderRot.z, holderRot.w));
+    ComponentManager::getInstance()->addPhysicsComponent(holderEnt, holderActor);
+    ComponentManager::getInstance()->addShapeRendererComponent(holderEnt, ModelManager::getModel("blownUpPieces-Chassis1"), PhysicsEngine::getFirstShapeFromActor(holderActor), glm::vec3(0.7f));
+
+    // Add the two rails on the top of the body
+    glm::vec3 railOffsets[2] = {glm::vec3(-0.6f,0.85f,0.7f), glm::vec3(0.6f,0.85f,0.7f)};
+
+    for (int i = 0; i < 2; i++) {
+        Entity* railEnt = createEntity(pos, rot, scale);
+        glm::vec3 railOffset = glm::vec3(globalMat * glm::vec4(railOffsets[i],0.0));
+        glm::quat railRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(-0.95f,0,0))));
+        physx::PxRigidActor* railActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(40.f, PhysicsEngine::toPxVec3(pos + railOffset), 
+            PhysicsEngine::toPxVec3(glm::vec3(0.2f, 1.5f, 0.2f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(railRot.x, railRot.y, railRot.z, railRot.w));
+        ComponentManager::getInstance()->addPhysicsComponent(railEnt, railActor);
+        ComponentManager::getInstance()->addShapeRendererComponent(railEnt, ModelManager::getModel("blownUpPieces-Chassis4"), PhysicsEngine::getFirstShapeFromActor(railActor), glm::vec3(0.65f));
+    }
+
+    // Add the wheels and the legs
+    glm::vec3 legOffsets[4] = {glm::vec3(0.8f,-0.2f,0.5f), glm::vec3(0.8f,-0.1f,-1.f), glm::vec3(-0.8f,-0.2f,0.5f), glm::vec3(-0.8f,-0.1f,-1.f)};
+    glm::vec3 legRotOffset[4] = {glm::vec3(-0.5f, 0, 0), glm::vec3(0.1f, 0, 0), glm::vec3(-0.5f, 0, 0), glm::vec3(0.1f, 0, 0)};
+    glm::vec3 wheelOffsets[4] = {glm::vec3(1.f,-1.f,1.f), glm::vec3(1.f,-1.f,-1.f), glm::vec3(-1.f,-1.f,1.f), glm::vec3(-1.f,-1.f,-1.f)};
+
+    // Spawn the vehicle legs and wheels
+    for (int i = 0; i < 4; i++) {
+        Entity* legEnt = createEntity(pos, rot, scale);
+        glm::quat legRot = glm::quat(glm::toMat4(rot) * glm::toMat4(glm::quat(legRotOffset[i])));
+        glm::vec3 legOffset = glm::vec3(globalMat * glm::vec4(legOffsets[i],0.0));
+        physx::PxRigidActor* legActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + legOffset),
+            PhysicsEngine::toPxVec3(glm::vec3(0.2f, 1.f, 0.2f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(legRot.x, legRot.y, legRot.z, legRot.w));
+        ComponentManager::getInstance()->addPhysicsComponent(legEnt, legActor);
+        ComponentManager::getInstance()->addShapeRendererComponent(legEnt, ModelManager::getModel("blownUpPieces-Chassis3"), PhysicsEngine::getFirstShapeFromActor(legActor), glm::vec3(0.8f));
+
+
+        Entity* wheelEnt = createEntity(pos, rot, scale);
+        glm::vec3 wheelOffset = glm::vec3(globalMat * glm::vec4(wheelOffsets[i],0.0));
+        physx::PxRigidActor* wheelActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + wheelOffset), 
+            PhysicsEngine::toPxVec3(glm::vec3(0.2f, 0.55f, 0.55f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+        ComponentManager::getInstance()->addPhysicsComponent(wheelEnt, wheelActor);
+        ComponentManager::getInstance()->addShapeRendererComponent(wheelEnt, ModelManager::getModel("wheels"), PhysicsEngine::getFirstShapeFromActor(wheelActor), glm::vec3(0.4f, 0.55f, 0.55f));
+    }
+
+    // Here we render the wires, the number is dependent on the level of the chassis being destroyed
+    for (int i = 0; i < chassisLevel * 4; i++) {
+        float x = (float(rand() % 50) / 50.f) - 0.5f;
+        float z = (float(rand() % 100) / 50.f) - 1.f;
+        float y = z * -1.f + 0.5f;
+        glm::vec3 wirePos(x,y,z);
+        if (i < 4) { // lvl1
+            // spawn 1 and 3, even distribution
+            if (rand() % 2 == 0) { // 50 - 50 chance
+                Entity* wireEnt = createEntity(pos, rot, scale);
+                glm::vec3 wireOffset = glm::vec3(globalMat * glm::vec4(wirePos,0.0));
+                physx::PxRigidActor* wireActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + wireOffset), 
+                    PhysicsEngine::toPxVec3(glm::vec3(0.2f, 0.4f, 0.4f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+                ComponentManager::getInstance()->addPhysicsComponent(wireEnt, wireActor);
+                ComponentManager::getInstance()->addShapeRendererComponent(wireEnt, ModelManager::getModel("blownUpPieces-ChassisWires1"), PhysicsEngine::getFirstShapeFromActor(wireActor), glm::vec3(0.8f));
+            } else {
+                Entity* wireEnt = createEntity(pos, rot, scale);
+                glm::vec3 wireOffset = glm::vec3(globalMat * glm::vec4(wirePos,0.0));
+                physx::PxRigidActor* wireActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + wireOffset), 
+                    PhysicsEngine::toPxVec3(glm::vec3(0.2f, 0.5f, 0.5f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+                ComponentManager::getInstance()->addPhysicsComponent(wireEnt, wireActor);
+                ComponentManager::getInstance()->addShapeRendererComponent(wireEnt, ModelManager::getModel("blownUpPieces-ChassisWires3"), PhysicsEngine::getFirstShapeFromActor(wireActor), glm::vec3(0.8f));
+            }
+        } else if (i < 8) { // lvl2
+            // spawn 3 and 4, mostly 4
+            if (rand() % 3 < 1) { // 66% chance of 4
+                Entity* wireEnt = createEntity(pos, rot, scale);
+                glm::vec3 wireOffset = glm::vec3(globalMat * glm::vec4(wirePos,0.0));
+                physx::PxRigidActor* wireActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + wireOffset), 
+                    PhysicsEngine::toPxVec3(glm::vec3(0.2f, 0.6f, 0.6f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+                ComponentManager::getInstance()->addPhysicsComponent(wireEnt, wireActor);
+                ComponentManager::getInstance()->addShapeRendererComponent(wireEnt, ModelManager::getModel("blownUpPieces-ChassisWires4"), PhysicsEngine::getFirstShapeFromActor(wireActor), glm::vec3(0.8f));
+            } else {
+                Entity* wireEnt = createEntity(pos, rot, scale);
+                glm::vec3 wireOffset = glm::vec3(globalMat * glm::vec4(wirePos,0.0));
+                physx::PxRigidActor* wireActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + wireOffset), 
+                    PhysicsEngine::toPxVec3(glm::vec3(0.2f, 0.5f, 0.5f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+                ComponentManager::getInstance()->addPhysicsComponent(wireEnt, wireActor);
+                ComponentManager::getInstance()->addShapeRendererComponent(wireEnt, ModelManager::getModel("blownUpPieces-ChassisWires3"), PhysicsEngine::getFirstShapeFromActor(wireActor), glm::vec3(0.8f));
+            }
+        } else if (i < 12) { // lvl3
+            // spawn 2 and 4, mostly 2
+            if (rand() % 3 < 1) { // 66% chance of 2
+                Entity* wireEnt = createEntity(pos, rot, scale);
+                glm::vec3 wireOffset = glm::vec3(globalMat * glm::vec4(wirePos,0.0));
+                physx::PxRigidActor* wireActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + wireOffset), 
+                    PhysicsEngine::toPxVec3(glm::vec3(0.3f, 0.7f, 0.7f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+                ComponentManager::getInstance()->addPhysicsComponent(wireEnt, wireActor);
+                ComponentManager::getInstance()->addShapeRendererComponent(wireEnt, ModelManager::getModel("blownUpPieces-ChassisWires2"), PhysicsEngine::getFirstShapeFromActor(wireActor), glm::vec3(0.8f));
+            } else {
+                Entity* wireEnt = createEntity(pos, rot, scale);
+                glm::vec3 wireOffset = glm::vec3(globalMat * glm::vec4(wirePos,0.0));
+                physx::PxRigidActor* wireActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + wireOffset), 
+                    PhysicsEngine::toPxVec3(glm::vec3(0.2f, 0.5f, 0.5f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+                ComponentManager::getInstance()->addPhysicsComponent(wireEnt, wireActor);
+                ComponentManager::getInstance()->addShapeRendererComponent(wireEnt, ModelManager::getModel("blownUpPieces-ChassisWires3"), PhysicsEngine::getFirstShapeFromActor(wireActor), glm::vec3(0.8f));
+            }
+        }
+    }
+
+    // If the vehicle had armour then add some scales. Unlike everything else, the size of the scales should not change, just the quantity
+    // This is OPTIONAL but would look pretty cool.
 }
 
 // ***************************************************** SECTION FOR UPGRADING/MODIFYING VEHICLE PARTS *******************************************************************
