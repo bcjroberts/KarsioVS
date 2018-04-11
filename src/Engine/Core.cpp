@@ -369,6 +369,9 @@ void Core::runGame() {
     // the other stuff... although feel free to change this if you think some other
     // approach is better
 	if (properties.isPaused) {
+        float loc = -100.f;
+        float scale = 1.f;
+        renderEngine->ui->modifyImageDiffSize(playerReticleId, &loc, &loc, &scale, &scale);
 		if (properties.isInUpgradeMenu) {
 			runUpgradeMenu();
 		} else {
