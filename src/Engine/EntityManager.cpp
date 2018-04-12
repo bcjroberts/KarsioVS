@@ -308,15 +308,18 @@ Entity* EntityManager::createFloatingText (Entity* relativeEnt, glm::vec3 color,
     return entity;
 }
 
-void EntityManager::spawnBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::quat rot, glm::vec3 scale, glm::vec3 velocity) {
+const glm::vec3 chassisScales[3] = {glm::vec3(1.5f, 1.5f, 1.5f), glm::vec3(2.5f, 2.5f, 2.5f), glm::vec3(3.5f, 3.5f, 3.5f)};
 
+void EntityManager::createBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::quat rot, glm::vec3 velocity) {
+
+	glm::vec3 scale = chassisScales[chassisLevel - 1];
     glm::mat4 globalMat;
     globalMat = glm::translate(globalMat, pos) * glm::toMat4(rot) * glm::scale(globalMat, scale);
 
     // Add the body
     Entity* bodyEnt = createEntity(pos, rot, scale);
     glm::quat bodyRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(0.6f,0,0))));
-    physx::PxRigidActor* bodyActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(100.f, PhysicsEngine::toPxVec3(pos + glm::vec3(0,0.5f,0)), 
+    physx::PxRigidActor* bodyActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + glm::vec3(0,0.5f,0)), 
         PhysicsEngine::toPxVec3(glm::vec3(1.3f,0.5f,2.5f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(bodyRot.x, bodyRot.y, bodyRot.z, bodyRot.w));
     ComponentManager::getInstance()->addPhysicsComponent(bodyEnt, bodyActor);
     ComponentManager::getInstance()->addShapeRendererComponent(bodyEnt, ModelManager::getModel("blownUpPieces-Chassis2"), PhysicsEngine::getFirstShapeFromActor(bodyActor), glm::vec3(0.7f));
@@ -325,7 +328,7 @@ void EntityManager::spawnBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::qua
     Entity* holderEnt = createEntity(pos, rot, scale);
     glm::vec3 holderOffset = glm::vec3(globalMat * glm::vec4(0, 1.6f, -0.4f, 0.0));
     glm::quat holderRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(0.65f,0,0))));
-    physx::PxRigidActor* holderActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(40.f, PhysicsEngine::toPxVec3(pos + holderOffset), 
+    physx::PxRigidActor* holderActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + holderOffset), 
         PhysicsEngine::toPxVec3(glm::vec3(0.3f, 0.3f, 0.8f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(holderRot.x, holderRot.y, holderRot.z, holderRot.w));
     ComponentManager::getInstance()->addPhysicsComponent(holderEnt, holderActor);
     ComponentManager::getInstance()->addShapeRendererComponent(holderEnt, ModelManager::getModel("blownUpPieces-Chassis1"), PhysicsEngine::getFirstShapeFromActor(holderActor), glm::vec3(0.7f));
@@ -337,7 +340,7 @@ void EntityManager::spawnBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::qua
         Entity* railEnt = createEntity(pos, rot, scale);
         glm::vec3 railOffset = glm::vec3(globalMat * glm::vec4(railOffsets[i],0.0));
         glm::quat railRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(-0.95f,0,0))));
-        physx::PxRigidActor* railActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(40.f, PhysicsEngine::toPxVec3(pos + railOffset), 
+        physx::PxRigidActor* railActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + railOffset), 
             PhysicsEngine::toPxVec3(glm::vec3(0.2f, 1.5f, 0.2f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(railRot.x, railRot.y, railRot.z, railRot.w));
         ComponentManager::getInstance()->addPhysicsComponent(railEnt, railActor);
         ComponentManager::getInstance()->addShapeRendererComponent(railEnt, ModelManager::getModel("blownUpPieces-Chassis4"), PhysicsEngine::getFirstShapeFromActor(railActor), glm::vec3(0.65f));

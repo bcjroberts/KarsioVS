@@ -83,7 +83,6 @@ bool pauseButtonPressed = false;
 bool forceReplay = false;
 bool upgradeButtonPressed = false;
 bool changeTargetPressed = false;
-bool TEMPBOOL = false;
 
 // camera, using keyboard events for WASD
 void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int mods) {
@@ -123,7 +122,6 @@ void windowKeyInput(GLFWwindow *window, int key, int scancode, int action, int m
     forceReplay = key == GLFW_KEY_Y && action == GLFW_RELEASE;
 	upgradeButtonPressed = key == GLFW_KEY_X && action == GLFW_RELEASE;
 	changeTargetPressed = key == GLFW_KEY_E && action == GLFW_RELEASE;
-    TEMPBOOL = key == GLFW_KEY_T && action == GLFW_RELEASE;
 }
 
 float timeDiff = 0;
@@ -668,11 +666,6 @@ void Core::runMenu() {
             currentChoiceIndex = (currentChoiceIndex + 1) % maxChoiceIndex;
             keyPressedDown = false;
         }
-    }
-
-    if (TEMPBOOL) {
-        TEMPBOOL = false;
-        EntityManager::getInstance()->spawnBrokenVehicle(1, glm::vec3(0, 0, 10), glm::quat(glm::vec3(0,0,0)), glm::vec3(1.f));
     }
 
     if (enterPressed) {

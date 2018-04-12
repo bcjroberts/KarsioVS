@@ -448,8 +448,17 @@ bool Logic::isGoalInLOS (Entity* originEnt, Entity* destEnt) {
 void Logic::finiteStateMachine(Entity* entity) {
     HealthComponent* aiHealth = static_cast<HealthComponent*>(entity->getComponent(HEALTH));
     if (aiHealth->isDead()) {
-        //static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-350, 10, -350)), false);
-        EntityManager::getInstance()->destroyEntity(entity->id);
+        // Before we destroy the vehicle, we need to grab some important information from it
+		int chassisLevel = static_cast<UpgradeComponent*>(entity->getComponent(UPGRADE))->getChassisLevel();
+		glm::vec3 pos = entity->getPosition();
+		glm::quat rot = entity->getRotation();
+		glm::vec3 velocity = PhysicsEngine::toglmVec3(static_cast<PhysicsComponent*>(entity->getComponent(PHYSICS))->getRigidBody()->getLinearVelocity());
+
+		// Then destroy the vehicle
+    	EntityManager::getInstance()->destroyEntity(entity->id);
+
+		// Then spawn the broken vehicle parts
+		EntityManager::getInstance()->createBrokenVehicle(chassisLevel, pos, rot, velocity);
         return;
     }
 

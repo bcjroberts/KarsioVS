@@ -33,7 +33,7 @@ public:
 	Entity* createCrystalProp(glm::vec3 startPos);
     Entity* createProjectile(int ownerid, glm::vec3 origin, glm::quat orientation, float speed, float damage);
     Entity* createFloatingText (Entity* relativeEnt, glm::vec3 color, float scale, std::string* text);
-    void spawnBrokenVehicle (int chassisLevel, glm::vec3 pos, glm::quat rot, glm::vec3 scale, glm::vec3 velocity = glm::vec3(0));
+    void createBrokenVehicle (int chassisLevel, glm::vec3 pos, glm::quat rot, glm::vec3 velocity = glm::vec3(0));
     void updateChassis(Entity* toUpdate, float newScale, int level);
     void updateGun(Entity* toUpdate, int gunLevel);
     void updateRam(Entity* toUpdate, int ramLevel);
