@@ -177,6 +177,11 @@ void ComponentManager::performFloatingTextLogic() {
     lastSimTime = Core::simtimeSinceStartup;
 }
 
+void ComponentManager::deleteFloatingText() {
+	for (int i = floatingTextComponents.size() - 1; i >= 0; i--) {
+		EntityManager::getInstance()->destroyEntity(floatingTextComponents[i]->owner->id);
+	}
+}
 glm::mat4 hiddenMat4 = glm::translate(glm::mat4(), glm::vec3(0, -25, 0));
 
 // Removes all of the components, and cleans up their traces

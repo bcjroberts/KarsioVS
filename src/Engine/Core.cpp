@@ -220,6 +220,7 @@ bool controllerButtonPressed = false;
 bool replayUIShown = false;
 bool replayUIInitialized = false;
 bool inPauseMenu = false;
+bool displayFloatingText = true;
 
 std::vector<int> currentImageUiIds;
 
@@ -229,8 +230,8 @@ void Core::runGame() {
         renderEngine->ui->clearAllUI();
         EntityManager::getInstance()->destroyAllEntities();
 
-        physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
-        mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
+        //physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
+        //mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
 
 		Core::upgradeLizardId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeAvailable.png"), float(*properties.screenWidth - 300), 315, 0);
 		healthBarGreenId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthGreen.png"), 118, 77, 1);
@@ -502,7 +503,13 @@ void Core::runGame() {
 			if (cameraPos.z < -threshold) cameraPos.z = -threshold;
             cameras[0]->lerpCameraTowardPoint(cameraPos, 7.5f * fixedStepTimediff);
         }
-        ComponentManager::getInstance()->performFloatingTextLogic();
+
+		if (displayFloatingText) {
+			ComponentManager::getInstance()->performFloatingTextLogic();
+		}
+		else {
+			ComponentManager::getInstance()->deleteFloatingText();
+		}
     }
 }
 
@@ -555,7 +562,11 @@ void Core::runMenu() {
         mainMenuEnt = EntityManager::getInstance()->createBasicVehicleEntity(glm::vec3(5, 0, 0));
         properties.isGameInitialized = false;
     }
-
+	// for button placement
+	int buttonTop = 10;
+	int buttonTopHeight = 73;
+	int buttonHeight = 169;
+	int titleHeight = 250;
     // If we clicked something and change the menu state, then load the new menu
     if (currentMainMenuState != nextMainMenuState) {
         currentMainMenuState = nextMainMenuState;
@@ -570,25 +581,28 @@ void Core::runMenu() {
         currentTextUiIds.clear();
         currentChoiceIndex = 0;
 
-		// for button placement
-		int buttonTop = 10;
-		int buttonTopHeight = 73;
-		int buttonHeight = 169;
-		int titleHeight = 250;
-
+		
         switch (currentMainMenuState) {
         case OPTIONS:
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("pauseMenu.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
-			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 155, 190 + buttonHeight, 1, menuBaseTextColor, 1));
+			if (displayFloatingText) {
+				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+			}
+			else {
+				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+			}
 
-			maxChoiceIndex = 1;
+			currentTextUiIds.push_back(renderEngine->ui->addText("Display Damage", 155, 190 + buttonHeight, 1, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
+
+			maxChoiceIndex = 2;
 			break;
 		case CONTROLS:
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.png"), 650, 250, 1));
@@ -691,8 +705,21 @@ void Core::runMenu() {
             break;
             case OPTIONS:
                 if (currentChoiceIndex == 0) {
-                    nextMainMenuState = MAINMENU;
+					displayFloatingText = displayFloatingText ? false : true;
+					if (displayFloatingText) {
+						renderEngine->ui->removeImage(currentImageUiIds.back());
+						currentImageUiIds.pop_back();
+						currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+					}
+					else {
+						renderEngine->ui->removeImage(currentImageUiIds.back());
+						currentImageUiIds.pop_back();
+						currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+					}
                 }
+				else if (currentChoiceIndex == 1) {
+					nextMainMenuState = MAINMENU;
+				}
             break;
 			case CONTROLS:
 				if (currentChoiceIndex == 0) {
@@ -765,6 +792,11 @@ void Core::runPauseMenu() {
         properties.isIngameMenuInitialized = true;
     }
 
+	// for button placement
+	int buttonTop = 200;
+	int buttonTopHeight = 75;
+	int buttonHeight = 169;
+
     // If we clicked something and change the menu state, then load the new menu
     if (currentPauseMenuState != nextPauseMenuState) {
         currentPauseMenuState = nextPauseMenuState;
@@ -779,24 +811,29 @@ void Core::runPauseMenu() {
         currentTextUiIds.clear();
         currentChoiceIndex = 0;
 
-		// for button placement
-		int buttonTop = 200;
-		int buttonTopHeight = 75;
-		int buttonHeight = 169;
-
         switch (currentPauseMenuState) {
         case PAUSEOPTIONS:
 
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongPauseSign.png"), 0, buttonTop + buttonTopHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("pauseMenu.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight, 0));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight, 0));			
+			
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
 
+			if (displayFloatingText) {
+				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			}
+			else {
+				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+			}
+			
+			currentTextUiIds.push_back(renderEngine->ui->addText("Display Damage", 155, 300 + buttonHeight, 1, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 300 + buttonHeight * 3, 1, menuSelectedTextColor, 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("Options are TBD.", 155, 300 + buttonHeight, 1, menuBaseTextColor, 1));
 
-            maxChoiceIndex = 1;
+            maxChoiceIndex = 2;
             break;
         default: // Default is the PAUSEMENU
 
@@ -910,8 +947,21 @@ void Core::runPauseMenu() {
             break;
         case PAUSEOPTIONS:
             if (currentChoiceIndex == 0) {
-                nextPauseMenuState = PAUSEMAIN;
+				displayFloatingText = displayFloatingText ? false : true;
+				if (displayFloatingText) {
+					renderEngine->ui->removeImage(currentImageUiIds.back());
+					currentImageUiIds.pop_back();
+					currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+				}
+				else {
+					renderEngine->ui->removeImage(currentImageUiIds.back());
+					currentImageUiIds.pop_back();
+					currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+				}
             }
+			else if (currentChoiceIndex == 1) {
+				nextPauseMenuState = PAUSEMAIN;
+			}
             break;
         default:
             nextPauseMenuState = PAUSEMAIN;

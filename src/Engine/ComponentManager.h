@@ -55,6 +55,7 @@ public:
     void performRendering();
     void performPhysicsLogic();
     void performFloatingTextLogic();
+	void deleteFloatingText();
     void cleanupComponents(Entity* entity);
     void performProjectileLogic();
     void updateWeaponAiming();
