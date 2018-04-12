@@ -185,7 +185,7 @@ void WorldGenerator::createCrystals(std::vector<glm::vec3> *positions, int gridS
 	std::uniform_int_distribution<int> uid2{ 0, 9 };
 
 	// make small useless crystals
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < 30; i++) {
 		std::uniform_int_distribution<int> uid{ -(gridSize - 2), gridSize - 2 };
 		// make sure they end in 5....
 		int x, z;
