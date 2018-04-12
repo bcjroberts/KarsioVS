@@ -494,7 +494,7 @@ void Core::runGame() {
 			}
 
             cameras[0]->rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 7.5f * fixedStepTimediff);
-            cameras[0]->lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -12.0f * chassisLevel + glm::vec3(0, 8 + 4.f * (chassisLevel - 0.5f), 0), 7.5f * fixedStepTimediff);
+            cameras[0]->lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 7 + 3.f * (chassisLevel - 0.5f), 0), 7.5f * fixedStepTimediff);
         }
         ComponentManager::getInstance()->performFloatingTextLogic();
     }
