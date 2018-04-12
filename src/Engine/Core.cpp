@@ -494,7 +494,13 @@ void Core::runGame() {
 			}
 
             cameras[0]->rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 7.5f * fixedStepTimediff);
-            cameras[0]->lerpCameraTowardPoint(playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 7 + 3.f * (chassisLevel - 0.5f), 0), 7.5f * fixedStepTimediff);
+			glm::vec3 cameraPos = playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 7 + 3.f * (chassisLevel - 0.5f), 0);
+			float threshold = 288.f; // Limit the camera so it does not stick into the outside walls
+			if (cameraPos.x > threshold) cameraPos.x = threshold;
+			if (cameraPos.x < -threshold) cameraPos.x = -threshold;
+			if (cameraPos.z > threshold) cameraPos.z = threshold;
+			if (cameraPos.z < -threshold) cameraPos.z = -threshold;
+            cameras[0]->lerpCameraTowardPoint(cameraPos, 7.5f * fixedStepTimediff);
         }
         ComponentManager::getInstance()->performFloatingTextLogic();
     }
