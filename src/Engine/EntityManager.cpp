@@ -309,7 +309,7 @@ Entity* EntityManager::createFloatingText (Entity* relativeEnt, glm::vec3 color,
     return entity;
 }
 
-const glm::vec3 chassisScales[3] = {glm::vec3(1.5f, 1.5f, 1.5f), glm::vec3(2.5f, 2.5f, 2.5f), glm::vec3(3.5f, 3.5f, 3.5f)};
+const glm::vec3 chassisScales[3] = {glm::vec3(1.5f, 1.5f, 1.5f), glm::vec3(2.5f, 2.5f, 2.5f), glm::vec3(3.25f, 3.25f, 3.25f)};
 
 void EntityManager::createBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::quat rot, glm::vec3 velocity) {
 
@@ -317,15 +317,29 @@ void EntityManager::createBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::qu
     glm::mat4 globalMat;
     globalMat = glm::translate(globalMat, pos) * glm::toMat4(rot) * glm::scale(globalMat, scale);
 
-    // Add the body
-	/*
-    Entity* bodyEnt = createEntity(pos, rot, scale);
-    glm::quat bodyRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(0.6f,0,0))));
-    physx::PxRigidActor* bodyActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + glm::vec3(0,0.5f,0)), 
-        PhysicsEngine::toPxVec3(glm::vec3(1.3f,0.5f,2.5f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(bodyRot.x, bodyRot.y, bodyRot.z, bodyRot.w));
-    ComponentManager::getInstance()->addPhysicsComponent(bodyEnt, bodyActor);
-    ComponentManager::getInstance()->addShapeRendererComponent(bodyEnt, ModelManager::getModel("blownUpPieces-Chassis2"), PhysicsEngine::getFirstShapeFromActor(bodyActor), glm::vec3(0.7f));
-	*/
+    // Add the body pieces
+    glm::vec3 bodyOffsets[5] = {glm::vec3(0.74f,0.f,-0.88f), glm::vec3(-0.83f,0.f,1.79f), glm::vec3(0.57f,0.f,1.8f), glm::vec3(-0.64f,0.f,-2.0f), glm::vec3(-1.04f,0.f,-0.26f)};
+
+    for (int i = 0; i < 5; ++i) {
+        glm::vec3 bodyPartOffset = glm::vec3(globalMat * glm::vec4(bodyOffsets[i], 0.0));
+        Entity* bodyParTEnt = createEntity(pos, rot, scale);
+        glm::quat bodyPartRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(0.6f,0,0))));
+        physx::PxRigidActor* bodyPartActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(3.f, PhysicsEngine::toPxVec3(pos + bodyOffsets[i]), 
+            PhysicsEngine::toPxVec3(glm::vec3(0.8f,0.4f,1.0f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(bodyPartRot.x, bodyPartRot.y, bodyPartRot.z, bodyPartRot.w));
+        ComponentManager::getInstance()->addPhysicsComponent(bodyParTEnt, bodyPartActor);
+        if (i == 0)
+            ComponentManager::getInstance()->addShapeRendererComponent(bodyParTEnt, ModelManager::getModel("BrokenBasePart1"), PhysicsEngine::getFirstShapeFromActor(bodyPartActor), glm::vec3(0.8f));
+        if (i == 1)
+            ComponentManager::getInstance()->addShapeRendererComponent(bodyParTEnt, ModelManager::getModel("BrokenBasePart2"), PhysicsEngine::getFirstShapeFromActor(bodyPartActor), glm::vec3(0.8f));
+        if (i == 2)
+            ComponentManager::getInstance()->addShapeRendererComponent(bodyParTEnt, ModelManager::getModel("BrokenBasePart3"), PhysicsEngine::getFirstShapeFromActor(bodyPartActor), glm::vec3(0.8f));
+        if (i == 3)
+            ComponentManager::getInstance()->addShapeRendererComponent(bodyParTEnt, ModelManager::getModel("BrokenBasePart4"), PhysicsEngine::getFirstShapeFromActor(bodyPartActor), glm::vec3(0.8f));
+        if (i == 4)
+            ComponentManager::getInstance()->addShapeRendererComponent(bodyParTEnt, ModelManager::getModel("BrokenBasePart5"), PhysicsEngine::getFirstShapeFromActor(bodyPartActor), glm::vec3(0.8f));
+        
+
+    }
 
     // Add the thing that holds the gun mount
     Entity* holderEnt = createEntity(pos, rot, scale);
