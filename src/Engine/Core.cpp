@@ -230,8 +230,8 @@ void Core::runGame() {
         renderEngine->ui->clearAllUI();
         EntityManager::getInstance()->destroyAllEntities();
 
-        //physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
-        //mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
+        physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
+        mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
 
 		Core::upgradeLizardId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeAvailable.png"), float(*properties.screenWidth - 300), 315, 0);
 		healthBarGreenId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthGreen.png"), 118, 77, 1);
@@ -567,6 +567,7 @@ void Core::runMenu() {
 	int buttonTopHeight = 73;
 	int buttonHeight = 169;
 	int titleHeight = 250;
+	int storyWidth = 660;
     // If we clicked something and change the menu state, then load the new menu
     if (currentMainMenuState != nextMainMenuState) {
         currentMainMenuState = nextMainMenuState;
@@ -605,7 +606,7 @@ void Core::runMenu() {
 			maxChoiceIndex = 2;
 			break;
 		case CONTROLS:
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.png"), 650, 250, 1));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.png"), float(*properties.screenWidth - 1287), buttonTop + buttonTopHeight + 130));
 			
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
@@ -628,9 +629,20 @@ void Core::runMenu() {
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
-
             currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 155, 190 + buttonHeight, 1, menuSelectedTextColor, 1));
             currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
+
+			titleHeight = 130;
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("story.png"), float(*properties.screenWidth - storyWidth - 40), buttonTop + buttonTopHeight + titleHeight));
+			titleHeight += 10;
+			currentTextUiIds.push_back(renderEngine->ui->addText("Your goal as one of the many rogue", float(*properties.screenWidth - storyWidth), 190 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("vehicles is to annihilate all others", float(*properties.screenWidth - storyWidth), 190 + 45 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("before they get to you first.", float(*properties.screenWidth - storyWidth), 190 + 45 * 2 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("", float(*properties.screenWidth - storyWidth), 190 + 45 * 3 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("You may wish to collect crystals in", float(*properties.screenWidth - storyWidth), 190 + 45 * 4 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("order to improve your vehicle.", float(*properties.screenWidth - storyWidth), 190 + 45 * 5 + titleHeight, 0.60, menuBaseTextColor, 1));
+			
+
             maxChoiceIndex = 2;
             break;
         default: // Default is the MAINMENU			
@@ -647,6 +659,22 @@ void Core::runMenu() {
 			currentTextUiIds.push_back(renderEngine->ui->addText("Options", 155, 190 + buttonHeight*2, 1, glm::vec3(1, 1, 0), 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Controls", 155, 190 + buttonHeight*3, 1, glm::vec3(1, 1, 0), 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 155, 190 + buttonHeight*4, 1, glm::vec3(1, 1, 0), 1));
+
+			titleHeight = 130;
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("story.png"), float(*properties.screenWidth - storyWidth - 40), buttonTop + buttonTopHeight + titleHeight));
+			titleHeight += 5;
+			currentTextUiIds.push_back(renderEngine->ui->addText("Far far away in a world even further", float(*properties.screenWidth - storyWidth), 190 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("away, intelligent lizard-like aliens", float(*properties.screenWidth - storyWidth), 190 + 45 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("created specialized vehicles to collect", float(*properties.screenWidth - storyWidth), 190 + 45 * 2 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("crystals. However the vehicles developed", float(*properties.screenWidth - storyWidth), 190 + 45 * 3 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("a mind of their and decided instead of", float(*properties.screenWidth - storyWidth), 190 + 45 * 4 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("gathering, it will kill anything that", float(*properties.screenWidth - storyWidth), 190 + 45 * 5 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("moves.", float(*properties.screenWidth - storyWidth), 190 + 45 * 6 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Far more interesting than gathering", float(*properties.screenWidth - storyWidth), 190 + 45 * 7 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("resources, it's time to see which", float(*properties.screenWidth - storyWidth), 190 + 45 * 8 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("vehicle is best at destroying each", float(*properties.screenWidth - storyWidth), 190 + 45 * 9 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("other instead!", float(*properties.screenWidth - storyWidth), 190 + 450 + titleHeight, 0.60, menuBaseTextColor, 1));
+
 
             maxChoiceIndex = 4;
             break;
