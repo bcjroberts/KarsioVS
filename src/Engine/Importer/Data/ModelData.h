@@ -17,7 +17,7 @@
 class ModelData {
 
 private:
-	bool isCrystal = false;
+	bool isCrystal;
 	void processNode(aiNode *node, const aiScene *scene);
 	MeshData processMesh(aiMesh* mesh);
 

@@ -6,6 +6,7 @@ layout(location = 1) in vec3 vNormal;
 layout(location = 2) in vec2 vTextureCoord;
 layout(location = 3) in vec3 vTangent;
 layout(location = 4) in vec3 vBitangent;
+layout(location = 5) in float isCrystal;
 
 out VertexShader{
     vec3 modelPos;
@@ -14,6 +15,7 @@ out VertexShader{
     vec3 tangentView;
     vec3 tangentPos;
     vec3 viewPos;
+    float isCrystal;
 } vs_output;
 // out vec3 Normal;
 // out vec3 ModelPos;
@@ -44,6 +46,7 @@ void main() {
     vs_output.tangentPos = TBN * vs_output.modelPos;
     vs_output.viewPos = viewPos;
 
+    vs_output.isCrystal = isCrystal;
 
     //place the mesh in the scene
     gl_Position = projection * view * modelTransformation * vec4(vPosition, 1.0);

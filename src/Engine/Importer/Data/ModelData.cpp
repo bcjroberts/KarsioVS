@@ -5,10 +5,11 @@
 void ModelData::importMesh(std::string meshPath) {
 	// Create an instance of the Importer class
 	Assimp::Importer importer;
-	std::string crystal = "Crystal";
-	if (meshPath.find(crystal)) {
-		isCrystal = true;
-	}
+	std::string crystal = "ryst";
+	isCrystal = meshPath.find(crystal) != std::string::npos ? true : false;
+//	if(meshPath.find(crystal) != std::string::npos) {
+//		std::cout << meshPath << std::endl;
+//	}
 	// And have it read the given file with some example postprocessing
 	// Usually - if speed is not the most important aspect for you - you'll 
 	// propably to request more postprocessing than we do in this example.

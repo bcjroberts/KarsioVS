@@ -11,6 +11,7 @@ in VertexShader{
     vec3 tangentView;
     vec3 tangentPos;
     vec3 viewPos;
+    float isCrystal;
 } vs_output;
 // in vec3 Normal;
 // in vec3 ModelPos;
@@ -194,10 +195,15 @@ vec3 computeColor(){
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).
     // vec3 ambient = vec3(0.03) * albedo * ao;
-    vec3 ambient = vec3(0.02) * albedo;    
+    vec3 ambient = vec3(0.01) * albedo;    
     
-    // vec3 color = ambient + reflectance;
-    return ambient + reflectance;
+    vec3 color = ambient + reflectance;
+
+    //give a little randomness to the crystals
+    vec3 crystalColor = viewDir * vs_output.isCrystal * 0.01;
+    // vec3 crystalColor = viewDir * vs_output.isCrystal + color * (1 - vs_output.isCrystal);
+    // return crystalColor;
+    return color + crystalColor;
 }
 
 // ----------------------------------------------------------------------------

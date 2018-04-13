@@ -25,7 +25,7 @@ public:
 		glm::vec2 uvCoords; // vertex uv coordinate
 		glm::vec3 tangent;	// tangent
 		glm::vec3 bitangent; // bitangent
-		glm::vec3 vertColors; // vertex colors 
+		//glm::vec3 vertColors; // vertex colors 
 		GLfloat isCrystal;
 	};
 	MeshData(aiMesh *mesh, bool isCrystal);
