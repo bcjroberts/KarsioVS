@@ -29,8 +29,8 @@ void Logic::displayUpgradeUI(UpgradeComponent* upgradeComp) {
 			upgradeText = -1;
 			//Core::renderEngine->ui->removeImage(currentImageUiIds[0]);
 			//currentImageUiIds.clear();
-			scale = 0;
-			Core::renderEngine->ui->modifyImage(Core::upgradeLizardId, nullptr, nullptr, &scale);
+			//scale = 0;
+			//Core::renderEngine->ui->modifyImage(Core::upgradeLizardId, nullptr, nullptr, &scale);
 		}
 		return;
 	} else if (upgradeText == -1) {

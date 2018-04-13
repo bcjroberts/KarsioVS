@@ -221,18 +221,22 @@ bool replayUIShown = false;
 bool replayUIInitialized = false;
 bool inPauseMenu = false;
 bool displayFloatingText = true;
+bool displayFPS = false;
 
 std::vector<int> currentImageUiIds;
+
+glm::vec3 lastPlayerCameraMovePos(0);
+glm::vec3 lastPlayerCameraLookPos(0);
 
 void Core::runGame() {
     if (properties.isGameInitialized == false) {
         // We need to clear the menu and all of its buttons and spawn the UI/Game elements for our scene
         renderEngine->ui->clearAllUI();
         EntityManager::getInstance()->destroyAllEntities();
-
-        //physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
-        //mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
-
+		
+		physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
+		mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
+        
 		Core::upgradeLizardId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeAvailable.png"), float(*properties.screenWidth - 300), 315, 0);
 		healthBarGreenId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthGreen.png"), 118, 77, 1);
 		healthBarRedId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthRed.png"), 115, 73, 1);
@@ -294,7 +298,6 @@ void Core::runGame() {
 	renderEngine->ui->modifyImageDiffSize(healthBarGreenId, nullptr, nullptr, &greenScale);
 	renderEngine->ui->modifyImageDiffSize(healthBarRedId, nullptr, nullptr, &redScale);
     renderEngine->ui->modifyText(playerHealthId, &playerHealthStr, nullptr, nullptr, nullptr, nullptr);
-    bool isPlayerDead = playerHealthComp->isDead();
 
 	
     // Only set this value to false if the game has yet to be paused. Also used for unpausing.
@@ -316,10 +319,27 @@ void Core::runGame() {
 	int buttonTop = 200;
 	int buttonTopHeight = 75;
 
-    if (replayUIShown == false && isPlayerDead) { // Defeat!
+    if (replayUIShown == false && playerHealthComp->isDead()) { // Defeat!
         //renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
 		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongDefeatSign.png"), 0, buttonTop + buttonTopHeight));
+        if (!playerHealthComp->isDeathProcessed()) {
+            // If we have yet to process the death of the player, then do that now
+            // First copy relevant player values
+            PhysicsComponent* playerPC = static_cast<PhysicsComponent*>(playerVehicle->getComponent(PHYSICS));
 
+            const int chassisLevel = playerUC->getChassisLevel();
+            const glm::vec3 pos = playerVehicle->getPosition();
+            const glm::quat rot = playerVehicle->getRotation();
+            const glm::vec3 vel = PhysicsEngine::toglmVec3(playerPC->getRigidBody()->getLinearVelocity());
+
+            printf("Death Velocity: %f %f %f\n", vel.x, vel.y, vel.z);
+
+            // Then move the player far away
+            playerPC->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-1000, 10, -1000)), false);
+
+            // Then spawn a broken vehicle where the player died
+            EntityManager::getInstance()->createBrokenVehicle(chassisLevel, pos, rot, vel);
+        }
         replayUIShown = true;
         replayUIInitialized = false;
     }
@@ -348,21 +368,39 @@ void Core::runGame() {
 	std::string enemyCount = oss.str();
 	renderEngine->ui->modifyText(enemyCountId, &enemyCount, nullptr, nullptr, nullptr, nullptr);
 
-    timeSinceLastfpsPrint += timeDiff;
-    if (timeSinceLastfpsPrint > 0.2f) {
-        timeSinceLastfpsPrint = 0;
-        oss.str("");
-        oss.clear();
-        oss << (round(physxIterCounter * 10.f) / 10.f);
-        std::string physxfpsString = oss.str();
-        renderEngine->ui->modifyText(physxIterCounterId, &physxfpsString, nullptr, nullptr, nullptr, nullptr);
+	timeSinceLastfpsPrint += timeDiff;
+	if (displayFPS) {
+		if (timeSinceLastfpsPrint > 0.2f) {
+			timeSinceLastfpsPrint = 0;
+			oss.str("");
+			oss.clear();
+			oss << (round(physxIterCounter * 10.f) / 10.f);
+			std::string physxfpsString = oss.str();
+			renderEngine->ui->modifyText(physxIterCounterId, &physxfpsString, nullptr, nullptr, nullptr, nullptr);
 
-        oss.str("");
-        oss.clear();
-        oss << round(mainfpsCounter);
-        std::string mainfpsString = oss.str();
-        renderEngine->ui->modifyText(mainfpsCounterId, &mainfpsString, nullptr, nullptr, nullptr, nullptr);
-    }
+			oss.str("");
+			oss.clear();
+			oss << round(mainfpsCounter);
+			std::string mainfpsString = oss.str();
+			renderEngine->ui->modifyText(mainfpsCounterId, &mainfpsString, nullptr, nullptr, nullptr, nullptr);
+		}
+	}
+	else {
+		if (timeSinceLastfpsPrint > 0.2f) {
+			timeSinceLastfpsPrint = 0;
+			oss.str("");
+			oss.clear();
+			std::string physxfpsString = oss.str();
+			renderEngine->ui->modifyText(physxIterCounterId, &physxfpsString, nullptr, nullptr, nullptr, nullptr);
+
+			oss.str("");
+			oss.clear();
+			std::string mainfpsString = oss.str();
+			renderEngine->ui->modifyText(mainfpsCounterId, &mainfpsString, nullptr, nullptr, nullptr, nullptr);
+		}
+	}
+    
+    
 
 
 
@@ -494,14 +532,18 @@ void Core::runGame() {
 				renderEngine->ui->modifyImageDiffSize(playerReticleId, &(x), &(y), &m, &m);
 			}
 
-            cameras[0]->rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 7.5f * fixedStepTimediff);
-			glm::vec3 cameraPos = playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 7 + 3.f * (chassisLevel - 0.5f), 0);
-			float threshold = 288.f; // Limit the camera so it does not stick into the outside walls
-			if (cameraPos.x > threshold) cameraPos.x = threshold;
-			if (cameraPos.x < -threshold) cameraPos.x = -threshold;
-			if (cameraPos.z > threshold) cameraPos.z = threshold;
-			if (cameraPos.z < -threshold) cameraPos.z = -threshold;
-            cameras[0]->lerpCameraTowardPoint(cameraPos, 7.5f * fixedStepTimediff);
+            if (!playerHealthComp->isDead()) {
+                lastPlayerCameraLookPos = playerVehicle->getPosition() + offset * 10.0f;
+                lastPlayerCameraMovePos = playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 7 + 3.f * (chassisLevel - 0.5f), 0);
+                float threshold = 288.f; // Limit the camera so it does not stick into the outside walls
+                if (lastPlayerCameraMovePos.x > threshold) lastPlayerCameraMovePos.x = threshold;
+                if (lastPlayerCameraMovePos.x < -threshold) lastPlayerCameraMovePos.x = -threshold;
+                if (lastPlayerCameraMovePos.z > threshold) lastPlayerCameraMovePos.z = threshold;
+                if (lastPlayerCameraMovePos.z < -threshold) lastPlayerCameraMovePos.z = -threshold;
+            }
+
+            cameras[0]->rotateCameraTowardPoint(lastPlayerCameraLookPos, 7.5f * fixedStepTimediff);
+            cameras[0]->lerpCameraTowardPoint(lastPlayerCameraMovePos, 7.5f * fixedStepTimediff);
         }
 
 		if (displayFloatingText) {
@@ -538,6 +580,11 @@ int menuLightId2;
 
 bool previouslyPressed = false;
 
+int menuFPSOn;
+int menuFPSOff;
+int menuDamageOn;
+int menuDamageOff;
+
 void Core::runMenu() {
 
     if (properties.isGameInitialized) {
@@ -567,6 +614,7 @@ void Core::runMenu() {
 	int buttonTopHeight = 73;
 	int buttonHeight = 169;
 	int titleHeight = 250;
+	int storyWidth = 660;
     // If we clicked something and change the menu state, then load the new menu
     if (currentMainMenuState != nextMainMenuState) {
         currentMainMenuState = nextMainMenuState;
@@ -587,25 +635,37 @@ void Core::runMenu() {
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
 
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight));
+			//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
 			if (displayFloatingText) {
-				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+				menuDamageOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + titleHeight);
+				currentImageUiIds.push_back(menuDamageOn);
 			}
 			else {
-				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+				menuDamageOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + titleHeight);
+				currentImageUiIds.push_back(menuDamageOff);
+			}
+
+			if (displayFPS) {
+				menuFPSOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight);
+				currentImageUiIds.push_back(menuFPSOn);
+			}
+			else {
+				menuFPSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight);
+				currentImageUiIds.push_back(menuFPSOff);
 			}
 
 			currentTextUiIds.push_back(renderEngine->ui->addText("Display Damage", 155, 190 + buttonHeight, 1, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Display FPS", 155, 190 + buttonHeight * 2, 1, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
 
-			maxChoiceIndex = 2;
+			maxChoiceIndex = 3;
 			break;
 		case CONTROLS:
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.png"), 650, 250, 1));
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.png"), float(*properties.screenWidth - 1287), buttonTop + buttonTopHeight + 130));
 			
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
@@ -628,9 +688,20 @@ void Core::runMenu() {
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
-
             currentTextUiIds.push_back(renderEngine->ui->addText("Last Kar Driving", 155, 190 + buttonHeight, 1, menuSelectedTextColor, 1));
             currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
+
+			titleHeight = 130;
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("story.png"), float(*properties.screenWidth - storyWidth - 40), buttonTop + buttonTopHeight + titleHeight));
+			titleHeight += 10;
+			currentTextUiIds.push_back(renderEngine->ui->addText("Your goal as one of the many rogue", float(*properties.screenWidth - storyWidth), 190 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("vehicles is to annihilate all others", float(*properties.screenWidth - storyWidth), 190 + 45 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("before they get to you first.", float(*properties.screenWidth - storyWidth), 190 + 45 * 2 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("", float(*properties.screenWidth - storyWidth), 190 + 45 * 3 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("You may wish to collect crystals in", float(*properties.screenWidth - storyWidth), 190 + 45 * 4 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("order to improve your vehicle.", float(*properties.screenWidth - storyWidth), 190 + 45 * 5 + titleHeight, 0.60, menuBaseTextColor, 1));
+			
+
             maxChoiceIndex = 2;
             break;
         default: // Default is the MAINMENU			
@@ -647,6 +718,22 @@ void Core::runMenu() {
 			currentTextUiIds.push_back(renderEngine->ui->addText("Options", 155, 190 + buttonHeight*2, 1, glm::vec3(1, 1, 0), 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Controls", 155, 190 + buttonHeight*3, 1, glm::vec3(1, 1, 0), 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Exit", 155, 190 + buttonHeight*4, 1, glm::vec3(1, 1, 0), 1));
+
+			titleHeight = 130;
+			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("story.png"), float(*properties.screenWidth - storyWidth - 40), buttonTop + buttonTopHeight + titleHeight));
+			titleHeight += 5;
+			currentTextUiIds.push_back(renderEngine->ui->addText("Far far away in a world even further", float(*properties.screenWidth - storyWidth), 190 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("away, intelligent lizard-like aliens", float(*properties.screenWidth - storyWidth), 190 + 45 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("created specialized vehicles to collect", float(*properties.screenWidth - storyWidth), 190 + 45 * 2 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("crystals. However the vehicles developed", float(*properties.screenWidth - storyWidth), 190 + 45 * 3 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("a mind of their and decided instead of", float(*properties.screenWidth - storyWidth), 190 + 45 * 4 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("gathering, it will kill anything that", float(*properties.screenWidth - storyWidth), 190 + 45 * 5 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("moves.", float(*properties.screenWidth - storyWidth), 190 + 45 * 6 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Far more interesting than gathering", float(*properties.screenWidth - storyWidth), 190 + 45 * 7 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("resources, it's time to see which", float(*properties.screenWidth - storyWidth), 190 + 45 * 8 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("vehicle is best at destroying each", float(*properties.screenWidth - storyWidth), 190 + 45 * 9 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("other instead!", float(*properties.screenWidth - storyWidth), 190 + 450 + titleHeight, 0.60, menuBaseTextColor, 1));
+
 
             maxChoiceIndex = 4;
             break;
@@ -707,17 +794,54 @@ void Core::runMenu() {
                 if (currentChoiceIndex == 0) {
 					displayFloatingText = displayFloatingText ? false : true;
 					if (displayFloatingText) {
-						renderEngine->ui->removeImage(currentImageUiIds.back());
-						currentImageUiIds.pop_back();
-						currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+						renderEngine->ui->removeImage(menuDamageOff);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuDamageOff == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}						
+						menuDamageOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + titleHeight);
+						currentImageUiIds.push_back(menuDamageOn);
 					}
 					else {
-						renderEngine->ui->removeImage(currentImageUiIds.back());
-						currentImageUiIds.pop_back();
-						currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + titleHeight));
+						renderEngine->ui->removeImage(menuDamageOn);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuDamageOn == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}
+						menuDamageOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + titleHeight);
+						currentImageUiIds.push_back(menuDamageOff);
 					}
                 }
 				else if (currentChoiceIndex == 1) {
+					displayFPS = displayFPS ? false : true;
+					if (displayFPS) {
+						renderEngine->ui->removeImage(menuFPSOff);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuFPSOff == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}						
+						menuFPSOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight);
+						currentImageUiIds.push_back(menuFPSOn);
+					}
+					else {
+						renderEngine->ui->removeImage(menuFPSOn);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuFPSOn == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}
+						menuFPSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight);
+						currentImageUiIds.push_back(menuFPSOff);
+					}
+				}
+				else if (currentChoiceIndex == 2) {
 					nextMainMenuState = MAINMENU;
 				}
             break;
@@ -816,24 +940,35 @@ void Core::runPauseMenu() {
 
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonTopCap.png"), 0, buttonTop));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongPauseSign.png"), 0, buttonTop + buttonTopHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight, 0));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight, 0));			
 			
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
+			//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
-
+			
 			if (displayFloatingText) {
-				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+				menuDamageOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight);
+				currentImageUiIds.push_back(menuDamageOn);
 			}
 			else {
-				currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+				menuDamageOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight);
+				currentImageUiIds.push_back(menuDamageOff);
 			}
-			
+
+			if (displayFPS) {
+				menuFPSOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2);
+				currentImageUiIds.push_back(menuFPSOn);
+			}
+			else {
+				menuFPSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2);
+				currentImageUiIds.push_back(menuFPSOff);
+			}
+
 			currentTextUiIds.push_back(renderEngine->ui->addText("Display Damage", 155, 300 + buttonHeight, 1, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("Display FPS", 155, 300 + buttonHeight * 2, 1, menuBaseTextColor, 1));
+
 			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 300 + buttonHeight * 3, 1, menuSelectedTextColor, 1));
 
-            maxChoiceIndex = 2;
+            maxChoiceIndex = 3;
             break;
         default: // Default is the PAUSEMENU
 
@@ -947,19 +1082,56 @@ void Core::runPauseMenu() {
             break;
         case PAUSEOPTIONS:
             if (currentChoiceIndex == 0) {
-				displayFloatingText = displayFloatingText ? false : true;
-				if (displayFloatingText) {
-					renderEngine->ui->removeImage(currentImageUiIds.back());
-					currentImageUiIds.pop_back();
-					currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
+					displayFloatingText = displayFloatingText ? false : true;
+					if (displayFloatingText) {
+						renderEngine->ui->removeImage(menuDamageOff);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuDamageOff == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}						
+						menuDamageOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + buttonHeight);
+						currentImageUiIds.push_back(menuDamageOn);
+					}
+					else {
+						renderEngine->ui->removeImage(menuDamageOn);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuDamageOn == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}
+						menuDamageOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight);
+						currentImageUiIds.push_back(menuDamageOff);
+					}
+                }
+				else if (currentChoiceIndex == 1) {
+					displayFPS = displayFPS ? false : true;
+					if (displayFPS) {
+						renderEngine->ui->removeImage(menuFPSOff);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuFPSOff == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}						
+						menuFPSOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2);
+						currentImageUiIds.push_back(menuFPSOn);
+					}
+					else {
+						renderEngine->ui->removeImage(menuFPSOn);
+						for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+							if (menuFPSOn == currentImageUiIds[i]) {
+								currentImageUiIds.rbegin() + i;
+								break;
+							}
+						}
+						menuFPSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2);
+						currentImageUiIds.push_back(menuFPSOff);
+					}
 				}
-				else {
-					renderEngine->ui->removeImage(currentImageUiIds.back());
-					currentImageUiIds.pop_back();
-					currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
-				}
-            }
-			else if (currentChoiceIndex == 1) {
+			else if (currentChoiceIndex == 2) {
 				nextPauseMenuState = PAUSEMAIN;
 			}
             break;
@@ -1131,6 +1303,8 @@ void Core::runUpgradeMenu() {
 
         if (!uc->isUpgradeAvailable()) {
             currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeMenuNotEnough.png"), 600, 0));
+			float scale = 0;
+			Core::renderEngine->ui->modifyImage(Core::upgradeLizardId, nullptr, nullptr, &scale);
         }
 		else {
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("upgradeMenu.png"), 600, 0));
@@ -1167,7 +1341,10 @@ void Core::runUpgradeMenu() {
 			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY, 0.5, availableTextColour, 1));
 		} else {
 			constantTextUI.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 300 + selectPanelY, 1, selectionDisabledColour, 1));
-			if (uc->getGunLevel() < 5) {
+			if (!uc->isUpgradeAvailable() && uc->getGunLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("More Crystals Required", statPanelX + 50, 340 + statPanelY, 0.5, unavailableTextColour, 1));
+			}
+			else if (uc->getGunLevel() < 5) {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY, 0.5, unavailableTextColour, 1));
 			} else {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY, 0.5, generalTextColour, 1));
@@ -1181,7 +1358,10 @@ void Core::runUpgradeMenu() {
 			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY*2, 0.5, availableTextColour, 1));
 		} else {
 			constantTextUI.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 300 + selectPanelY*2, 1, selectionDisabledColour, 1));
-			if (uc->getArmorLevel() < 5) {
+			if (!uc->isUpgradeAvailable() && uc->getArmorLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("More Crystals Required", statPanelX + 50, 340 + statPanelY*2, 0.5, unavailableTextColour, 1));
+			}
+			else if (uc->getArmorLevel() < 5) {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY*2, 0.5, unavailableTextColour, 1));
 			} else {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY*2, 0.5, generalTextColour, 1));
@@ -1195,7 +1375,10 @@ void Core::runUpgradeMenu() {
 			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY*3, 0.5, availableTextColour, 1));
 		} else {
 			constantTextUI.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 300 + selectPanelY*3, 1, selectionDisabledColour, 1));
-			if (uc->getRamLevel() < 5) {
+			if (!uc->isUpgradeAvailable() && uc->getRamLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("More Crystals Required", statPanelX + 50, 340 + statPanelY*3, 0.5, unavailableTextColour, 1));
+			}
+			else if (uc->getRamLevel() < 5) {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY*3, 0.5, unavailableTextColour, 1));
 			} else {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY*3, 0.5, generalTextColour, 1));
