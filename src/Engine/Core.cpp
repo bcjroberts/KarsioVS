@@ -975,13 +975,15 @@ void Core::runPauseMenu() {
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button2.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 2));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 3));
+            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + buttonHeight * 4 - 1));
 
 
             currentTextUiIds.push_back(renderEngine->ui->addText("Resume", 155, 300 + buttonHeight, 1, menuSelectedTextColor, 1));
             currentTextUiIds.push_back(renderEngine->ui->addText("Options", 155, 300 + buttonHeight * 2, 1, menuBaseTextColor, 1));
-            currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 155, 300 + buttonHeight * 3, 1, menuBaseTextColor, 1));
-            maxChoiceIndex = 3;
+            currentTextUiIds.push_back(renderEngine->ui->addText("Restart", 155, 300 + buttonHeight * 3, 1, menuBaseTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Main Menu", 155, 300 + buttonHeight * 4, 1, menuBaseTextColor, 1));
+            maxChoiceIndex = 4;
             break;
         }
     }
@@ -1072,6 +1074,14 @@ void Core::runPauseMenu() {
                 nextPauseMenuState = PAUSEOPTIONS;
             }
             else if (currentChoiceIndex == 2) {
+                properties.isPaused = false;
+                properties.isIngameMenuInitialized = false;
+                inPauseMenu = false;
+                replayUIInitialized = false;
+                replayUIShown = false;
+                properties.isGameInitialized = false;
+            }
+            else if (currentChoiceIndex == 3) {
                 properties.isPaused = false;
 				inPauseMenu = false;
                 properties.isIngameMenuInitialized = false;
