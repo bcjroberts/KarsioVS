@@ -136,7 +136,7 @@ void Core::coreLoop() {
     logic = new Logic;
 
 	glfwSetKeyCallback(properties.window, windowKeyInput);
-	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(properties.window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
     // initialize audio engine
     audioObserver = new AudioObserver();
@@ -661,11 +661,11 @@ void Core::runMenu() {
 
             if (displayFullscreen) {
                 menuFSOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2);
-                currentImageUiIds.push_back(menuFPSOn);
+                currentImageUiIds.push_back(menuFSOn);
             }
             else {
                 menuFSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2);
-                currentImageUiIds.push_back(menuFPSOff);
+                currentImageUiIds.push_back(menuFSOff);
             }
 
 			currentTextUiIds.push_back(renderEngine->ui->addText("Display Damage", 155, 190 + buttonHeight, 1, menuBaseTextColor, 1));
