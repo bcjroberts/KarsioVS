@@ -222,6 +222,7 @@ bool replayUIInitialized = false;
 bool inPauseMenu = false;
 bool displayFloatingText = true;
 bool displayFPS = false;
+bool displayFullscreen = false;
 
 std::vector<int> currentImageUiIds;
 
@@ -582,6 +583,8 @@ int menuFPSOn;
 int menuFPSOff;
 int menuDamageOn;
 int menuDamageOff;
+int menuFSOff;
+int menuFSOn;
 
 void Core::runMenu() {
 
@@ -634,9 +637,9 @@ void Core::runMenu() {
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongTitleSign.png"), 0, buttonTop + buttonTopHeight));
 
 			//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2));
+			//currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonExtend2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("button.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 3));
-			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
+            currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonEndCapShort.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 4 - 1));
 
 			if (displayFloatingText) {
 				menuDamageOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn.png"), 0, buttonTop + buttonTopHeight + titleHeight);
@@ -656,11 +659,21 @@ void Core::runMenu() {
 				currentImageUiIds.push_back(menuFPSOff);
 			}
 
+            if (displayFullscreen) {
+                menuFSOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2);
+                currentImageUiIds.push_back(menuFPSOn);
+            }
+            else {
+                menuFSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2);
+                currentImageUiIds.push_back(menuFPSOff);
+            }
+
 			currentTextUiIds.push_back(renderEngine->ui->addText("Display Damage", 155, 190 + buttonHeight, 1, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Display FPS", 155, 190 + buttonHeight * 2, 1, menuBaseTextColor, 1));
+            currentTextUiIds.push_back(renderEngine->ui->addText("Fullscreen", 155, 190 + buttonHeight * 3, 1, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Back", 155, 190 + buttonHeight * 4, 1, menuBaseTextColor, 1));
 
-			maxChoiceIndex = 3;
+			maxChoiceIndex = 4;
 			break;
 		case CONTROLS:
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("controller.png"), float(*properties.screenWidth - 1287), buttonTop + buttonTopHeight + 130));
@@ -838,8 +851,34 @@ void Core::runMenu() {
 						menuFPSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight);
 						currentImageUiIds.push_back(menuFPSOff);
 					}
+				} else if (currentChoiceIndex == 2) {
+                    displayFullscreen = displayFullscreen ? false : true;
+                    if (displayFullscreen) {
+                        glfwSetWindowMonitor(globalWindow, glfwGetPrimaryMonitor(), 0, 0, 1920, 1080, GLFW_DONT_CARE);
+                        renderEngine->ui->removeImage(menuFSOff);
+                        for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+                            if (menuFSOff == currentImageUiIds[i]) {
+                                currentImageUiIds.rbegin() + i;
+                                break;
+                            }
+                        }						
+                        menuFSOn = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOn2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2);
+                        currentImageUiIds.push_back(menuFSOn);
+                    }
+                    else {
+                        glfwSetWindowMonitor(globalWindow, NULL, 0, 0, 1920, 1080, GLFW_DONT_CARE);
+                        renderEngine->ui->removeImage(menuFSOn);
+                        for (unsigned int i = 0; i < currentImageUiIds.size(); i++) {
+                            if (menuFSOn == currentImageUiIds[i]) {
+                                currentImageUiIds.rbegin() + i;
+                                break;
+                            }
+                        }
+                        menuFSOff = renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongToggleOff2.png"), 0, buttonTop + buttonTopHeight + titleHeight + buttonHeight * 2);
+                        currentImageUiIds.push_back(menuFSOff);
+                    }
 				}
-				else if (currentChoiceIndex == 2) {
+				else if (currentChoiceIndex == 3) {
 					nextMainMenuState = MAINMENU;
 				}
             break;
