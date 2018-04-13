@@ -291,15 +291,20 @@
   </ItemGroup>
   <ItemGroup>
     <Media Include="data\sound\bgm1.mp3" />
+    <Media Include="data\sound\car-collide-1.mp3" />
     <Media Include="data\sound\crystal-collide-1.mp3" />
     <Media Include="data\sound\crystal-collide-2.mp3" />
     <Media Include="data\sound\crystal-shatter-major-1.mp3" />
     <Media Include="data\sound\crystal-shatter-major-2.mp3" />
     <Media Include="data\sound\crystal-shatter-minor-1.mp3" />
+    <Media Include="data\sound\engine-big-idle.mp3" />
+    <Media Include="data\sound\engine-hum.mp3" />
     <Media Include="data\sound\engine-idle.mp3" />
     <Media Include="data\sound\engine-rev.mp3" />
+    <Media Include="data\sound\metal-major-collide-1.mp3" />
     <Media Include="data\sound\minor-collide-1.mp3" />
     <Media Include="data\sound\minor-collide-2.mp3" />
+    <Media Include="data\sound\minor-collide-3.mp3" />
     <Media Include="data\sound\pickup1.mp3" />
     <Media Include="data\sound\rifle-close.mp3" />
   </ItemGroup>
