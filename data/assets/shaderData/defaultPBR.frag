@@ -131,7 +131,7 @@ vec3 gridSamplingDisk[20] = vec3[]
 
 float calculateShadows(int i, vec3 norm, vec3 lightDir){
     float shadow = 0.0;
-    if(i<numShadows){
+    if(i < numShadows){
         vec3 lightVector = vs_output.modelPos - lights[i].position;
         float currentDepth = length(lightVector);
         // currentDepth = normalize(currentDepth);
@@ -140,7 +140,7 @@ float calculateShadows(int i, vec3 norm, vec3 lightDir){
         float bias = max(1 * (1.0 - dot(norm, lightDir)),0.25);
         int samples = 20;
         float viewDistance = length(vs_output.viewPos - vs_output.modelPos);
-        float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
+        float diskRadius = (1.0 + (viewDistance / farPlane)) / 8.0;
         for(int j = 0; j < samples; ++j)
         {
             // float closestDepth = texture(shadowData[i], lightVector).r;
