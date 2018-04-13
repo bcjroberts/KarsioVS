@@ -26,8 +26,9 @@ public:
 		glm::vec3 tangent;	// tangent
 		glm::vec3 bitangent; // bitangent
 		glm::vec3 vertColors; // vertex colors 
+		GLfloat isCrystal;
 	};
-	MeshData(aiMesh *mesh);
+	MeshData(aiMesh *mesh, bool isCrystal);
 	~MeshData() = default;
 
 	// Data containers for everything that makes up a mesh
@@ -39,9 +40,8 @@ public:
 
 private:
 	unsigned int VBO, EBO;
-
 	// Functions for filling the above data
-	void setVerticies(aiMesh *mesh);
+	void setVerticies(aiMesh *mesh, bool isCrystal);
 	void setIndicies(aiMesh *mesh);
 	void setupBuffers();
 };

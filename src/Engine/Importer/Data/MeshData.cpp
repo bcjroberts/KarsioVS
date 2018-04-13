@@ -3,14 +3,14 @@
 #include "MeshData.h"
 
 
-MeshData::MeshData(aiMesh *mesh) {
-	setVerticies(mesh);
+MeshData::MeshData(aiMesh *mesh, bool isCrystal) {
+	setVerticies(mesh, isCrystal);
 	setIndicies(mesh);
 	setupBuffers();
 }
 
 
-void MeshData::setVerticies(aiMesh* mesh) {
+void MeshData::setVerticies(aiMesh* mesh, bool isCrystal) {
 	// Walk through each of the mesh's vertices
 	for (int i = 0; i < mesh->mNumVertices; i++) {
 		Vertex vertex;
@@ -62,9 +62,14 @@ void MeshData::setVerticies(aiMesh* mesh) {
 		else {
 			tvec3 = glm::vec3(1);
 		}
-
 		vertex.vertColors = tvec3;
 
+		GLfloat tfloat = 0;
+		if(isCrystal) {
+			tfloat = 1;
+		}
+		vertex.isCrystal = tfloat;
+		
 		this->vertices.push_back(vertex);
 	}
 }
@@ -114,9 +119,12 @@ void MeshData::setupBuffers() {
 	// vertex bitangent
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
-	// vertex colors
+	// vertex colors AO
 	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, vertColors));
+	// vertex colors isCrystal
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, isCrystal));
 
 	glBindVertexArray(0);
 }

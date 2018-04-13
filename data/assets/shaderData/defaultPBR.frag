@@ -10,6 +10,7 @@ in VertexShader{
     mat3 tangentLight;
     vec3 tangentView;
     vec3 tangentPos;
+    vec3 viewPos;
 } vs_output;
 // in vec3 Normal;
 // in vec3 ModelPos;
@@ -29,12 +30,15 @@ struct Textures{
     // sampler2D ambiantOcculusion;
 };
 
-const int numLights = 50;
+const int numShadows = 1;
+uniform samplerCube shadowData[numShadows];
 
+const int numLights = 50;
 uniform Light lights[numLights];
 // uniform vec3 viewPos;
 uniform Textures textureData;
 
+uniform float farPlane;
 // float distributionGGX(vec3 N, vec3 H, float roughness);
 // float geometrySchlickGGX(float NdotV, float roughness) ;
 // float geometrySmith(vec3 norm, vec3 viewDir, vec3 lightDir, float roughness) ;
@@ -80,11 +84,8 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0) {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-vec3 calculateReflectance(int i, vec3 norm, vec3 viewDir, vec3 albedo, float roughness, float metalness, vec3 fresnel0){
-    vec3 lightMagnitude = (vs_output.tangentLight * lights[i].position) - vs_output.tangentPos;
+vec3 calculateReflectance(int i, vec3 norm, vec3 viewDir, vec3 albedo, float roughness, float metalness, vec3 fresnel0, vec3 lightDir, vec3 lightMagnitude){
 
-    // calculate per-light radiance
-    vec3 lightDir = normalize(lightMagnitude);
     vec3 halfNorm = normalize(viewDir + lightDir);
     float lightDis = length(lightMagnitude);
     float attenuation = 1.0 / (lightDis * lightDis);
@@ -118,6 +119,46 @@ vec3 calculateReflectance(int i, vec3 norm, vec3 viewDir, vec3 albedo, float rou
     return (kDiffuse * albedo / PI + specular) * radiance * NdotL;
 }
 
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[]
+(
+   vec3(1, 1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1, 1,  1), 
+   vec3(1, 1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+   vec3(1, 1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1, 1,  0),
+   vec3(1, 0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1, 0, -1),
+   vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
+);
+
+float calculateShadows(int i, vec3 norm, vec3 lightDir){
+    float shadow = 0.0;
+    if(i<numShadows){
+        vec3 lightVector = vs_output.modelPos - lights[i].position;
+        float currentDepth = length(lightVector);
+        // currentDepth = normalize(currentDepth);
+
+        // float bias = 5;
+        float bias = max(1 * (1.0 - dot(norm, lightDir)),0.25);
+        int samples = 20;
+        float viewDistance = length(vs_output.viewPos - vs_output.modelPos);
+        float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
+        for(int j = 0; j < samples; ++j)
+        {
+            // float closestDepth = texture(shadowData[i], lightVector).r;
+            float closestDepth = texture(shadowData[i], lightVector + gridSamplingDisk[j] * diskRadius).r;
+            closestDepth *= farPlane;   // undo mapping [0;1]
+            // FragColor = vec4(0,viewDistance,0,1.f);
+            // FragColor = vec4(0,0,viewDistance/1000,1.f);
+            if(currentDepth - bias > closestDepth){
+                shadow += 1.0;
+            }
+        }
+        shadow /= float(samples);
+        // FragColor = vec4(0,shadow,0,1.0);
+    }
+    return shadow;
+}
+
+
 vec3 computeColor(){
     vec3 albedo = pow(texture(textureData.albedo, vs_output.uvs).rgb, vec3(2.2));
     float metalness = texture(textureData.metalness, vs_output.uvs).r;
@@ -142,15 +183,18 @@ vec3 computeColor(){
     // reflectance equation
     vec3 reflectance = vec3(0.0);
     for(int i = 0; i < numLights; ++i) {
+        vec3 lightMagnitude = (vs_output.tangentLight * lights[i].position) - vs_output.tangentPos;
+        // calculate per-light radiance
+        vec3 lightDir = normalize(lightMagnitude);
         // add to outgoing radiance to fragment reflectance
-        reflectance += calculateReflectance(i, norm, viewDir, albedo, roughness, metalness, fresnel0);  
+        reflectance += (calculateReflectance(i, norm, viewDir, albedo, roughness, metalness, fresnel0, lightDir, lightMagnitude) * (1 - calculateShadows(i, norm,  lightDir)));  
         // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
     }   
     
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).
     // vec3 ambient = vec3(0.03) * albedo * ao;
-    vec3 ambient = vec3(0.03) * albedo;    
+    vec3 ambient = vec3(0.02) * albedo;    
     
     // vec3 color = ambient + reflectance;
     return ambient + reflectance;

@@ -14,11 +14,11 @@
 
 class RenderWorld {
 public:
-	RenderWorld();
+	RenderWorld(int *screenWidth, int *screenHeight);
 	~RenderWorld();
-	//Need the model that is being used and the instance that will be added to that model
-	void renderElements();
-	void renderCubemap();
+	void genShadows();
+	void renderScene();
+
 	void updateCamera(glm::mat4& view, glm::mat4& projection, glm::vec3& location);
 	void setLight(int index, glm::vec3 position, glm::vec3 color);
 	int getNextAvailableLightID();
@@ -29,6 +29,9 @@ public:
 	//	void render(Camera camera);
 
 private:
+	int *screenWidth;
+	int *screenHeight;
+	
 	struct CameraDetails {
 		glm::mat4 view;
 		glm::mat4 projection;
@@ -83,16 +86,33 @@ private:
 	};
 	Cubemap cubemap;
 
+	struct ShadowMaps {
+		const GLuint SIZE = 2048;
+		GLuint shaderID;
+		GLuint depthFBO;
+		std::vector<GLuint> maps;
+	};
+	int NUM_SHADOWS = 1; //Max 25ish since only 32 textures can be loaded
+	ShadowMaps shadows;
+
+	float farPlane = 10000.0f;
+
 //	GLFWwindow *window;
 //	int *screenWidth;
 //	int *screenHeight;
 
+	void PrepShadowMaps();
+
+	//Need the model that is being used and the instance that will be added to that model
+	void renderElements(RendererModel &sModel, GLuint shaderID);
+	void renderCamera();
+	void renderCubemap();
+	
 	void passLights(GLuint shaderID);
 	void passCamera(GLuint shaderID);
 
 	void passTextures(GLuint shaderID);
 	void activateTextures(RendererModel sModel);
 
-	void loadCubemap();
-
+	void loadSkybox();
 };

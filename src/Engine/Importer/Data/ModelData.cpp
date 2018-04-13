@@ -5,7 +5,10 @@
 void ModelData::importMesh(std::string meshPath) {
 	// Create an instance of the Importer class
 	Assimp::Importer importer;
-
+	std::string crystal = "Crystal";
+	if (meshPath.find(crystal)) {
+		isCrystal = true;
+	}
 	// And have it read the given file with some example postprocessing
 	// Usually - if speed is not the most important aspect for you - you'll 
 	// propably to request more postprocessing than we do in this example.
@@ -33,7 +36,7 @@ void ModelData::processNode(aiNode *node, const aiScene *scene) {
 		// the node object only contains indices to index the actual objects in the scene.
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(MeshData(mesh));
+		meshes.push_back(MeshData(mesh,isCrystal));
 	}
 	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {

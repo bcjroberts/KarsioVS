@@ -13,6 +13,7 @@ out VertexShader{
     mat3 tangentLight;
     vec3 tangentView;
     vec3 tangentPos;
+    vec3 viewPos;
 } vs_output;
 // out vec3 Normal;
 // out vec3 ModelPos;
@@ -41,6 +42,7 @@ void main() {
     vs_output.tangentLight = TBN;
     vs_output.tangentView = TBN * viewPos;
     vs_output.tangentPos = TBN * vs_output.modelPos;
+    vs_output.viewPos = viewPos;
 
 
     //place the mesh in the scene

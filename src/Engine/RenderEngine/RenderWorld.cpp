@@ -6,7 +6,9 @@
 
 using namespace glm;
 
-RenderWorld::RenderWorld() {
+RenderWorld::RenderWorld(int *screenWidth, int *screenHeight) {
+	this->screenWidth = screenWidth;
+	this->screenHeight = screenHeight;
 	for (int i = 0; i < NUM_LIGHTS; ++i) {
 		Light newLight;
 		newLight.position = vec3(0);
@@ -14,23 +16,118 @@ RenderWorld::RenderWorld() {
 		lights.push_back(newLight);
 		lightsInUse[i] = false;
 	}
-	setLight(0, vec3(100.0, 100.0, 100.0), vec3(20000.0, 20000.0, 20000.0));
-	setLight(1, vec3(100.0, 100.0, -100.0), vec3(20000.0, 20000.0, 20000.0));
-	setLight(2, vec3(-100.0, 100.0, 100.0), vec3(20000.0, 20000.0, 20000.0));
-	setLight(3, vec3(-100.0, 100.0, -100.0), vec3(20000.0, 20000.0, 20000.0));
-	lightsInUse[0] = lightsInUse[1] = lightsInUse[2] = lightsInUse[3] = true;
+	setLight(0, vec3(0, 100.0, 0), vec3(20000));
+//	setLight(0, vec3(100.0, 100.0, 100.0), vec3(2000.0, 2000.0, 2000.0));
+//	setLight(1, vec3(100.0, 100.0, -100.0), vec3(20000.0));
+//	setLight(2, vec3(-100.0, 100.0, 100.0), vec3(20000.0));
+//	setLight(3, vec3(-100.0, 100.0, -100.0), vec3(20000.0));
+//	lightsInUse[0] = lightsInUse[1] = lightsInUse[2] = lightsInUse[3] = true;
+	lightsInUse[0] = true;
 
 	//load the skybox
-	loadCubemap();
+	PrepShadowMaps();
+	loadSkybox();
+//	for (int i = 0; i < shadows.maps.size(); ++i) {
+//		std::cout << shadows.maps[i] << std::endl;
+//	}
 }
 
 RenderWorld::~RenderWorld() {
+
 }
 
-void RenderWorld::renderElements() {
+void RenderWorld::renderScene() {
+	glViewport(0, 0, shadows.SIZE, shadows.SIZE);
+	genShadows();
+	glViewport(0, 0, *screenWidth, *screenHeight);
+	renderCubemap();
+	renderCamera();
+}
+
+void RenderWorld::PrepShadowMaps() {
+	//GLint texture_units;
+	//glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &texture_units);
+	//std::cout << texture_units << std::endl;
+
+	//Create shadow shader
+	shadows.shaderID = ShaderDataManager::getShaderData("pointShadows")->shaderID;
+
+	//Create framebuffer for shadows
+	glGenFramebuffers(1, &shadows.depthFBO);
+
+	//Create cubemaps for shadow maps
+	for (int i = 0; i < NUM_SHADOWS; ++i) {
+		shadows.maps.push_back(0);
+//		std::cout << shadows.maps[i] << std::endl;
+		glGenTextures(1, &shadows.maps[i]);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, shadows.maps[i]);
+		for (int j = 0; j < 6; ++j) {
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_DEPTH_COMPONENT, shadows.SIZE, shadows.SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+		}
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+		//std::cout << shadows.maps[i] << std::endl;
+	}
+}
+
+void RenderWorld::genShadows() {
+	for (int i = 0; i < shadows.maps.size(); ++i) {
+		// attach depth texture as FBO's depth buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, shadows.depthFBO);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadows.maps[i], 0);
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+
+		// create depth cubemap tranformation matrices
+		glm::vec3 lightPos = lights[i].position;
+		float nearPlane = 1.0f;
+		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)shadows.SIZE / shadows.SIZE, nearPlane, farPlane);
+		std::vector<glm::mat4> shadowTransforms;
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+		shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+		// render scene to depth cubemap
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glUseProgram(shadows.shaderID);
+		for (unsigned int i = 0; i < 6; ++i) {
+			ShaderUniforms::setMat4(shadows.shaderID, "shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+		}
+
+		ShaderUniforms::setFloat(shadows.shaderID, "farPlane", farPlane);
+		ShaderUniforms::setVec3(shadows.shaderID, "lightPos", lightPos);
+
+		for (RendererModel &sModel : sceneModels) {
+			renderElements(sModel, shadows.shaderID);
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void RenderWorld::renderElements(RendererModel &sModel, GLuint shaderID) {
+
+	GLint transformationLoc = glGetUniformLocation(shaderID, "modelTransformation");
+
+	for (auto &mesh : sModel.meshes) {
+		for (int j = 0; j < sModel.instances.size(); ++j) {
+			glBindVertexArray(mesh.VAO);
+			glUniformMatrix4fv(transformationLoc, 1, GL_FALSE, value_ptr(sModel.instances[j].transform));
+			glDrawElements(GL_TRIANGLES, mesh.trisCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+	}
+}
+
+void RenderWorld::renderCamera() {
 	GLuint currentShaderID = -1;
-	GLint transformationLoc;
-	for (auto &sModel : sceneModels) {
+	for (RendererModel &sModel : sceneModels) {
 
 		if (sModel.shaderID != currentShaderID) {
 			currentShaderID = sModel.shaderID;
@@ -38,21 +135,12 @@ void RenderWorld::renderElements() {
 
 			passLights(currentShaderID); //pass lights into shader
 			passCamera(currentShaderID); //pass camera into shader
-			passTextures(currentShaderID);
-
-			transformationLoc = glGetUniformLocation(currentShaderID, "modelTransformation");
+			passTextures(currentShaderID); //pass textures into shader
+			ShaderUniforms::setFloat(currentShaderID, "farPlane", farPlane);
 		}
 
 		activateTextures(sModel);
-
-		for (auto &mesh : sModel.meshes) {
-			for (int j = 0; j < sModel.instances.size(); ++j) {
-				glBindVertexArray(mesh.VAO);
-				glUniformMatrix4fv(transformationLoc, 1, GL_FALSE, value_ptr(sModel.instances[j].transform));
-				glDrawElements(GL_TRIANGLES, mesh.trisCount, GL_UNSIGNED_INT, 0);
-				glBindVertexArray(0);
-			}
-		}
+		renderElements(sModel, currentShaderID);
 	}
 	//std::cout<<"rendering"<<std::endl;
 }
@@ -71,6 +159,7 @@ void RenderWorld::renderCubemap() {
 	glBindVertexArray(cubemap.model.VAO);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap.textureID);
+//	glBindTexture(GL_TEXTURE_CUBE_MAP, shadows.maps[0]);
 	glDrawElements(GL_TRIANGLES, cubemap.model.trisCount, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glEnable(GL_CULL_FACE);
@@ -185,6 +274,9 @@ void RenderWorld::passTextures(GLuint shaderID) {
 	ShaderUniforms::setInt(shaderID, "textureData.metalness", 2);
 	ShaderUniforms::setInt(shaderID, "textureData.normal", 3);
 	ShaderUniforms::setInt(shaderID, "textureData.emission", 4);
+	for (int i = 0; i < shadows.maps.size(); ++i) {
+		ShaderUniforms::setInt(shaderID, "shadowData[" + std::to_string(i) + "]", 5 + i);
+	}
 }
 
 void RenderWorld::activateTextures(RendererModel sModel) {
@@ -198,10 +290,13 @@ void RenderWorld::activateTextures(RendererModel sModel) {
 	glBindTexture(GL_TEXTURE_2D, sModel.texture.normal);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, sModel.texture.emission);
+	for (int i = 0; i < shadows.maps.size(); ++i) {
+		glActiveTexture(GL_TEXTURE5 + i);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, shadows.maps[i]);
+	}
 }
 
-//TODO fix this method, shaders are probably broken
-void RenderWorld::loadCubemap() {
+void RenderWorld::loadSkybox() {
 	glGenTextures(1, &cubemap.textureID);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap.textureID);

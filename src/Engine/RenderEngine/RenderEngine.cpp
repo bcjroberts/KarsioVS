@@ -17,7 +17,7 @@ RenderEngine::RenderEngine(GLFWwindow *window, int *screenWidth, int *screenHeig
 	this->screenWidth = screenWidth;
 	this->screenHeight = screenHeight;
 
-	world = new RenderWorld();
+	world = new RenderWorld(screenWidth, screenHeight);
 	ui = new UserInterface(screenWidth,screenHeight);
 
 	//Maybe load the font from somewhere else?
@@ -37,8 +37,7 @@ void RenderEngine::render(std::vector<Camera*> cameras) {
 
 	for (int i = 0; i < cameras.size(); ++i) {
 		world->updateCamera(cameras[i]->getView(), cameras[i]->getProjection(), cameras[i]->getPosition());
-		world->renderCubemap();
-		world->renderElements();
+		world->renderScene();
 
 		ui->renderUI();
 	}
