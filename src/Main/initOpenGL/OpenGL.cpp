@@ -47,6 +47,7 @@ bool OpenGL::setupOpenGL(GLFWwindow **window,const char *windowName) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     *window = glfwCreateWindow(window_width, window_height, windowName, glfwGetPrimaryMonitor(), nullptr);
+	glfwSetWindowAspectRatio(*window, 16, 9);
     //*window = glfwCreateWindow(window_width, window_height, windowName, glfwGetPrimaryMonitor(), nullptr);
     //Check that window was properly setup
     if (!*window) {
