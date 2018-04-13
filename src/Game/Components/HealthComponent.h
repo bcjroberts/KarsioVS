@@ -10,8 +10,8 @@ private:
 	int hitID = -1;
     float maxHealth;
     float armor = 0;
-    bool HealthComponent::isPlayerInvolved(int id);
 public:
+    bool HealthComponent::isPlayerInvolved(int id);
     HealthComponent(float nhealth, bool nhealthIsThreshold = false, float narmor = 0);
     bool isDead() const;
     void applyDamage(float damage, int damageSenderId);

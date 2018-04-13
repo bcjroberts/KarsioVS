@@ -14,6 +14,12 @@ UpgradeComponent::~UpgradeComponent() = default;
 
 void UpgradeComponent::addResources(float value) {
     resources += value;
+
+    if (static_cast<HealthComponent*>(owner->getComponent(HEALTH))->isPlayerInvolved(owner->id)) {
+        const int roundedCrystal = round(value);
+        std::string crystalString = std::to_string(roundedCrystal);
+        EntityManager::getInstance()->createFloatingText(owner, glm::vec3(0.2,0.6,1), 0.6f, &crystalString);
+    }
 }
 
 float UpgradeComponent::getCurrentRamMultiplier() {
