@@ -46,7 +46,8 @@ bool OpenGL::setupOpenGL(GLFWwindow **window,const char *windowName) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    *window = glfwCreateWindow(window_width, window_height, windowName, nullptr, nullptr);
+    *window = glfwCreateWindow(window_width, window_height, windowName, glfwGetPrimaryMonitor(), nullptr);
+    //*window = glfwCreateWindow(window_width, window_height, windowName, glfwGetPrimaryMonitor(), nullptr);
     //Check that window was properly setup
     if (!*window) {
         std::cout << "Program failed to create GLFW window, TERMINATING" << std::endl;
