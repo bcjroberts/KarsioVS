@@ -17,7 +17,7 @@ WeaponComponent::WeaponComponent(ShapeRendererComponent* newWeapon) : Component(
 
 WeaponComponent::~WeaponComponent() = default;
 
-float projHeight[3] = {2.7f, 3.7f, 5.2f};
+float projHeight[3] = {2.7f, 3.7f, 5.4f};
 
 void WeaponComponent::fireWeapon() {
     // First check to see if we can fire
@@ -46,6 +46,7 @@ void WeaponComponent::updateGunValues(float nROF, float newDamaga, float newSpee
     projectileSpeed = newSpeed;
 }
 
+float aimHeight[3] = {2.8f, 3.8f, 7.f};
 void WeaponComponent::updateTargetting() {
     // Rotate the gun as much as possible to point at the entity
     if (targetEnt != nullptr) {
@@ -66,7 +67,7 @@ void WeaponComponent::updateTargetting() {
         float pitchAngleToTarget = 0;
         if (abs(yawAngleToTarget) < maxGunYaw) {
             int lvl = static_cast<UpgradeComponent*>(owner->getComponent(UPGRADE))->getChassisLevel();
-            pitchAngleToTarget = -glm::orientedAngle(glm::normalize(targetPos - (owner->getPosition() + glm::vec3(0,projHeight[lvl - 1],0))), glm::normalize(targetPos - owner->getPosition()), owner->getRightVector());
+            pitchAngleToTarget = -glm::orientedAngle(glm::normalize(targetPos - (owner->getPosition() + glm::vec3(0,aimHeight[lvl - 1],0))), glm::normalize(targetPos - owner->getPosition()), owner->getRightVector());
 
             pitchAngleToTarget = pitchAngleToTarget > maxGunPitch ? maxGunPitch : pitchAngleToTarget;
             pitchAngleToTarget = pitchAngleToTarget <  -maxGunPitch ? 6.283185f - maxGunPitch : 6.283185f + pitchAngleToTarget;
