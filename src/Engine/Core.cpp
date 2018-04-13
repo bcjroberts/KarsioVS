@@ -222,7 +222,7 @@ bool replayUIInitialized = false;
 bool inPauseMenu = false;
 bool displayFloatingText = true;
 bool displayFPS = false;
-bool displayFullscreen = false;
+bool displayFullscreen = true;
 
 std::vector<int> currentImageUiIds;
 
