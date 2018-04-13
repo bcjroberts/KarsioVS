@@ -157,6 +157,11 @@
     <Media Include="data\sound\crystal-shatter-major-1.mp3" />
     <Media Include="data\sound\crystal-shatter-minor-1.mp3" />
     <Media Include="data\sound\minor-collide-1.mp3" />
+    <Media Include="data\sound\car-collide-1.mp3" />
+    <Media Include="data\sound\engine-big-idle.mp3" />
+    <Media Include="data\sound\engine-hum.mp3" />
+    <Media Include="data\sound\metal-major-collide-1.mp3" />
+    <Media Include="data\sound\minor-collide-3.mp3" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Debug\fmodL.dll" />
