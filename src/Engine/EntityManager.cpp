@@ -318,12 +318,14 @@ void EntityManager::createBrokenVehicle(int chassisLevel, glm::vec3 pos, glm::qu
     globalMat = glm::translate(globalMat, pos) * glm::toMat4(rot) * glm::scale(globalMat, scale);
 
     // Add the body
+	/*
     Entity* bodyEnt = createEntity(pos, rot, scale);
     glm::quat bodyRot(glm::toMat4(rot) * glm::toMat4(glm::quat(glm::vec3(0.6f,0,0))));
     physx::PxRigidActor* bodyActor = PhysicsEngine::getInstance()->createDynamicPhysicsBox(10.f, PhysicsEngine::toPxVec3(pos + glm::vec3(0,0.5f,0)), 
         PhysicsEngine::toPxVec3(glm::vec3(1.3f,0.5f,2.5f) * scale), PhysicsEngine::toPxVec3(velocity), physx::PxQuat(bodyRot.x, bodyRot.y, bodyRot.z, bodyRot.w));
     ComponentManager::getInstance()->addPhysicsComponent(bodyEnt, bodyActor);
     ComponentManager::getInstance()->addShapeRendererComponent(bodyEnt, ModelManager::getModel("blownUpPieces-Chassis2"), PhysicsEngine::getFirstShapeFromActor(bodyActor), glm::vec3(0.7f));
+	*/
 
     // Add the thing that holds the gun mount
     Entity* holderEnt = createEntity(pos, rot, scale);
