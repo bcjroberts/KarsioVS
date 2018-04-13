@@ -1281,7 +1281,9 @@ void Core::runUpgradeMenu() {
 		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("previewChassis" + cLevel + "A" + aLevel + ".png"), x, y, vehicleScale));
 
         if (!uc->isUpgradeAvailable()) {
-            currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeMenuNotEnough.png"), 600, 0));
+			if (!uc->fullyUpgraded()) {
+				currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeMenuNotEnough.png"), 600, 0));
+			}
 			float scale = 0;
 			Core::renderEngine->ui->modifyImage(Core::upgradeLizardId, nullptr, nullptr, &scale);
         }
