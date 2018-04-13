@@ -225,16 +225,17 @@ bool displayFPS = false;
 
 std::vector<int> currentImageUiIds;
 
+glm::vec3 lastPlayerCameraMovePos(0);
+glm::vec3 lastPlayerCameraLookPos(0);
+
 void Core::runGame() {
     if (properties.isGameInitialized == false) {
         // We need to clear the menu and all of its buttons and spawn the UI/Game elements for our scene
         renderEngine->ui->clearAllUI();
         EntityManager::getInstance()->destroyAllEntities();
-
 		
 		physxIterCounterId = renderEngine->ui->addText("78", 5, 5, 0.5, glm::vec3(0, 1, 0));
 		mainfpsCounterId = renderEngine->ui->addText("100", 50, 5, 0.5, glm::vec3(1, 1, 0));
-		
         
 		Core::upgradeLizardId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeAvailable.png"), float(*properties.screenWidth - 300), 315, 0);
 		healthBarGreenId = renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("healthGreen.png"), 118, 77, 1);
@@ -297,7 +298,6 @@ void Core::runGame() {
 	renderEngine->ui->modifyImageDiffSize(healthBarGreenId, nullptr, nullptr, &greenScale);
 	renderEngine->ui->modifyImageDiffSize(healthBarRedId, nullptr, nullptr, &redScale);
     renderEngine->ui->modifyText(playerHealthId, &playerHealthStr, nullptr, nullptr, nullptr, nullptr);
-    bool isPlayerDead = playerHealthComp->isDead();
 
 	
     // Only set this value to false if the game has yet to be paused. Also used for unpausing.
@@ -319,10 +319,27 @@ void Core::runGame() {
 	int buttonTop = 200;
 	int buttonTopHeight = 75;
 
-    if (replayUIShown == false && isPlayerDead) { // Defeat!
+    if (replayUIShown == false && playerHealthComp->isDead()) { // Defeat!
         //renderEngine->ui->addText("DEFEAT!", 100, 150, 4, glm::vec3(1, 0, 0));
 		currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("buttonLongDefeatSign.png"), 0, buttonTop + buttonTopHeight));
+        if (!playerHealthComp->isDeathProcessed()) {
+            // If we have yet to process the death of the player, then do that now
+            // First copy relevant player values
+            PhysicsComponent* playerPC = static_cast<PhysicsComponent*>(playerVehicle->getComponent(PHYSICS));
 
+            const int chassisLevel = playerUC->getChassisLevel();
+            const glm::vec3 pos = playerVehicle->getPosition();
+            const glm::quat rot = playerVehicle->getRotation();
+            const glm::vec3 vel = PhysicsEngine::toglmVec3(playerPC->getRigidBody()->getLinearVelocity());
+
+            printf("Death Velocity: %f %f %f\n", vel.x, vel.y, vel.z);
+
+            // Then move the player far away
+            playerPC->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-1000, 10, -1000)), false);
+
+            // Then spawn a broken vehicle where the player died
+            EntityManager::getInstance()->createBrokenVehicle(chassisLevel, pos, rot, vel);
+        }
         replayUIShown = true;
         replayUIInitialized = false;
     }
@@ -515,14 +532,18 @@ void Core::runGame() {
 				renderEngine->ui->modifyImageDiffSize(playerReticleId, &(x), &(y), &m, &m);
 			}
 
-            cameras[0]->rotateCameraTowardPoint(playerVehicle->getPosition() + offset * 10.0f, 7.5f * fixedStepTimediff);
-			glm::vec3 cameraPos = playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 7 + 3.f * (chassisLevel - 0.5f), 0);
-			float threshold = 288.f; // Limit the camera so it does not stick into the outside walls
-			if (cameraPos.x > threshold) cameraPos.x = threshold;
-			if (cameraPos.x < -threshold) cameraPos.x = -threshold;
-			if (cameraPos.z > threshold) cameraPos.z = threshold;
-			if (cameraPos.z < -threshold) cameraPos.z = -threshold;
-            cameras[0]->lerpCameraTowardPoint(cameraPos, 7.5f * fixedStepTimediff);
+            if (!playerHealthComp->isDead()) {
+                lastPlayerCameraLookPos = playerVehicle->getPosition() + offset * 10.0f;
+                lastPlayerCameraMovePos = playerVehicle->getPosition() + offset * -8.0f * chassisLevel + glm::vec3(0, 7 + 3.f * (chassisLevel - 0.5f), 0);
+                float threshold = 288.f; // Limit the camera so it does not stick into the outside walls
+                if (lastPlayerCameraMovePos.x > threshold) lastPlayerCameraMovePos.x = threshold;
+                if (lastPlayerCameraMovePos.x < -threshold) lastPlayerCameraMovePos.x = -threshold;
+                if (lastPlayerCameraMovePos.z > threshold) lastPlayerCameraMovePos.z = threshold;
+                if (lastPlayerCameraMovePos.z < -threshold) lastPlayerCameraMovePos.z = -threshold;
+            }
+
+            cameras[0]->rotateCameraTowardPoint(lastPlayerCameraLookPos, 7.5f * fixedStepTimediff);
+            cameras[0]->lerpCameraTowardPoint(lastPlayerCameraMovePos, 7.5f * fixedStepTimediff);
         }
 
 		if (displayFloatingText) {
