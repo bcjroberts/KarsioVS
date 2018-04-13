@@ -332,8 +332,6 @@ void Core::runGame() {
             const glm::quat rot = playerVehicle->getRotation();
             const glm::vec3 vel = PhysicsEngine::toglmVec3(playerPC->getRigidBody()->getLinearVelocity());
 
-            printf("Death Velocity: %f %f %f\n", vel.x, vel.y, vel.z);
-
             // Then move the player far away
             playerPC->getRigidBody()->setGlobalPose(physx::PxTransform(physx::PxVec3(-1000, 10, -1000)), false);
 

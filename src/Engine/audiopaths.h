@@ -7,6 +7,7 @@ private:
 public:
     std::string bgm1;
     std::string engineIdle;
+    std::string engineBigIdle;
     std::string engineRev;
     std::string rifleShot;
     
@@ -16,6 +17,9 @@ public:
 
     std::string metalBump1;
     std::string metalBump2;
+    std::string metalBump3;
+    std::string metalCollide1;
+    std::string metalCollide2;
 
     std::string crysBump1;
     std::string crysBump2;

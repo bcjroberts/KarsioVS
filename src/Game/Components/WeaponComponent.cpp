@@ -17,6 +17,8 @@ WeaponComponent::WeaponComponent(ShapeRendererComponent* newWeapon) : Component(
 
 WeaponComponent::~WeaponComponent() = default;
 
+float projHeight[3] = {2.7f, 3.7f, 5.2f};
+
 void WeaponComponent::fireWeapon() {
     // First check to see if we can fire
     if (Core::simtimeSinceStartup - lastTimeFired > timeBetweenShots) {
@@ -26,9 +28,10 @@ void WeaponComponent::fireWeapon() {
 		float xvalue = float((rand() % 1000) - 500) / 30000.f;
 		float yvalue = float((rand() % 1000) - 500) / 30000.f;
 		float zvalue = float((rand() % 1000) - 500) / 30000.f;
+        int lvl = static_cast<UpgradeComponent*>(owner->getComponent(UPGRADE))->getChassisLevel();
 
 		glm::quat projRot = glm::quat(glm::eulerAngles(glm::quat(myWeapon->getMatrixNoScale())) + glm::vec3(xvalue, yvalue, zvalue));
-        EntityManager::getInstance()->createProjectile(owner->id, owner->getPosition() + glm::vec3(0,myWeapon->localPos.y * 0.8f,0), projRot, projectileSpeed, gunDamage);
+        EntityManager::getInstance()->createProjectile(owner->id, owner->getPosition() + glm::vec3(0,projHeight[lvl - 1],0), projRot, projectileSpeed, gunDamage);
     }
 }
 
@@ -48,9 +51,9 @@ void WeaponComponent::updateTargetting() {
     if (targetEnt != nullptr) {
 
         // Aim higher the higher the level of the enemy
-        float targetLevel = static_cast<UpgradeComponent*>(owner->getComponent(UPGRADE))->getChassisLevel();
+        int targetLevel = static_cast<UpgradeComponent*>(owner->getComponent(UPGRADE))->getChassisLevel();
 
-        const glm::vec3 targetPos = targetEnt->getPosition() + glm::vec3(0, 3.f * targetLevel, 0);
+        const glm::vec3 targetPos = targetEnt->getPosition() + glm::vec3(0, projHeight[targetLevel-1] - 1.0f, 0);
 
         // Now we need to perform the same oangle calculations that also occur elsewhere
         // And limit the guns rotation to the specified max values
@@ -62,7 +65,8 @@ void WeaponComponent::updateTargetting() {
 
         float pitchAngleToTarget = 0;
         if (abs(yawAngleToTarget) < maxGunYaw) {
-            pitchAngleToTarget = -glm::orientedAngle(glm::normalize(targetPos - (owner->getPosition() + glm::vec3(0,myWeapon->localPos.y * 0.8f,0))), glm::normalize(targetPos - owner->getPosition()), owner->getRightVector());
+            int lvl = static_cast<UpgradeComponent*>(owner->getComponent(UPGRADE))->getChassisLevel();
+            pitchAngleToTarget = -glm::orientedAngle(glm::normalize(targetPos - (owner->getPosition() + glm::vec3(0,projHeight[lvl - 1],0))), glm::normalize(targetPos - owner->getPosition()), owner->getRightVector());
 
             pitchAngleToTarget = pitchAngleToTarget > maxGunPitch ? maxGunPitch : pitchAngleToTarget;
             pitchAngleToTarget = pitchAngleToTarget <  -maxGunPitch ? 6.283185f - maxGunPitch : 6.283185f + pitchAngleToTarget;

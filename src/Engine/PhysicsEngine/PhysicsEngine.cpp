@@ -298,7 +298,7 @@ physx::PxRigidActor* PhysicsEngine::createDynamicPhysicsBox(float density, physx
     gScene->addActor(*box);
     
     // set the velocity of the actor to be the same as the velocity passed in
-    //box->setLinearVelocity(velocity);
+    box->setLinearVelocity(velocity);
     return box;
 }
 
