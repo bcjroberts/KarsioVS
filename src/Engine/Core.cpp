@@ -725,7 +725,7 @@ void Core::runMenu() {
 			currentTextUiIds.push_back(renderEngine->ui->addText("created specialized vehicles to collect", float(*properties.screenWidth - storyWidth), 190 + 45 * 2 + titleHeight, 0.60, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("crystals. However the vehicles developed", float(*properties.screenWidth - storyWidth), 190 + 45 * 3 + titleHeight, 0.60, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("a mind of their and decided instead of", float(*properties.screenWidth - storyWidth), 190 + 45 * 4 + titleHeight, 0.60, menuBaseTextColor, 1));
-			currentTextUiIds.push_back(renderEngine->ui->addText("gathering, it will kill anything that", float(*properties.screenWidth - storyWidth), 190 + 45 * 5 + titleHeight, 0.60, menuBaseTextColor, 1));
+			currentTextUiIds.push_back(renderEngine->ui->addText("gathering, they will kill anything that", float(*properties.screenWidth - storyWidth), 190 + 45 * 5 + titleHeight, 0.60, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("moves.", float(*properties.screenWidth - storyWidth), 190 + 45 * 6 + titleHeight, 0.60, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("Far more interesting than gathering", float(*properties.screenWidth - storyWidth), 190 + 45 * 7 + titleHeight, 0.60, menuBaseTextColor, 1));
 			currentTextUiIds.push_back(renderEngine->ui->addText("resources, it's time to see which", float(*properties.screenWidth - storyWidth), 190 + 45 * 8 + titleHeight, 0.60, menuBaseTextColor, 1));
@@ -880,7 +880,7 @@ void Core::runMenu() {
 
     // We need to render the UI if this is the case and keep track of where we are/what is selected.
     UpgradeComponent* uc = static_cast<UpgradeComponent*>(mainMenuEnt->getComponent(UPGRADE));
-    uc->addResources(timeDiff * 5.f);
+    uc->addResources(timeDiff * 100.f);
 
     if (uc->isUpgradeAvailable()) {
         UpgradeType type = UpgradeType(logic->randomNum(0, 3));
