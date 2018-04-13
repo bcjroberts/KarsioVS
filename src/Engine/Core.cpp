@@ -1282,6 +1282,8 @@ void Core::runUpgradeMenu() {
 
         if (!uc->isUpgradeAvailable()) {
             currentImageUiIds.push_back(Core::renderEngine->ui->addImageDiffSize(*TextureDataManager::getImageData("upgradeMenuNotEnough.png"), 600, 0));
+			float scale = 0;
+			Core::renderEngine->ui->modifyImage(Core::upgradeLizardId, nullptr, nullptr, &scale);
         }
 		else {
 			currentImageUiIds.push_back(renderEngine->ui->addImage(*TextureDataManager::getImageData("upgradeMenu.png"), 600, 0));
@@ -1318,7 +1320,10 @@ void Core::runUpgradeMenu() {
 			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY, 0.5, availableTextColour, 1));
 		} else {
 			constantTextUI.push_back(renderEngine->ui->addText("Gun", selectPanelX + 90, 300 + selectPanelY, 1, selectionDisabledColour, 1));
-			if (uc->getGunLevel() < 5) {
+			if (!uc->isUpgradeAvailable() && uc->getGunLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("More Crystals Required", statPanelX + 50, 340 + statPanelY, 0.5, unavailableTextColour, 1));
+			}
+			else if (uc->getGunLevel() < 5) {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY, 0.5, unavailableTextColour, 1));
 			} else {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY, 0.5, generalTextColour, 1));
@@ -1332,7 +1337,10 @@ void Core::runUpgradeMenu() {
 			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY*2, 0.5, availableTextColour, 1));
 		} else {
 			constantTextUI.push_back(renderEngine->ui->addText("Armor", selectPanelX + 90, 300 + selectPanelY*2, 1, selectionDisabledColour, 1));
-			if (uc->getArmorLevel() < 5) {
+			if (!uc->isUpgradeAvailable() && uc->getArmorLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("More Crystals Required", statPanelX + 50, 340 + statPanelY*2, 0.5, unavailableTextColour, 1));
+			}
+			else if (uc->getArmorLevel() < 5) {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY*2, 0.5, unavailableTextColour, 1));
 			} else {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY*2, 0.5, generalTextColour, 1));
@@ -1346,7 +1354,10 @@ void Core::runUpgradeMenu() {
 			constantTextUI.push_back(Core::renderEngine->ui->addText("Upgrade Available", statPanelX + 50, 340 + statPanelY*3, 0.5, availableTextColour, 1));
 		} else {
 			constantTextUI.push_back(renderEngine->ui->addText("Ram", selectPanelX + 90, 300 + selectPanelY*3, 1, selectionDisabledColour, 1));
-			if (uc->getRamLevel() < 5) {
+			if (!uc->isUpgradeAvailable() && uc->getRamLevel() < 5) {
+				constantTextUI.push_back(Core::renderEngine->ui->addText("More Crystals Required", statPanelX + 50, 340 + statPanelY*3, 0.5, unavailableTextColour, 1));
+			}
+			else if (uc->getRamLevel() < 5) {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Chassis Upgrade Required", statPanelX + 50, 340 + statPanelY*3, 0.5, unavailableTextColour, 1));
 			} else {
 				constantTextUI.push_back(Core::renderEngine->ui->addText("Fully Upgraded", statPanelX + 50, 340 + statPanelY*3, 0.5, generalTextColour, 1));
